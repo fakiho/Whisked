@@ -72,12 +72,12 @@ struct MealListView: View {
             VStack(spacing: Theme.Spacing.large.value) {
                 // Hero section with shimmer
                 VStack(spacing: Theme.Spacing.medium.value) {
-                    Text("Cooking delicious meals...")
+                    Text("Exploring \(viewModel.category.name) recipes...")
                         .themeHeadline()
                         .foregroundColor(.textSecondary)
                         .themePadding(.top, .extraLarge)
                     
-                    Text("Preparing your meals")
+                    Text("Loading delicious meals")
                         .themeBody()
                         .foregroundColor(.textSecondary)
                 }
@@ -89,7 +89,7 @@ struct MealListView: View {
             }
         }
         .background(Color.backgroundPrimary)
-        .accessibilityLabel("Loading meals")
+        .accessibilityLabel("Loading \(viewModel.category.name) meals")
         .accessibilityHint("Please wait while we fetch delicious meal recipes")
     }
     
@@ -117,10 +117,13 @@ struct MealListView: View {
     
     private var headerSection: some View {
         VStack(spacing: Theme.Spacing.small.value) {
-            Text("Discover \(viewModel.meals.count) delicious meal recipes")
-                .themeBody()
-                .foregroundColor(.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack {
+                Text("Discover \(viewModel.meals.count) delicious \(viewModel.category.name.lowercased()) recipes")
+                    .themeBody()
+                    .foregroundColor(.textSecondary)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .themePadding(.horizontal, .large)
         .themePadding(.top, .medium)
@@ -139,36 +142,12 @@ struct MealListView: View {
                 .scaleEffect(hasAppeared ? 1 : 0.8)
                 .animation(
                     .spring(response: 0.6, dampingFraction: 0.8)
-                    .delay(Double(index) * 0.1),
+                    .delay(Double(index) * 0.05),
                     value: hasAppeared
                 )
-                .onAppear {
-                    viewModel.checkForLoadMore(meal: meal)
-                }
+                .id(meal.id)
             }
             .padding(.horizontal, Theme.Spacing.medium.value)
-            
-            // Pagination controls
-            if viewModel.hasMorePages {
-                if viewModel.isLoadingMore {
-                    HStack(spacing: Theme.Spacing.medium.value) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .accent))
-                            .scaleEffect(0.8)
-                        Text("Loading more meals...")
-                            .themeCaption()
-                            .foregroundColor(.textSecondary)
-                    }
-                    .padding(.all, Theme.Spacing.large.value)
-                } else {
-                    Button("Load More Meals") {
-                        viewModel.loadMoreMeals()
-                    }
-                    .themeButton()
-                    .padding(.horizontal, Theme.Spacing.large.value)
-                    .padding(.vertical, Theme.Spacing.medium.value)
-                }
-            }
         }
     }
     

@@ -17,23 +17,11 @@ final class MealListViewModel {
     /// Current view state
     private(set) var state: ViewState = .loading
     
-    /// Array of meals currently displayed (paginated)
+    /// Array of meals loaded from the API
     private(set) var meals: [Meal] = []
-    
-    /// Loading state for pagination
-    private(set) var isLoadingMore: Bool = false
-    
-    /// Whether there are more pages to load
-    private(set) var hasMorePages: Bool = false
     
     /// The category being filtered, if any
     private(set) var category: MealCategory
-    
-    // MARK: - Private Properties
-    
-    private var allMeals: [Meal] = []
-    private var currentPage: Int = 0
-    private let pageSize: Int
     
     // MARK: - Dependencies
     
@@ -41,15 +29,13 @@ final class MealListViewModel {
     
     // MARK: - Initialization
     
-    /// Initializes the ViewModel with a network service and optional category
+    /// Initializes the ViewModel with a network service and category
     /// - Parameters:
     ///   - networkService: The network service for fetching meal data
-    ///   - category: Optional category to filter meals by
-    ///   - pageSize: Number of items per page (default: 15)
-    init(networkService: NetworkServiceProtocol, category: MealCategory, pageSize: Int = 15) {
+    ///   - category: Category to filter meals by
+    init(networkService: NetworkServiceProtocol, category: MealCategory) {
         self.networkService = networkService
         self.category = category
-        self.pageSize = pageSize
     }
     
     // MARK: - Public Methods
@@ -57,22 +43,11 @@ final class MealListViewModel {
     /// Fetches meals from the API based on category and updates the view state
     func fetchMeals() async {
         state = .loading
-        currentPage = 0
         meals = []
         
         do {
             let fetchedMeals = try await networkService.fetchMealsByCategory(category.name)
-            allMeals = fetchedMeals
-            hasMorePages = fetchedMeals.count > pageSize
-            
-            // Load first page immediately for initial load
-            let startIndex = 0
-            let endIndex = min(pageSize, allMeals.count)
-            if endIndex > 0 {
-                meals = Array(allMeals[startIndex..<endIndex])
-                currentPage = 1
-            }
-            
+            meals = fetchedMeals
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)
@@ -86,32 +61,7 @@ final class MealListViewModel {
 
     /// Refreshes the meal list
     func refresh() async {
-        // Don't change state to loading during refresh to avoid UI flicker
-        currentPage = 0
-        meals = []
-        
-        do {
-            let fetchedMeals = try await networkService.fetchMealsByCategory(category.name)
-            allMeals = fetchedMeals
-            hasMorePages = fetchedMeals.count > pageSize
-            
-            // Load first page immediately for refresh
-            let startIndex = 0
-            let endIndex = min(pageSize, allMeals.count)
-            if endIndex > 0 {
-                meals = Array(allMeals[startIndex..<endIndex])
-                currentPage = 1
-            }
-            
-            state = .success
-        } catch {
-            // Don't show error for cancelled requests (common during pull-to-refresh)
-            if let urlError = error as? URLError, urlError.code == .cancelled {
-                return
-            }
-            let errorMessage = mapErrorToUserFriendlyMessage(error)
-            state = .error(errorMessage)
-        }
+        await fetchMeals()
     }
     
     /// Retries fetching meals after an error
@@ -119,45 +69,7 @@ final class MealListViewModel {
         await fetchMeals()
     }
     
-    /// Loads the next page of meals
-    func loadMoreMeals() {
-        guard !isLoadingMore && hasMorePages && state.isSuccess else { return }
-        loadNextPage()
-    }
-    
-    /// Checks if we should load more meals when reaching near the end
-    func checkForLoadMore(meal: Meal) {
-        // Load more when we're 3 items from the end
-        if let index = meals.firstIndex(where: { $0.id == meal.id }),
-           index >= meals.count - 3 {
-            loadMoreMeals()
-        }
-    }
-    
     // MARK: - Private Methods
-    
-    /// Loads the next page of meals from allMeals array
-    private func loadNextPage() {
-        guard !isLoadingMore else { return }
-        
-        let startIndex = currentPage * pageSize
-        let endIndex = min(startIndex + pageSize, allMeals.count)
-        
-        guard startIndex < allMeals.count else { return }
-        
-        isLoadingMore = true
-        
-        // Simulate loading delay for better UX (only for subsequent pages)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self = self else { return }
-            
-            let nextPageMeals = Array(self.allMeals[startIndex..<endIndex])
-            self.meals.append(contentsOf: nextPageMeals)
-            self.currentPage += 1
-            self.hasMorePages = endIndex < self.allMeals.count
-            self.isLoadingMore = false
-        }
-    }
     
     /// Maps network errors to user-friendly messages
     private func mapErrorToUserFriendlyMessage(_ error: Error) -> String {
@@ -202,7 +114,7 @@ final class MealListViewModel {
 
 extension MealListViewModel {
 
-    /// Enumeration representing the possible states of the category list view
+    /// Enumeration representing the possible states of the meal list view
     enum ViewState: Equatable, Sendable {
         case loading
         case success
