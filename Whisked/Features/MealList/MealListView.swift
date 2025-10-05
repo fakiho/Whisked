@@ -40,8 +40,9 @@ struct MealListView: View {
                 await viewModel.refresh()
             }
             .task {
-                if viewModel.meals.isEmpty {
-                    await viewModel.fetchMeals()
+                // Initial fetch - only happens once due to ViewModel logic
+                if viewModel.meals.isEmpty && viewModel.state == .idle {
+                    await viewModel.fetchAllMeals()
                 }
             }
             .accessibilityRotor("Meals") {
@@ -58,9 +59,9 @@ struct MealListView: View {
     @ViewBuilder
     private var contentView: some View {
         switch viewModel.state {
-        case .loading:
+        case .idle, .loading:
             loadingView
-        case .success:
+        case .loaded, .finished:
             mealListView
         case .error:
             errorView
@@ -70,27 +71,27 @@ struct MealListView: View {
     private var loadingView: some View {
         ScrollView {
             VStack(spacing: Theme.Spacing.large.value) {
-                // Hero section with shimmer
+                // Hero section with shimmer - only shown during initial fetch
                 VStack(spacing: Theme.Spacing.medium.value) {
                     Text("Exploring \(viewModel.category.name) recipes...")
                         .themeHeadline()
                         .foregroundColor(.textSecondary)
                         .themePadding(.top, .extraLarge)
                     
-                    Text("Loading delicious meals")
+                    Text("Fetching complete meal catalog")
                         .themeBody()
                         .foregroundColor(.textSecondary)
                 }
                 .themePadding(.horizontal, .large)
                 
-                // Shimmer grid
+                // Shimmer grid - represents loading state for initial fetch only
                 ShimmerMealGrid(itemCount: 6)
                     .themePadding(.horizontal, .medium)
             }
         }
         .background(Color.backgroundPrimary)
         .accessibilityLabel("Loading \(viewModel.category.name) meals")
-        .accessibilityHint("Please wait while we fetch delicious meal recipes")
+        .accessibilityHint("Please wait while we fetch the complete meal catalog")
     }
     
     private var mealListView: some View {
@@ -109,24 +110,9 @@ struct MealListView: View {
     
     private var mealListContent: some View {
         LazyVStack(spacing: Theme.Spacing.medium.value) {
-            headerSection
             mealCardsSection
             bottomSpacing
         }
-    }
-    
-    private var headerSection: some View {
-        VStack(spacing: Theme.Spacing.small.value) {
-            HStack {
-                Text("Discover \(viewModel.meals.count) delicious \(viewModel.category.name.lowercased()) recipes")
-                    .themeBody()
-                    .foregroundColor(.textSecondary)
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .themePadding(.horizontal, .large)
-        .themePadding(.top, .medium)
     }
     
     private var mealCardsSection: some View {
@@ -148,7 +134,20 @@ struct MealListView: View {
                 .id(meal.id)
             }
             .padding(.horizontal, Theme.Spacing.medium.value)
+            
+            if viewModel.state.canLoadMore {
+                paginationTrigger
+            }
         }
+    }
+    
+    /// Invisible pagination trigger that loads the next page when scrolled into view
+    private var paginationTrigger: some View {
+        Color.clear
+            .frame(height: 1)
+            .onAppear {
+                viewModel.loadNextPage()
+            }
     }
     
     private var bottomSpacing: some View {
