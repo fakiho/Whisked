@@ -1,3 +1,4 @@
 .github/*
 Whisked.xcodeproj/xcuserdata/*
 PersistenceKit/.build/*
+ThemeKit/.build/*

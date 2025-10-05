@@ -38,8 +38,22 @@ struct WhiskedApp: App {
     
     var body: some Scene {
         WindowGroup {
-            coordinator.createDessertListView()
+            WhiskedMainView(coordinator: coordinator)
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+// MARK: - Main View with Hero Animation Namespace
+
+/// Main view that provides the hero animation namespace for seamless transitions
+struct WhiskedMainView: View {
+    let coordinator: WhiskedMainCoordinator
+    
+    // Hero animation namespace shared across views
+    @Namespace private var heroAnimationNamespace
+    
+    var body: some View {
+        coordinator.createDessertListView(heroAnimationNamespace: heroAnimationNamespace)
     }
 }
