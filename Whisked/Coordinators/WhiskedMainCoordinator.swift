@@ -32,8 +32,8 @@ final class WhiskedMainCoordinator {
     
     /// Initializes the coordinator with a network service
     /// - Parameter networkService: The network service for data operations
-    init(networkService: NetworkServiceProtocol = NetworkService()) {
-        self.networkService = networkService
+    init(networkService: NetworkServiceProtocol? = nil) {
+        self.networkService = networkService ?? NetworkService()
     }
     
     // MARK: - Factory Methods

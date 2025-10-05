@@ -10,7 +10,7 @@ import Network
 import Combine
 
 /// Concrete implementation of NetworkServiceProtocol for live API calls
-final class NetworkService: NetworkServiceProtocol, ObservableObject {
+nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject {
     
     // MARK: - Properties
     

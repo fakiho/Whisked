@@ -7,6 +7,8 @@
 
 import SwiftUI
 import SwiftData
+// TODO: Add PersistenceKit import once the package dependency is added
+// import PersistenceKit
 
 @main
 struct WhiskedApp: App {
@@ -17,9 +19,11 @@ struct WhiskedApp: App {
     @State private var coordinator = WhiskedMainCoordinator()
     
     /// Shared model container for SwiftData persistence
+    /// This will be updated to use PersistenceKit.createModelContainer() once the dependency is added
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            // TODO: Add FavoriteDessert.self here once PersistenceKit is added
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
