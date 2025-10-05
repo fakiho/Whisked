@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import PersistenceKit
 
 /// Temporary placeholder protocol for PersistenceService
 import Foundation
@@ -47,7 +48,7 @@ final class MealListViewModel {
     // MARK: - Dependencies
     
     private let networkService: NetworkServiceProtocol
-    private let persistenceService: PersistenceServiceProtocol?
+    private nonisolated let persistenceService: PersistenceKit.PersistenceServiceProtocol?
     
     // MARK: - Initialization
     
@@ -59,7 +60,7 @@ final class MealListViewModel {
     init(
         networkService: NetworkServiceProtocol, 
         category: MealCategory,
-        persistenceService: PersistenceServiceProtocol? = nil
+        persistenceService: PersistenceKit.PersistenceServiceProtocol? = nil
     ) {
         self.networkService = networkService
         self.category = category
@@ -107,21 +108,24 @@ final class MealListViewModel {
     
     /// Loads favorite meal IDs from persistence service
     /// - Returns: Set of favorite meal IDs, empty if no persistence service available
-    private func loadFavoriteIDs() async throws -> Set<String> {
-        guard let persistenceService = persistenceService else {
+    private nonisolated func loadFavoriteIDs() async throws -> Set<String> {
+        guard let service = persistenceService else {
             return []
         }
         
-        return try await persistenceService.fetchFavoriteIDs()
+        return try await service.fetchFavoriteIDs()
     }
     
     /// Refreshes the favorite status for the meal list
     /// Call this when returning from the detail view where favorites might have changed
-    func refreshFavorites() async {
-        guard let persistenceService = persistenceService else { return }
+    nonisolated func refreshFavorites() async {
+        guard let service = persistenceService else { return }
         
         do {
-            favoriteMealIDs = try await persistenceService.fetchFavoriteIDs()
+            let favorites = try await service.fetchFavoriteIDs()
+            await MainActor.run {
+                favoriteMealIDs = favorites
+            }
         } catch {
             print("Failed to refresh favorites: \(error)")
             // Don't disrupt the user experience for favorite refresh failures

@@ -6,13 +6,13 @@
 //
 
 import Foundation
-
-// TODO: Add PersistenceKit import and full offline-first implementation
-// For now, this is a placeholder for the PersistenceService dependency
-
-/// Temporary placeholder protocol for PersistenceService
-import Foundation
 import SwiftUI
+import PersistenceKit
+
+// Import Core types
+extension MealDetailViewModel {
+    // Using types from the app's Core module
+}
 
 /// ViewModel for managing the meal detail screen state and data with offline-first capability
 @MainActor
@@ -33,7 +33,7 @@ final class MealDetailViewModel {
     // MARK: - Dependencies
     
     private let networkService: NetworkServiceProtocol
-    private let persistenceService: PersistenceServiceProtocol?
+    private nonisolated let persistenceService: PersistenceKit.PersistenceServiceProtocol?
     
     // MARK: - Initialization
     
@@ -45,7 +45,7 @@ final class MealDetailViewModel {
     init(
         mealID: String, 
         networkService: NetworkServiceProtocol,
-        persistenceService: PersistenceServiceProtocol? = nil
+        persistenceService: PersistenceKit.PersistenceServiceProtocol? = nil
     ) {
         self.mealID = mealID
         self.networkService = networkService
@@ -63,8 +63,8 @@ final class MealDetailViewModel {
         
         do {
             // Step 1: Check if meal is stored offline (favorited) - if persistence service is available
-            if let persistenceService = persistenceService,
-               let offlineMealData = try await persistenceService.fetchFavoriteMeal(by: mealID) {
+            if let service = persistenceService,
+               let offlineMealData = try await service.fetchFavoriteMeal(by: mealID) {
                 // Found offline! Convert to MealDetail and display immediately
                 let mealDetail = MealDetail.fromOfflineData(
                     idMeal: offlineMealData.idMeal,
@@ -74,8 +74,10 @@ final class MealDetailViewModel {
                     ingredients: offlineMealData.ingredients
                 )
                 
-                isFavorite = true
-                state = .success(mealDetail)
+                await MainActor.run {
+                    isFavorite = true
+                    state = .success(mealDetail)
+                }
                 return
             }
             
@@ -83,12 +85,17 @@ final class MealDetailViewModel {
             let mealDetail = try await networkService.fetchMealDetail(id: mealID)
             
             // Update favorite status if persistence service is available
-            if let persistenceService = persistenceService {
-                let favoriteIDs = try await persistenceService.fetchFavoriteIDs()
-                isFavorite = favoriteIDs.contains(mealID)
+            if let service = persistenceService {
+                let favoriteIDs = try await service.fetchFavoriteIDs()
+                await MainActor.run {
+                    isFavorite = favoriteIDs.contains(mealID)
+                    state = .success(mealDetail)
+                }
+            } else {
+                await MainActor.run {
+                    state = .success(mealDetail)
+                }
             }
-            
-            state = .success(mealDetail)
             
         } catch {
             // Don't show error for cancelled requests
@@ -96,7 +103,9 @@ final class MealDetailViewModel {
                 return
             }
             let errorMessage = mapErrorToUserFriendlyMessage(error)
-            state = .error(errorMessage)
+            await MainActor.run {
+                state = .error(errorMessage)
+            }
         }
     }
     
@@ -104,25 +113,29 @@ final class MealDetailViewModel {
     /// - If favoriting: saves the complete meal data for offline access
     /// - If unfavoriting: removes the meal data from offline storage
     func toggleFavorite() async {
-        guard let persistenceService = persistenceService,
+        guard let service = persistenceService,
               case .success(let mealDetail) = state else { return }
         
         do {
             if isFavorite {
                 // Remove from favorites (delete offline data)
-                try await persistenceService.deleteFavoriteMeal(by: mealID)
-                isFavorite = false
+                try await service.deleteFavoriteMeal(by: mealID)
+                await MainActor.run {
+                    isFavorite = false
+                }
             } else {
                 // Add to favorites (save complete meal data for offline access)
                 let offlineData = mealDetail.extractForOfflineStorage()
-                try await persistenceService.saveFavoriteMeal(
+                try await service.saveFavoriteMeal(
                     idMeal: offlineData.idMeal,
                     strMeal: offlineData.strMeal,
                     strMealThumb: offlineData.strMealThumb,
                     strInstructions: offlineData.strInstructions,
                     ingredients: offlineData.ingredients
                 )
-                isFavorite = true
+                await MainActor.run {
+                    isFavorite = true
+                }
             }
         } catch {
             // Handle favorite toggle error silently or show a brief message
@@ -136,8 +149,8 @@ final class MealDetailViewModel {
         // Don't change state to loading during refresh to avoid UI flicker
         do {
             // Check offline first, then network if needed
-            if let persistenceService = persistenceService,
-               let offlineMealData = try await persistenceService.fetchFavoriteMeal(by: mealID) {
+            if let service = persistenceService,
+               let offlineMealData = try await service.fetchFavoriteMeal(by: mealID) {
                 let mealDetail = MealDetail.fromOfflineData(
                     idMeal: offlineMealData.idMeal,
                     strMeal: offlineMealData.strMeal,
@@ -145,8 +158,10 @@ final class MealDetailViewModel {
                     strInstructions: offlineMealData.strInstructions,
                     ingredients: offlineMealData.ingredients
                 )
-                isFavorite = true
-                state = .success(mealDetail)
+                await MainActor.run {
+                    isFavorite = true
+                    state = .success(mealDetail)
+                }
                 return
             }
             
@@ -154,12 +169,17 @@ final class MealDetailViewModel {
             let mealDetail = try await networkService.fetchMealDetail(id: mealID)
             
             // Update favorite status if persistence service is available
-            if let persistenceService = persistenceService {
-                let favoriteIDs = try await persistenceService.fetchFavoriteIDs()
-                isFavorite = favoriteIDs.contains(mealID)
+            if let service = persistenceService {
+                let favoriteIDs = try await service.fetchFavoriteIDs()
+                await MainActor.run {
+                    isFavorite = favoriteIDs.contains(mealID)
+                    state = .success(mealDetail)
+                }
+            } else {
+                await MainActor.run {
+                    state = .success(mealDetail)
+                }
             }
-            
-            state = .success(mealDetail)
             
         } catch {
             // Don't show error for cancelled requests
@@ -167,7 +187,9 @@ final class MealDetailViewModel {
                 return
             }
             let errorMessage = mapErrorToUserFriendlyMessage(error)
-            state = .error(errorMessage)
+            await MainActor.run {
+                state = .error(errorMessage)
+            }
         }
     }
     

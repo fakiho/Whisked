@@ -8,10 +8,10 @@
 import Foundation
 import SwiftData
 
-/// Actor-based service for managing offline meals persistence using SwiftData
-/// Ensures thread safety for all data access and mutations
-public actor PersistenceService {
-    
+/// Thread-safe actor responsible for managing offline meal data persistence
+/// Uses SwiftData for robust local storage with complete meal information
+public actor PersistenceService: PersistenceServiceProtocol {
+
     // MARK: - Properties
     
     /// The SwiftData model context for persistence operations
@@ -35,7 +35,7 @@ public actor PersistenceService {
     ///   - strInstructions: The cooking instructions
     ///   - ingredients: Array of ingredient tuples (name, measure)
     /// - Throws: Error if the save operation fails
-    public func save(
+    public func saveFavoriteMeal(
         idMeal: String,
         strMeal: String,
         strMealThumb: String,
@@ -73,9 +73,9 @@ public actor PersistenceService {
     /// Deletes a meal from offline storage by ID
     /// - Parameter mealID: The unique identifier of the meal to delete
     /// - Throws: Error if the delete operation fails
-    public func delete(mealID: String) async throws {
+    public func deleteFavoriteMeal(by idMeal: String) async throws {
         let descriptor = FetchDescriptor<OfflineMeal>(
-            predicate: #Predicate { $0.idMeal == mealID }
+            predicate: #Predicate { $0.idMeal == idMeal }
         )
         
         let existingMeals = try modelContext.fetch(descriptor)
@@ -89,11 +89,11 @@ public actor PersistenceService {
         }
     }
     
-    /// Fetches a specific meal from offline storage
-    /// - Parameter mealID: The unique identifier of the meal to fetch
-    /// - Returns: A tuple containing the meal data if found, nil otherwise
+    /// Fetches a specific offline meal by ID
+    /// - Parameter idMeal: The unique identifier of the meal
+    /// - Returns: Tuple with meal data if found, nil otherwise
     /// - Throws: Error if the fetch operation fails
-    public func fetch(mealID: String) async throws -> (
+    public func fetchFavoriteMeal(by idMeal: String) async throws -> (
         idMeal: String,
         strMeal: String,
         strMealThumb: String,
@@ -101,7 +101,7 @@ public actor PersistenceService {
         ingredients: [(name: String, measure: String)]
     )? {
         let descriptor = FetchDescriptor<OfflineMeal>(
-            predicate: #Predicate { $0.idMeal == mealID }
+            predicate: #Predicate { $0.idMeal == idMeal }
         )
         
         let meals = try modelContext.fetch(descriptor)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PersistenceKit
 
 /// Main coordinator responsible for managing the navigation flow in the Whisked application
 @MainActor
@@ -20,6 +21,7 @@ final class WhiskedMainCoordinator {
     // MARK: - Dependencies
     
     private let networkService: NetworkServiceProtocol
+    private var persistenceService: PersistenceService?
     
     // MARK: - Destinations
     
@@ -38,6 +40,14 @@ final class WhiskedMainCoordinator {
         self.networkService = networkService ?? NetworkService()
     }
     
+    // MARK: - Configuration
+    
+    /// Configures the persistence service after app initialization
+    /// - Parameter persistenceService: The persistence service to use for offline storage
+    func configurePersistenceService(_ persistenceService: PersistenceService) {
+        self.persistenceService = persistenceService
+    }
+    
     // MARK: - Factory Methods
     
     /// Creates the main category list view with proper dependency injection
@@ -50,7 +60,11 @@ final class WhiskedMainCoordinator {
     /// - Parameter category: The meal category to display
     /// - Returns: Configured MealListView with category filter
     func createMealsByCategoryView(category: MealCategory) -> MealListView {
-        let viewModel = MealListViewModel(networkService: networkService, category: category)
+        let viewModel = MealListViewModel(
+            networkService: networkService, 
+            category: category, 
+            persistenceService: persistenceService
+        )
         return MealListView(
             coordinator: self,
             viewModel: viewModel
@@ -109,7 +123,11 @@ final class WhiskedMainCoordinator {
     /// - Parameter mealID: The meal ID to display details for
     /// - Returns: Configured MealDetailView
     private func createMealDetailView(mealID: String) -> MealDetailView {
-        let viewModel = MealDetailViewModel(mealID: mealID, networkService: networkService)
+        let viewModel = MealDetailViewModel(
+            mealID: mealID, 
+            networkService: networkService,
+            persistenceService: persistenceService
+        )
         return MealDetailView(
             mealID: mealID, 
             coordinator: self, 

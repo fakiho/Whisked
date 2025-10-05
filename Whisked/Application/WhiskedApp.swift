@@ -7,8 +7,7 @@
 
 import SwiftUI
 import SwiftData
-// TODO: Add PersistenceKit import once the package dependency is added
-// import PersistenceKit
+import PersistenceKit
 
 @main
 struct WhiskedApp: App {
@@ -16,14 +15,15 @@ struct WhiskedApp: App {
     // MARK: - Properties
     
     /// Main coordinator for managing navigation throughout the app
-    @State private var coordinator = WhiskedMainCoordinator()
+    @State private var coordinator: WhiskedMainCoordinator = {
+        return WhiskedMainCoordinator()
+    }()
     
     /// Shared model container for SwiftData persistence
-    /// This will be updated to use PersistenceKit.createModelContainer() once the dependency is added
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
-            // TODO: Add FavoriteDessert.self here once PersistenceKit is added
+            OfflineMeal.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -33,6 +33,13 @@ struct WhiskedApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    /// Persistence service for managing offline favorites
+    private var persistenceService: PersistenceService {
+        // Create a new ModelContext that can be safely passed to the actor
+        let context = ModelContext(sharedModelContainer)
+        return PersistenceService(modelContext: context)
+    }
 
     // MARK: - Scene
     
@@ -43,6 +50,10 @@ struct WhiskedApp: App {
                     .navigationDestination(for: WhiskedMainCoordinator.Destination.self) { destination in
                         coordinator.view(for: destination)
                     }
+            }
+            .onAppear {
+                // Inject persistence service into coordinator once container is ready
+                coordinator.configurePersistenceService(persistenceService)
             }
         }
         .modelContainer(sharedModelContainer)
