@@ -17,11 +17,9 @@ struct WhiskedDessertDetailView: View {
     private let mealID: String
     @State private var viewModel: DessertDetailViewModel
     
-    // Hero animation namespace (optional for legacy support)
-    private let heroAnimationNamespace: Namespace.ID?
-    
     // Animation states
     @State private var contentOpacity: Double = 0
+    @State private var imageOpacity: Double = 0
     @State private var isImageLoaded = false
     
     // Device and screen size detection
@@ -33,13 +31,11 @@ struct WhiskedDessertDetailView: View {
     init(
         mealID: String, 
         coordinator: WhiskedMainCoordinator, 
-        viewModel: DessertDetailViewModel,
-        heroAnimationNamespace: Namespace.ID? = nil
+        viewModel: DessertDetailViewModel
     ) {
         self.mealID = mealID
         self.coordinator = coordinator
         self.viewModel = viewModel
-        self.heroAnimationNamespace = heroAnimationNamespace
     }
     
     // MARK: - Body
@@ -60,6 +56,9 @@ struct WhiskedDessertDetailView: View {
             .onAppear {
                 withAnimation(.easeOut(duration: 0.6)) {
                     contentOpacity = 1
+                }
+                withAnimation(.easeOut(duration: 0.4).delay(0.2)) {
+                    imageOpacity = 1
                 }
             }
     }
@@ -158,54 +157,47 @@ struct WhiskedDessertDetailView: View {
     
     private func mealHeaderView(mealDetail: MealDetail) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.large.value) {
-            // Hero Image with responsive layout
-            GeometryReader { geometry in
-                AsyncImage(url: URL(string: mealDetail.strMealThumb)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(
-                            width: geometry.size.width,
-                            height: imageHeight(for: geometry.size)
-                        )
-                        .clipped()
-                        .onAppear {
-                            isImageLoaded = true
+            // Recipe header image with smooth fade-in animation
+            AsyncImage(url: URL(string: mealDetail.strMealThumb)) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: adaptiveImageHeight)
+                    .clipped()
+                    .opacity(imageOpacity)
+                    .animation(.easeOut(duration: 0.4), value: imageOpacity)
+                    .onAppear {
+                        isImageLoaded = true
+                    }
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.backgroundSecondary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: adaptiveImageHeight)
+                    .overlay {
+                        VStack(spacing: Theme.Spacing.medium.value) {
+                            Image(systemName: "photo")
+                                .font(.system(size: Theme.IconSize.extraLarge))
+                                .foregroundColor(.textSecondary)
+                            
+                            Text("Loading image...")
+                                .themeCaption()
+                                .foregroundColor(.textSecondary)
                         }
-                } placeholder: {
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
-                        .fill(Color.backgroundSecondary)
-                        .frame(
-                            width: geometry.size.width,
-                            height: imageHeight(for: geometry.size)
-                        )
-                        .overlay {
-                            VStack(spacing: Theme.Spacing.medium.value) {
-                                Image(systemName: "photo")
-                                    .font(.system(size: Theme.IconSize.extraLarge))
-                                    .foregroundColor(.textSecondary)
-                                
-                                Text("Loading image...")
-                                    .themeCaption()
-                                    .foregroundColor(.textSecondary)
-                            }
-                        }
-                        .overlay(ShimmerView())
-                }
-                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.large))
-                .shadow(
-                    color: Color.black.opacity(0.1),
-                    radius: 20,
-                    x: 0,
-                    y: 10
-                )
-                .applyHeroAnimation(
-                    id: "dessert-image-\(mealID)",
-                    namespace: heroAnimationNamespace,
-                    isSource: false  // Detail view is the destination, not source
-                )
+                        .opacity(0.7)
+                    }
+                    .overlay(ShimmerView())
+                    .opacity(imageOpacity)
+                    .animation(.easeOut(duration: 0.4), value: imageOpacity)
             }
-            .frame(height: adaptiveImageHeight)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.large))
+            .shadow(
+                color: Color.black.opacity(0.1),
+                radius: 20,
+                x: 0,
+                y: 10
+            )
             .themePadding(.horizontal, .large)
             
             // Meal Information
@@ -442,18 +434,6 @@ private extension WhiskedDessertDetailView {
         }
     }
     
-    /// Calculates responsive image height based on available space
-    func imageHeight(for size: CGSize) -> CGFloat {
-        let aspectRatio: CGFloat = 16/9  // Standard aspect ratio for food images
-        let maxHeight = adaptiveImageHeight
-        
-        // Calculate height based on width and aspect ratio
-        let calculatedHeight = size.width / aspectRatio
-        
-        // Return the smaller of calculated height or max height
-        return min(calculatedHeight, maxHeight)
-    }
-    
     /// Adaptive content layout for different screen sizes
     var shouldUseCompactLayout: Bool {
         horizontalSizeClass == .compact || isLandscape
@@ -485,30 +465,28 @@ private extension Button where Label == Text {
 
 #Preview("Success State") {
     @Previewable @Namespace var heroNamespace
-    return NavigationStack {
+    NavigationStack {
         WhiskedDessertDetailView(
             mealID: "52893",
             coordinator: WhiskedMainCoordinator(),
             viewModel: DessertDetailViewModel(
                 mealID: "52893",
                 networkService: MockNetworkService.success()
-            ),
-            heroAnimationNamespace: heroNamespace
+            )
         )
     }
 }
 
 #Preview("Error State") {
     @Previewable @Namespace var heroNamespace
-    return NavigationStack {
+    NavigationStack {
         WhiskedDessertDetailView(
             mealID: "invalid",
             coordinator: WhiskedMainCoordinator(),
             viewModel: DessertDetailViewModel(
                 mealID: "invalid",
                 networkService: MockNetworkService.notFoundError()
-            ),
-            heroAnimationNamespace: heroNamespace
+            )
         )
     }
 }

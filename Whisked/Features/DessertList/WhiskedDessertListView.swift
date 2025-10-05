@@ -16,9 +16,6 @@ struct WhiskedDessertListView: View {
     @State private var coordinator: WhiskedMainCoordinator
     @State private var viewModel: DessertListViewModel
     
-    // Hero animation namespace
-    let heroAnimationNamespace: Namespace.ID
-    
     // Animation state
     @State private var hasAppeared = false
     
@@ -26,12 +23,10 @@ struct WhiskedDessertListView: View {
     
     init(
         coordinator: WhiskedMainCoordinator, 
-        viewModel: DessertListViewModel,
-        heroAnimationNamespace: Namespace.ID
+        viewModel: DessertListViewModel
     ) {
         self.coordinator = coordinator
         self.viewModel = viewModel
-        self.heroAnimationNamespace = heroAnimationNamespace
     }
     
     // MARK: - Body
@@ -51,7 +46,7 @@ struct WhiskedDessertListView: View {
                     }
                 }
                 .navigationDestination(for: WhiskedMainCoordinator.Destination.self) { destination in
-                    coordinator.view(for: destination, heroAnimationNamespace: heroAnimationNamespace)
+                    coordinator.view(for: destination)
                 }
                 .accessibilityRotor("Desserts") {
                     ForEach(viewModel.desserts) { dessert in
@@ -105,44 +100,7 @@ struct WhiskedDessertListView: View {
     
     private var dessertListView: some View {
         ScrollView {
-            LazyVStack(spacing: Theme.Spacing.medium.value) {
-                // Header section
-                VStack(spacing: Theme.Spacing.small.value) {
-                    Text("Sweet Treats")
-                        .themeDisplayLarge()
-                        .foregroundColor(.textPrimary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Text("Discover \(viewModel.desserts.count) delicious dessert recipes")
-                        .themeBody()
-                        .foregroundColor(.textSecondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .themePadding(.horizontal, .large)
-                .themePadding(.top, .medium)
-                
-                // Dessert cards with staggered animation
-                ForEach(Array(viewModel.desserts.enumerated()), id: \.element.id) { index, dessert in
-                    DessertCard(
-                        meal: dessert,
-                        heroAnimationNamespace: heroAnimationNamespace,
-                        onTap: {
-                            coordinator.showDessertDetail(dessertId: dessert.idMeal)
-                        }
-                    )
-                    .opacity(hasAppeared ? 1 : 0)
-                    .scaleEffect(hasAppeared ? 1 : 0.8)
-                    .animation(
-                        .spring(response: 0.6, dampingFraction: 0.8)
-                        .delay(Double(index) * 0.1),
-                        value: hasAppeared
-                    )
-                }
-                .themePadding(.horizontal, .medium)
-                
-                // Bottom spacing
-                Spacer(minLength: Theme.Spacing.large.value)
-            }
+            dessertListContent
         }
         .background(Color.backgroundPrimary)
         .onAppear {
@@ -152,6 +110,53 @@ struct WhiskedDessertListView: View {
         }
         .accessibilityLabel("Dessert list")
         .accessibilityHint("Swipe up and down to browse dessert recipes")
+    }
+    
+    private var dessertListContent: some View {
+        LazyVStack(spacing: Theme.Spacing.medium.value) {
+            headerSection
+            dessertCardsSection
+            bottomSpacing
+        }
+    }
+    
+    private var headerSection: some View {
+        VStack(spacing: Theme.Spacing.small.value) {
+            Text("Sweet Treats")
+                .themeDisplayLarge()
+                .foregroundColor(.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Text("Discover \(viewModel.desserts.count) delicious dessert recipes")
+                .themeBody()
+                .foregroundColor(.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .themePadding(.horizontal, .large)
+        .themePadding(.top, .medium)
+    }
+    
+    private var dessertCardsSection: some View {
+        ForEach(Array(viewModel.desserts.enumerated()), id: \.element.id) { index, dessert in
+            DessertCard(
+                meal: dessert,
+                onTap: {
+                    coordinator.showDessertDetail(dessertId: dessert.idMeal)
+                }
+            )
+            .opacity(hasAppeared ? 1 : 0)
+            .scaleEffect(hasAppeared ? 1 : 0.8)
+            .animation(
+                .spring(response: 0.6, dampingFraction: 0.8)
+                .delay(Double(index) * 0.1),
+                value: hasAppeared
+            )
+        }
+        .themePadding(.horizontal, .medium)
+    }
+    
+    private var bottomSpacing: some View {
+        Spacer(minLength: Theme.Spacing.large.value)
     }
     
     private var errorView: some View {
@@ -202,71 +207,13 @@ struct WhiskedDessertListView: View {
 
 private struct DessertCard: View {
     let meal: Meal
-    let heroAnimationNamespace: Namespace.ID
     let onTap: () -> Void
     
     @State private var isPressed = false
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Theme.Spacing.medium.value) {
-                // Hero animated image
-                AsyncImage(url: URL(string: meal.strMealThumb)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
-                        .fill(Color.backgroundSecondary)
-                        .overlay {
-                            Image(systemName: "photo")
-                                .font(.system(size: Theme.IconSize.medium))
-                                .foregroundColor(.textSecondary)
-                        }
-                        .shimmer(isLoading: true)
-                }
-                .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.medium))
-                .matchedGeometryEffect(
-                    id: "dessert-image-\(meal.idMeal)",
-                    in: heroAnimationNamespace,
-                    isSource: true  // List view is the source of the animation
-                )
-                
-                VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
-                    Text(meal.strMeal)
-                        .themeHeadline()
-                        .foregroundColor(.textPrimary)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Text("Tap to view recipe")
-                        .themeCaption()
-                        .foregroundColor(.textSecondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Spacer(minLength: 0)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: Theme.IconSize.small, weight: .medium))
-                    .foregroundColor(.textSecondary)
-                    .scaleEffect(isPressed ? 1.2 : 1.0)
-                    .animation(.easeInOut(duration: 0.1), value: isPressed)
-            }
-            .themePadding(.all, .medium)
-            .background(Color.backgroundSecondary)
-            .cornerRadius(Theme.CornerRadius.large)
-            .shadow(
-                color: Color.black.opacity(0.05),
-                radius: isPressed ? 2 : 8,
-                x: 0,
-                y: isPressed ? 1 : 4
-            )
-            .scaleEffect(isPressed ? 0.98 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
+            cardContent
         }
         .buttonStyle(.plain)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity) { isPressing in
@@ -277,6 +224,70 @@ private struct DessertCard: View {
         .accessibilityLabel(meal.strMeal)
         .accessibilityHint("Double tap to view detailed recipe")
         .accessibilityAddTraits(.isButton)
+    }
+    
+    private var cardContent: some View {
+        HStack(spacing: Theme.Spacing.medium.value) {
+            cardImage
+            cardText
+            Spacer()
+            chevronIcon
+        }
+        .themePadding(.all, .medium)
+        .background(Color.backgroundSecondary)
+        .cornerRadius(Theme.CornerRadius.large)
+        .shadow(
+            color: Color.black.opacity(0.05),
+            radius: isPressed ? 2 : 8,
+            x: 0,
+            y: isPressed ? 1 : 4
+        )
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+    }
+    
+    private var cardImage: some View {
+        AsyncImage(url: URL(string: meal.strMealThumb)) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        } placeholder: {
+            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
+                .fill(Color.backgroundSecondary)
+                .overlay {
+                    Image(systemName: "photo")
+                        .font(.system(size: Theme.IconSize.medium))
+                        .foregroundColor(.textSecondary)
+                }
+                .shimmer(isLoading: true)
+        }
+        .frame(width: 80, height: 80)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.medium))
+    }
+    
+    private var cardText: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
+            Text(meal.strMeal)
+                .themeHeadline()
+                .foregroundColor(.textPrimary)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Text("Tap to view recipe")
+                .themeCaption()
+                .foregroundColor(.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Spacer(minLength: 0)
+        }
+    }
+    
+    private var chevronIcon: some View {
+        Image(systemName: "chevron.right")
+            .font(.system(size: Theme.IconSize.small, weight: .medium))
+            .foregroundColor(.textSecondary)
+            .scaleEffect(isPressed ? 1.2 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
     }
 }
 
@@ -299,28 +310,25 @@ private extension Button where Label == Text {
 
 #Preview("Success State") {
     @Previewable @Namespace var heroNamespace
-    return WhiskedDessertListView(
+    WhiskedDessertListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: DessertListViewModel(networkService: MockNetworkService.success()),
-        heroAnimationNamespace: heroNamespace
+        viewModel: DessertListViewModel(networkService: MockNetworkService.success())
     )
 }
 
 #Preview("Loading State") {
     @Previewable @Namespace var heroNamespace
     let viewModel = DessertListViewModel(networkService: MockNetworkService.success())
-    return WhiskedDessertListView(
+    WhiskedDessertListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: viewModel,
-        heroAnimationNamespace: heroNamespace
+        viewModel: viewModel
     )
 }
 
 #Preview("Error State") {
     @Previewable @Namespace var heroNamespace
-    return WhiskedDessertListView(
+    WhiskedDessertListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: DessertListViewModel(networkService: MockNetworkService.networkError()),
-        heroAnimationNamespace: heroNamespace
+        viewModel: DessertListViewModel(networkService: MockNetworkService.networkError())
     )
 }
