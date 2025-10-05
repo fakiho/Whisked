@@ -17,6 +17,10 @@ final class WhiskedMainCoordinator {
     /// Navigation path for managing the navigation stack
     var navigationPath = NavigationPath()
     
+    // MARK: - Dependencies
+    
+    private let networkService: NetworkServiceProtocol
+    
     // MARK: - Destinations
     
     /// Enumeration defining all possible navigation destinations in the app
@@ -26,7 +30,20 @@ final class WhiskedMainCoordinator {
     
     // MARK: - Initialization
     
-    init() {}
+    /// Initializes the coordinator with a network service
+    /// - Parameter networkService: The network service for data operations
+    init(networkService: NetworkServiceProtocol = NetworkService()) {
+        self.networkService = networkService
+    }
+    
+    // MARK: - Factory Methods
+    
+    /// Creates the main dessert list view with proper dependency injection
+    /// - Returns: Configured WhiskedDessertListView
+    func createDessertListView() -> WhiskedDessertListView {
+        let viewModel = DessertListViewModel(networkService: networkService)
+        return WhiskedDessertListView(coordinator: self, viewModel: viewModel)
+    }
     
     // MARK: - Navigation Methods
     

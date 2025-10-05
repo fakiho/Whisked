@@ -34,7 +34,7 @@ struct WhiskedApp: App {
     
     var body: some Scene {
         WindowGroup {
-            WhiskedDessertListView(coordinator: coordinator)
+            coordinator.createDessertListView()
         }
         .modelContainer(sharedModelContainer)
     }
