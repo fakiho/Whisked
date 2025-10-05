@@ -111,7 +111,7 @@ struct WhiskedDessertListView: View {
                 Spacer(minLength: 100)
             }
             .frame(maxWidth: .infinity)
-            .frame(minHeight: UIScreen.main.bounds.height - 200)
+            .frame(minHeight: 600) // Fixed height instead of deprecated UIScreen.main
         }
         .refreshable {
             await viewModel.refresh()
