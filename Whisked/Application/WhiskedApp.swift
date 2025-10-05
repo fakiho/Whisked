@@ -15,9 +15,7 @@ struct WhiskedApp: App {
     // MARK: - Properties
     
     /// Main coordinator for managing navigation throughout the app
-    @State private var coordinator: WhiskedMainCoordinator = {
-        return WhiskedMainCoordinator()
-    }()
+    @StateObject private var coordinator = WhiskedMainCoordinator()
     
     /// Shared model container for SwiftData persistence
     var sharedModelContainer: ModelContainer = {

@@ -7,21 +7,21 @@
 
 import SwiftUI
 import PersistenceKit
+import Combine
 
 /// Main coordinator responsible for managing the navigation flow in the Whisked application
 @MainActor
-@Observable
-final class WhiskedMainCoordinator {
+final class WhiskedMainCoordinator: ObservableObject {
     
     // MARK: - Navigation State
     
     /// Navigation path for managing the navigation stack
-    var navigationPath = NavigationPath()
+    @Published var navigationPath = NavigationPath()
     
     // MARK: - Dependencies
     
     private let networkService: NetworkServiceProtocol
-    private var persistenceService: PersistenceService?
+    @Published var persistenceService: PersistenceService?
     
     // MARK: - Destinations
     

@@ -8,6 +8,7 @@
 import SwiftUI
 import ThemeKit
 import PersistenceKit
+import Combine
 
 /// View displaying available meal categories for user selection
 struct CategoryListView: View {
@@ -15,7 +16,7 @@ struct CategoryListView: View {
     // MARK: - Properties
     
     @StateObject private var viewModel: CategoryListViewModel
-    private let coordinator: WhiskedMainCoordinator
+    @ObservedObject private var coordinator: WhiskedMainCoordinator
     private let persistenceService: PersistenceService?
     @State private var favoritesCount: Int = 0
     
@@ -40,6 +41,13 @@ struct CategoryListView: View {
             .refreshable {
                 await viewModel.refreshCategories()
                 await loadFavoritesCount()
+            }
+            .onReceive(coordinator.$persistenceService) { persistenceService in
+                if persistenceService != nil {
+                    Task {
+                        await loadFavoritesCount()
+                    }
+                }
             }
     }
     
@@ -194,7 +202,7 @@ struct CategoryListView: View {
     
     /// Loads the count of favorite meals from persistence service
     private func loadFavoritesCount() async {
-        guard let persistenceService = persistenceService else {
+        guard let persistenceService = coordinator.persistenceService else {
             favoritesCount = 0
             return
         }
