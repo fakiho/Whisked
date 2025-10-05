@@ -10,6 +10,13 @@ import SwiftData
 
 @main
 struct WhiskedApp: App {
+    
+    // MARK: - Properties
+    
+    /// Main coordinator for managing navigation throughout the app
+    @State private var coordinator = WhiskedMainCoordinator()
+    
+    /// Shared model container for SwiftData persistence
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -23,9 +30,11 @@ struct WhiskedApp: App {
         }
     }()
 
+    // MARK: - Scene
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            WhiskedDessertListView(coordinator: coordinator)
         }
         .modelContainer(sharedModelContainer)
     }
