@@ -72,7 +72,17 @@ final class WhiskedMainCoordinator {
     func view(for destination: Destination) -> some View {
         switch destination {
         case .dessertDetail(let dessertId):
-            WhiskedDessertDetailView(dessertId: dessertId, coordinator: self)
+            createDessertDetailView(mealID: dessertId)
         }
+    }
+    
+    // MARK: - Private Factory Methods
+    
+    /// Creates the dessert detail view with proper dependency injection
+    /// - Parameter mealID: The meal ID to display details for
+    /// - Returns: Configured WhiskedDessertDetailView
+    private func createDessertDetailView(mealID: String) -> WhiskedDessertDetailView {
+        let viewModel = DessertDetailViewModel(mealID: mealID, networkService: networkService)
+        return WhiskedDessertDetailView(mealID: mealID, coordinator: self, viewModel: viewModel)
     }
 }
