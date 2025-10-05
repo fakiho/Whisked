@@ -2,3 +2,4 @@
 Whisked.xcodeproj/xcuserdata/*
 PersistenceKit/.build/*
 ThemeKit/.build/*
+DerivedData/*

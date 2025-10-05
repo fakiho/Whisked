@@ -17,28 +17,32 @@ struct ShimmerView: View {
     // MARK: - Properties
     
     @State private var isAnimating = false
+    @Environment(\.colorScheme) private var colorScheme
     
-    private let gradient: LinearGradient
     private let animation: Animation
     
     // MARK: - Initialization
     
     init() {
-        self.gradient = LinearGradient(
+        self.animation = Animation
+            .linear(duration: 1.5)
+            .repeatForever(autoreverses: false)
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var gradient: LinearGradient {
+        LinearGradient(
             colors: [
                 Color.backgroundSecondary,
                 Color.backgroundSecondary.opacity(0.6),
-                Color.backgroundPrimary,
+                Color.backgroundTertiary,
                 Color.backgroundSecondary.opacity(0.6),
                 Color.backgroundSecondary
             ],
             startPoint: .leading,
             endPoint: .trailing
         )
-        
-        self.animation = Animation
-            .linear(duration: 1.5)
-            .repeatForever(autoreverses: false)
     }
     
     // MARK: - Body
@@ -78,11 +82,7 @@ struct ShimmerView: View {
 /// View modifier that applies shimmer effect to any view
 struct ShimmerModifier: ViewModifier {
     
-    @State private var isLoading: Bool
-    
-    init(isLoading: Bool) {
-        self._isLoading = State(initialValue: isLoading)
-    }
+    let isLoading: Bool
     
     func body(content: Content) -> some View {
         if isLoading {
@@ -111,22 +111,24 @@ public extension View {
 /// Pre-built shimmer skeleton components for common UI elements
 
 struct ShimmerDessertCard: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         HStack(spacing: Theme.Spacing.medium.value) {
             // Image placeholder
             RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
-                .fill(Color.backgroundSecondary)
+                .fill(Color.backgroundTertiary)
                 .frame(width: 80, height: 80)
             
             VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
                 // Title placeholder
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
-                    .fill(Color.backgroundSecondary)
+                    .fill(Color.backgroundTertiary)
                     .frame(height: 20)
                 
                 // Subtitle placeholder
                 RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
-                    .fill(Color.backgroundSecondary)
+                    .fill(Color.backgroundTertiary)
                     .frame(width: 120, height: 14)
                 
                 Spacer()
@@ -136,12 +138,12 @@ struct ShimmerDessertCard: View {
             
             // Chevron placeholder
             RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
-                .fill(Color.backgroundSecondary)
+                .fill(Color.backgroundTertiary)
                 .frame(width: 12, height: 12)
         }
-        .themePadding(.all, .small)
-        .background(Color.backgroundPrimary)
-        .cornerRadius(Theme.CornerRadius.medium)
+        .themePadding(.all, .medium)
+        .background(Color.backgroundSecondary)
+        .cornerRadius(Theme.CornerRadius.large)
         .overlay(ShimmerView())
         .accessibilityHidden(true)
     }

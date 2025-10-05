@@ -38,7 +38,12 @@ struct WhiskedApp: App {
     
     var body: some Scene {
         WindowGroup {
-            coordinator.createDessertListView()
+            NavigationStack(path: $coordinator.navigationPath) {
+                coordinator.createCategoryListView()
+                    .navigationDestination(for: WhiskedMainCoordinator.Destination.self) { destination in
+                        coordinator.view(for: destination)
+                    }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

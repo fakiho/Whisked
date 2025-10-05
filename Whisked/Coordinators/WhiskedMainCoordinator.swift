@@ -25,6 +25,8 @@ final class WhiskedMainCoordinator {
     
     /// Enumeration defining all possible navigation destinations in the app
     enum Destination: Hashable, Sendable {
+        case categoryList
+        case mealsByCategory(category: MealCategory)
         case dessertDetail(dessertId: String)
     }
     
@@ -38,10 +40,17 @@ final class WhiskedMainCoordinator {
     
     // MARK: - Factory Methods
     
-    /// Creates the main dessert list view with proper dependency injection
-    /// - Returns: Configured WhiskedDessertListView
-    func createDessertListView() -> WhiskedDessertListView {
-        let viewModel = DessertListViewModel(networkService: networkService)
+    /// Creates the main category list view with proper dependency injection
+    /// - Returns: Configured CategoryListView
+    func createCategoryListView() -> CategoryListView {
+        return CategoryListView(coordinator: self, networkService: networkService)
+    }
+    
+    /// Creates a meal list view for a specific category
+    /// - Parameter category: The meal category to display
+    /// - Returns: Configured WhiskedDessertListView with category filter
+    func createMealsByCategoryView(category: MealCategory) -> WhiskedDessertListView {
+        let viewModel = DessertListViewModel(networkService: networkService, category: category)
         return WhiskedDessertListView(
             coordinator: self, 
             viewModel: viewModel
@@ -49,6 +58,17 @@ final class WhiskedMainCoordinator {
     }
     
     // MARK: - Navigation Methods
+    
+    /// Shows the category list view
+    func showCategoryList() {
+        navigationPath.append(Destination.categoryList)
+    }
+    
+    /// Shows the meals for a specific category
+    /// - Parameter category: The meal category to display
+    func showMealsByCategory(_ category: MealCategory) {
+        navigationPath.append(Destination.mealsByCategory(category: category))
+    }
     
     /// Shows the dessert detail view for a specific dessert
     /// - Parameter dessertId: The unique identifier of the dessert
@@ -74,6 +94,10 @@ final class WhiskedMainCoordinator {
     @ViewBuilder
     func view(for destination: Destination) -> some View {
         switch destination {
+        case .categoryList:
+            createCategoryListView()
+        case .mealsByCategory(let category):
+            createMealsByCategoryView(category: category)
         case .dessertDetail(let dessertId):
             createDessertDetailView(mealID: dessertId)
         }

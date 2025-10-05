@@ -10,6 +10,17 @@ import Foundation
 /// Protocol defining the contract for network services in the Whisked app
 protocol NetworkServiceProtocol {
     
+    /// Fetches the list of available meal categories
+    /// - Returns: Array of MealCategory objects
+    /// - Throws: NetworkError if the request fails
+    func fetchCategories() async throws -> [MealCategory]
+    
+    /// Fetches meals by category from the API
+    /// - Parameter category: The category name to filter by
+    /// - Returns: Array of Meal objects for the specified category
+    /// - Throws: NetworkError if the request fails
+    func fetchMealsByCategory(_ category: String) async throws -> [Meal]
+    
     /// Fetches the list of desserts from the API
     /// - Returns: Array of Meal objects representing desserts
     /// - Throws: NetworkError if the request fails

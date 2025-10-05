@@ -20,27 +20,32 @@ final class DessertListViewModel {
     /// Array of desserts fetched from the API
     private(set) var desserts: [Meal] = []
     
+    /// The category being filtered, if any
+    private(set) var category: MealCategory
+    
     // MARK: - Dependencies
     
     private let networkService: NetworkServiceProtocol
     
     // MARK: - Initialization
     
-    /// Initializes the ViewModel with a network service
-    /// - Parameter networkService: The network service for fetching dessert data
-    init(networkService: NetworkServiceProtocol) {
+    /// Initializes the ViewModel with a network service and optional category
+    /// - Parameters:
+    ///   - networkService: The network service for fetching meal data
+    ///   - category: Optional category to filter meals by
+    init(networkService: NetworkServiceProtocol, category: MealCategory) {
         self.networkService = networkService
+        self.category = category
     }
     
     // MARK: - Public Methods
     
-    /// Fetches desserts from the API and updates the view state
+    /// Fetches meals from the API based on category and updates the view state
     func fetchDesserts() async {
         state = .loading
         
         do {
-            let fetchedDesserts = try await networkService.fetchDesserts()
-            desserts = fetchedDesserts
+            desserts = try await networkService.fetchMealsByCategory(category.id)
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)
@@ -51,13 +56,12 @@ final class DessertListViewModel {
             state = .error(errorMessage)
         }
     }
-    
-    /// Refreshes the dessert list
+
+    /// Refreshes the meal list
     func refresh() async {
         // Don't change state to loading during refresh to avoid UI flicker
         do {
-            let fetchedDesserts = try await networkService.fetchDesserts()
-            desserts = fetchedDesserts
+            desserts = try await networkService.fetchMealsByCategory(category.id)
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)

@@ -259,7 +259,6 @@ private struct DessertCard: View {
                         .font(.system(size: Theme.IconSize.medium))
                         .foregroundColor(.textSecondary)
                 }
-                .shimmer(isLoading: true)
         }
         .frame(width: 80, height: 80)
         .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.medium))
@@ -312,13 +311,13 @@ private extension Button where Label == Text {
     @Previewable @Namespace var heroNamespace
     WhiskedDessertListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: DessertListViewModel(networkService: MockNetworkService.success())
+        viewModel: DessertListViewModel(networkService: MockNetworkService.success(), category: .dessert)
     )
 }
 
 #Preview("Loading State") {
     @Previewable @Namespace var heroNamespace
-    let viewModel = DessertListViewModel(networkService: MockNetworkService.success())
+    let viewModel = DessertListViewModel(networkService: MockNetworkService.success(), category: .dessert)
     WhiskedDessertListView(
         coordinator: WhiskedMainCoordinator(),
         viewModel: viewModel
@@ -329,6 +328,6 @@ private extension Button where Label == Text {
     @Previewable @Namespace var heroNamespace
     WhiskedDessertListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: DessertListViewModel(networkService: MockNetworkService.networkError())
+        viewModel: DessertListViewModel(networkService: MockNetworkService.networkError(), category: .dessert)
     )
 }
