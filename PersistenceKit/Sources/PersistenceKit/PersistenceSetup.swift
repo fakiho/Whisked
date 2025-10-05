@@ -17,7 +17,7 @@ public enum PersistenceSetup: Sendable {
     /// - Throws: ModelContainer initialization errors
     public static func createModelContainer(inMemory: Bool = false) throws -> ModelContainer {
         let schema = Schema([
-            FavoriteDessert.self
+            OfflineMeal.self
         ])
         
         let modelConfiguration = ModelConfiguration(

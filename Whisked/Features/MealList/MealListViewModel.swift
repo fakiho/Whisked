@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Temporary placeholder protocol for PersistenceService
+import Foundation
+import SwiftUI
+
 /// ViewModel for managing the meal list screen state and data with client-side pagination
 @MainActor
 @Observable
@@ -22,6 +26,9 @@ final class MealListViewModel {
     
     /// The category being filtered, if any
     private(set) var category: MealCategory
+    
+    /// Set of favorite meal IDs for quick lookup
+    private(set) var favoriteMealIDs: Set<String> = []
     
     // MARK: - Private Properties
     
@@ -40,21 +47,29 @@ final class MealListViewModel {
     // MARK: - Dependencies
     
     private let networkService: NetworkServiceProtocol
+    private let persistenceService: PersistenceServiceProtocol?
     
     // MARK: - Initialization
     
-    /// Initializes the ViewModel with a network service and category
+    /// Initializes the ViewModel with a network service, category, and optional persistence service
     /// - Parameters:
     ///   - networkService: The network service for fetching meal data
     ///   - category: Category to filter meals by
-    init(networkService: NetworkServiceProtocol, category: MealCategory) {
+    ///   - persistenceService: The persistence service for favorite management (optional for now)
+    init(
+        networkService: NetworkServiceProtocol, 
+        category: MealCategory,
+        persistenceService: PersistenceServiceProtocol? = nil
+    ) {
         self.networkService = networkService
         self.category = category
+        self.persistenceService = persistenceService
     }
     
     // MARK: - Public Methods
     
     /// Initiates the initial fetch of all meals from the API
+    /// Also loads favorite meal IDs if persistence service is available
     /// This should only be called once - subsequent pagination is handled in-memory
     func fetchAllMeals() async {
         // Prevent multiple simultaneous fetches
@@ -66,7 +81,14 @@ final class MealListViewModel {
         currentPage = 0
         
         do {
-            let fetchedMeals = try await networkService.fetchMealsByCategory(category.name)
+            // Load favorites and meals concurrently
+            async let favoritesTask: Set<String> = loadFavoriteIDs()
+            async let mealsTask: [Meal] = networkService.fetchMealsByCategory(category.name)
+            
+            // Wait for both to complete
+            let (favorites, fetchedMeals) = try await (favoritesTask, mealsTask)
+            
+            favoriteMealIDs = favorites
             allMeals = fetchedMeals
             hasFetchedData = true
             
@@ -82,6 +104,38 @@ final class MealListViewModel {
             state = .error(errorMessage)
         }
     }
+    
+    /// Loads favorite meal IDs from persistence service
+    /// - Returns: Set of favorite meal IDs, empty if no persistence service available
+    private func loadFavoriteIDs() async throws -> Set<String> {
+        guard let persistenceService = persistenceService else {
+            return []
+        }
+        
+        return try await persistenceService.fetchFavoriteIDs()
+    }
+    
+    /// Refreshes the favorite status for the meal list
+    /// Call this when returning from the detail view where favorites might have changed
+    func refreshFavorites() async {
+        guard let persistenceService = persistenceService else { return }
+        
+        do {
+            favoriteMealIDs = try await persistenceService.fetchFavoriteIDs()
+        } catch {
+            print("Failed to refresh favorites: \(error)")
+            // Don't disrupt the user experience for favorite refresh failures
+        }
+    }
+    
+    /// Checks if a specific meal is favorited
+    /// - Parameter mealID: The meal ID to check
+    /// - Returns: True if the meal is favorited, false otherwise
+    func isFavorite(mealID: String) -> Bool {
+        return favoriteMealIDs.contains(mealID)
+    }
+    
+    // MARK: - Public Methods
     
     /// Loads the next page of meals from the in-memory dataset
     /// This is a synchronous operation that provides instant results

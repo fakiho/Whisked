@@ -13,7 +13,7 @@ struct WhiskedDessertListView: View {
     
     // MARK: - Properties
     
-    @State private var coordinator: WhiskedMainCoordinator
+private let coordinator: WhiskedMainCoordinator
     @State private var viewModel: DessertListViewModel
     
     // Animation state
@@ -21,12 +21,12 @@ struct WhiskedDessertListView: View {
     
     // MARK: - Initialization
     
-    init(
+init(
         coordinator: WhiskedMainCoordinator, 
         viewModel: DessertListViewModel
     ) {
         self.coordinator = coordinator
-        self.viewModel = viewModel
+        self._viewModel = State(initialValue: viewModel)
     }
     
     // MARK: - Body
@@ -82,9 +82,9 @@ struct WhiskedDessertListView: View {
                         .foregroundColor(.textSecondary)
                 }
                 .themePadding(.horizontal, .large)
-                
+
                 // Shimmer grid
-                ShimmerDessertGrid(itemCount: 6)
+                ShimmerMealGrid(itemCount: 6)
                     .themePadding(.horizontal, .medium)
             }
         }
@@ -135,8 +135,8 @@ struct WhiskedDessertListView: View {
         ForEach(Array(viewModel.meals.enumerated()), id: \.element.id) { index, meal in
             MealCard(
                 meal: meal,
-                onTap: {
-                                            coordinator.showDessertDetail(dessertId: meal.idMeal)
+onTap: {
+                    coordinator.showMealDetail(mealId: meal.idMeal)
                 }
             )
             .opacity(hasAppeared ? 1 : 0)

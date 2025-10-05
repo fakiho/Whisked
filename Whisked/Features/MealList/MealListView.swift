@@ -45,6 +45,12 @@ struct MealListView: View {
                     await viewModel.fetchAllMeals()
                 }
             }
+            .onAppear {
+                // Refresh favorites when returning to this view
+                Task {
+                    await viewModel.refreshFavorites()
+                }
+            }
             .accessibilityRotor("Meals") {
                 ForEach(viewModel.meals) { meal in
                     AccessibilityRotorEntry(meal.strMeal, id: meal.id) {
@@ -120,6 +126,7 @@ struct MealListView: View {
             ForEach(Array(viewModel.meals.enumerated()), id: \.element.id) { index, meal in
                 MealCard(
                     meal: meal,
+                    isFavorite: viewModel.isFavorite(mealID: meal.idMeal),
                     onTap: {
                         coordinator.showMealDetail(mealId: meal.idMeal)
                     }
@@ -202,6 +209,7 @@ struct MealListView: View {
 
 private struct MealCard: View {
     let meal: Meal
+    let isFavorite: Bool
     let onTap: () -> Void
     
     @State private var isPressed = false
@@ -226,6 +234,7 @@ private struct MealCard: View {
             cardImage
             cardText
             Spacer()
+            favoriteIcon
             chevronIcon
         }
         .themePadding(.all, .medium)
@@ -273,6 +282,25 @@ private struct MealCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer(minLength: 0)
+        }
+    }
+    
+    private var favoriteIcon: some View {
+        Group {
+            if isFavorite {
+                Image(systemName: "heart.fill")
+                    .font(.system(size: Theme.IconSize.small, weight: .medium))
+                    .foregroundColor(.error) // Using red color for favorite
+                    .scaleEffect(isPressed ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 0.1), value: isPressed)
+                    .accessibilityLabel("Favorited")
+            } else {
+                // Empty space to maintain layout consistency
+                Image(systemName: "heart")
+                    .font(.system(size: Theme.IconSize.small, weight: .medium))
+                    .foregroundColor(.clear)
+                    .accessibilityHidden(true)
+            }
         }
     }
     

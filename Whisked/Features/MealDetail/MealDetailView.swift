@@ -219,15 +219,20 @@ struct MealDetailView: View {
                     
                     Spacer()
                     
-                    // Favorite button (placeholder for future implementation)
+                    // Favorite button with improved functionality
                     Button(action: {
-                        // TODO: Implement favorite functionality
+                        Task {
+                            await viewModel.toggleFavorite()
+                        }
                     }) {
-                        Image(systemName: "heart")
-                            .font(.system(size: Theme.IconSize.medium))
-                            .foregroundColor(.textSecondary)
+                        Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                            .font(.system(size: Theme.IconSize.medium, weight: .medium))
+                            .foregroundColor(viewModel.isFavorite ? .error : .textSecondary)
+                            .scaleEffect(viewModel.isFavorite ? 1.1 : 1.0)
+                            .animation(.easeInOut(duration: 0.2), value: viewModel.isFavorite)
                     }
-                    .accessibilityLabel("Add to favorites")
+                    .accessibilityLabel(viewModel.isFavorite ? "Remove from favorites" : "Add to favorites")
+                    .accessibilityHint(viewModel.isFavorite ? "Double tap to remove this recipe from favorites" : "Double tap to save this recipe for offline viewing")
                 }
                 .opacity(contentOpacity)
                 .animation(.easeOut(duration: 0.6).delay(0.15), value: contentOpacity)

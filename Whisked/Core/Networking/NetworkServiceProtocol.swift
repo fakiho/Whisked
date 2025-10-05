@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Protocol defining the contract for network services in the Whisked app
-protocol NetworkServiceProtocol {
+/// Protocol defining the network service interface for fetching meal data
+protocol NetworkServiceProtocol: Sendable {
     
     /// Fetches the list of available meal categories
     /// - Returns: Array of MealCategory objects
