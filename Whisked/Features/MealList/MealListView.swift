@@ -117,11 +117,6 @@ struct MealListView: View {
     
     private var headerSection: some View {
         VStack(spacing: Theme.Spacing.small.value) {
-            Text("Sweet Treats")
-                .themeDisplayLarge()
-                .foregroundColor(.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
             Text("Discover \(viewModel.meals.count) delicious meal recipes")
                 .themeBody()
                 .foregroundColor(.textSecondary)
@@ -132,22 +127,49 @@ struct MealListView: View {
     }
     
     private var mealCardsSection: some View {
-        ForEach(Array(viewModel.meals.enumerated()), id: \.element.id) { index, meal in
-            MealCard(
-                meal: meal,
-                onTap: {
-                                            coordinator.showMealDetail(mealId: meal.idMeal)
+        VStack(spacing: Theme.Spacing.medium.value) {
+            ForEach(Array(viewModel.meals.enumerated()), id: \.element.id) { index, meal in
+                MealCard(
+                    meal: meal,
+                    onTap: {
+                        coordinator.showMealDetail(mealId: meal.idMeal)
+                    }
+                )
+                .opacity(hasAppeared ? 1 : 0)
+                .scaleEffect(hasAppeared ? 1 : 0.8)
+                .animation(
+                    .spring(response: 0.6, dampingFraction: 0.8)
+                    .delay(Double(index) * 0.1),
+                    value: hasAppeared
+                )
+                .onAppear {
+                    viewModel.checkForLoadMore(meal: meal)
                 }
-            )
-            .opacity(hasAppeared ? 1 : 0)
-            .scaleEffect(hasAppeared ? 1 : 0.8)
-            .animation(
-                .spring(response: 0.6, dampingFraction: 0.8)
-                .delay(Double(index) * 0.1),
-                value: hasAppeared
-            )
+            }
+            .padding(.horizontal, Theme.Spacing.medium.value)
+            
+            // Pagination controls
+            if viewModel.hasMorePages {
+                if viewModel.isLoadingMore {
+                    HStack(spacing: Theme.Spacing.medium.value) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .accent))
+                            .scaleEffect(0.8)
+                        Text("Loading more meals...")
+                            .themeCaption()
+                            .foregroundColor(.textSecondary)
+                    }
+                    .padding(.all, Theme.Spacing.large.value)
+                } else {
+                    Button("Load More Meals") {
+                        viewModel.loadMoreMeals()
+                    }
+                    .themeButton()
+                    .padding(.horizontal, Theme.Spacing.large.value)
+                    .padding(.vertical, Theme.Spacing.medium.value)
+                }
+            }
         }
-        .themePadding(.horizontal, .medium)
     }
     
     private var bottomSpacing: some View {

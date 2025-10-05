@@ -53,22 +53,28 @@ struct CategoryListView: View {
             loadingView
             
         case .loaded(let categories):
-            if categories.isEmpty {
-                VStack(spacing: 20) {
-                    Image(systemName: "tray")
-                        .font(.system(size: 48))
-                        .foregroundStyle(.secondary)
-                    
-                    Text("No Categories Available")
-                        .font(.title2)
-                        .foregroundStyle(.primary)
-                    
-                    Text("No meal categories could be loaded at this time.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
+            if viewModel.displayedCategories.isEmpty {
+                if viewModel.isLoadingMore {
+                    // Show shimmer while loading first page after categories are fetched
+                    loadingView
+                } else {
+                    // Show empty state only if no categories at all
+                    VStack(spacing: 20) {
+                        Image(systemName: "tray")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.secondary)
+                        
+                        Text("No Categories Available")
+                            .font(.title2)
+                            .foregroundStyle(.primary)
+                        
+                        Text("No meal categories could be loaded at this time.")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
                 }
-                .padding()
             } else {
                 loadedView(categories: categories)
             }
@@ -90,7 +96,7 @@ struct CategoryListView: View {
     private func loadedView(categories: [MealCategory]) -> some View {
         ScrollView {
             LazyVStack(spacing: 16) {
-                ForEach(Array(categories.enumerated()), id: \.element.id) { index, category in
+                ForEach(Array(viewModel.displayedCategories.enumerated()), id: \.element.id) { index, category in
                     CategoryCard(
                         category: category,
                         onTap: {
@@ -106,6 +112,30 @@ struct CategoryListView: View {
                         .delay(Double(index) * 0.1),
                         value: viewModel.loadingState
                     )
+                    .onAppear {
+                        viewModel.checkForLoadMore(category: category)
+                    }
+                }
+                
+                // Load more indicator
+                if viewModel.hasMorePages {
+                    if viewModel.isLoadingMore {
+                        HStack {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .scaleEffect(0.8)
+                            Text("Loading more categories...")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding()
+                    } else {
+                        Button("Load More") {
+                            viewModel.loadNextPage()
+                        }
+                        .buttonStyle(.bordered)
+                        .padding()
+                    }
                 }
             }
             .padding()
