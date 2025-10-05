@@ -145,14 +145,10 @@ struct MealDetailView: View {
         // Ingredients Section
         ingredientsSection(ingredients: mealDetail.ingredients)
             .opacity(contentOpacity)
-            .scaleEffect(contentOpacity * 0.2 + 0.8)
-            .animation(.easeOut(duration: 0.6).delay(0.2), value: contentOpacity)
         
         // Instructions Section
         instructionsSection(instructions: mealDetail.instructions)
             .opacity(contentOpacity)
-            .scaleEffect(contentOpacity * 0.2 + 0.8)
-            .animation(.easeOut(duration: 0.6).delay(0.4), value: contentOpacity)
     }
     
     private func mealHeaderView(mealDetail: MealDetail) -> some View {
@@ -263,19 +259,23 @@ struct MealDetailView: View {
                     .cornerRadius(Theme.CornerRadius.small)
             }
             
-            LazyVGrid(
-                columns: adaptiveGridColumns,
-                spacing: Theme.Spacing.medium.value
-            ) {
-                ForEach(Array(ingredients.enumerated()), id: \.element.id) { index, ingredient in
-                    IngredientCard(ingredient: ingredient)
-                        .opacity(contentOpacity)
-                        .scaleEffect(contentOpacity * 0.2 + 0.8)
-                        .animation(
-                            .spring(response: 0.6, dampingFraction: 0.8)
-                            .delay(Double(index) * 0.05),
-                            value: contentOpacity
-                        )
+            // Simple vertical stack with manual column layout
+            VStack(spacing: Theme.Spacing.medium.value) {
+                ForEach(ingredients.chunked(into: isIpad ? 3 : 2), id: \.self) { row in
+                    HStack(spacing: Theme.Spacing.medium.value) {
+                        ForEach(row, id: \.id) { ingredient in
+                            IngredientCard(ingredient: ingredient)
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        // Fill remaining space if row is incomplete
+                        if row.count < (isIpad ? 3 : 2) {
+                            ForEach(0..<((isIpad ? 3 : 2) - row.count), id: \.self) { _ in
+                                Color.clear
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -359,33 +359,46 @@ struct MealDetailView: View {
 
 // MARK: - Supporting Views
 
+/// Array extension for chunking ingredients into rows
+private extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0..<Swift.min($0 + size, count)])
+        }
+    }
+}
+
 private struct IngredientCard: View {
     let ingredient: Ingredient
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
-            Text(ingredient.name)
-                .themeHeadline()
-                .foregroundColor(.textPrimary)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            Text(ingredient.measure)
-                .themeBody()
-                .foregroundColor(.textSecondary)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .top, spacing: 8) {
+                Text(IngredientEmojiMapper.emoji(for: ingredient.name))
+                    .font(.system(size: 20))
+                    .frame(width: 24, height: 24, alignment: .center)
+                    .accessibilityHidden(true)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(ingredient.name)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text(ingredient.measure)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .themePadding(.all, .medium)
-        .background(Color.backgroundSecondary)
-        .cornerRadius(Theme.CornerRadius.medium)
-        .shadow(
-            color: Color.black.opacity(0.03),
-            radius: 4,
-            x: 0,
-            y: 2
-        )
+        .frame(height: 80)
+        .frame(maxWidth: .infinity)
+        .padding(12)
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(ingredient.name): \(ingredient.measure)")
     }
@@ -447,7 +460,7 @@ private extension MealDetailView {
     /// Adaptive grid columns for ingredients based on screen size
     var adaptiveGridColumns: [GridItem] {
         let columnCount = isIpad ? 3 : 2  // 3 columns on iPad, 2 on iPhone
-        return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.medium.value), count: columnCount)
+        return Array(repeating: GridItem(.flexible(minimum: 140, maximum: 200), spacing: Theme.Spacing.medium.value), count: columnCount)
     }
 }
 
