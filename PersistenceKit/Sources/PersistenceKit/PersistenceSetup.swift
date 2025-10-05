@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 /// Helper for setting up the PersistenceKit model container
-public enum PersistenceSetup {
+public enum PersistenceSetup: Sendable {
     
     /// Creates a model container for PersistenceKit
     /// - Parameter inMemory: Whether to store data in memory only (useful for testing)

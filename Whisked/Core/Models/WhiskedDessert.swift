@@ -8,7 +8,7 @@
 import Foundation
 
 /// Model representing a dessert from TheMealDB API
-struct WhiskedDessert: Identifiable, Codable, Hashable {
+struct WhiskedDessert: Identifiable, Codable, Hashable, Sendable {
     
     // MARK: - Properties
     
@@ -26,7 +26,7 @@ struct WhiskedDessert: Identifiable, Codable, Hashable {
 }
 
 /// Model representing detailed information about a dessert
-struct WhiskedDessertDetail: Identifiable, Codable {
+struct WhiskedDessertDetail: Identifiable, Codable, Sendable {
     
     // MARK: - Properties
     
@@ -76,7 +76,7 @@ struct WhiskedDessertDetail: Identifiable, Codable {
 }
 
 /// Model representing an ingredient with its measure
-struct WhiskedIngredient: Identifiable, Codable, Hashable {
+struct WhiskedIngredient: Identifiable, Codable, Hashable, Sendable {
     let id = UUID()
     let name: String
     let measure: String
@@ -87,7 +87,7 @@ struct WhiskedIngredient: Identifiable, Codable, Hashable {
 }
 
 /// Dynamic coding keys for parsing the flat ingredient structure from the API
-struct DynamicCodingKeys: CodingKey {
+struct DynamicCodingKeys: CodingKey, Sendable {
     var stringValue: String
     var intValue: Int?
     

@@ -123,7 +123,7 @@ final class DessertDetailViewModel {
 extension DessertDetailViewModel {
     
     /// Enumeration representing the possible states of the dessert detail view
-    enum ViewState: Equatable {
+    enum ViewState: Equatable, Sendable {
         case loading
         case success(MealDetail)
         case error(String)

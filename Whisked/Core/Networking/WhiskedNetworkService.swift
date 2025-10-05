@@ -62,19 +62,19 @@ final class WhiskedNetworkService: ObservableObject {
 // MARK: - Response Models
 
 /// Response model for the desserts list API
-private struct WhiskedDessertsResponse: Codable {
+private struct WhiskedDessertsResponse: Codable, Sendable {
     let meals: [WhiskedDessert]
 }
 
 /// Response model for the dessert detail API
-private struct WhiskedDessertDetailResponse: Codable {
+private struct WhiskedDessertDetailResponse: Codable, Sendable {
     let meals: [WhiskedDessertDetail]
 }
 
 // MARK: - Network Errors
 
 /// Enumeration of possible network errors
-enum WhiskedNetworkError: LocalizedError {
+enum WhiskedNetworkError: LocalizedError, Sendable {
     case invalidURL
     case noData
     case decodingError

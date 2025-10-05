@@ -24,7 +24,7 @@ final class WhiskedMainCoordinator {
     // MARK: - Destinations
     
     /// Enumeration defining all possible navigation destinations in the app
-    enum Destination: Hashable {
+    enum Destination: Hashable, Sendable {
         case dessertDetail(dessertId: String)
     }
     
