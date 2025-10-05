@@ -110,7 +110,7 @@ public extension View {
 
 /// Pre-built shimmer skeleton components for common UI elements
 
-struct ShimmerDessertCard: View {
+struct ShimmerMealCard: View {
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
@@ -149,7 +149,7 @@ struct ShimmerDessertCard: View {
     }
 }
 
-struct ShimmerDessertGrid: View {
+struct ShimmerMealGrid: View {
     let itemCount: Int
     
     init(itemCount: Int = 6) {
@@ -159,7 +159,7 @@ struct ShimmerDessertGrid: View {
     var body: some View {
         LazyVStack(spacing: Theme.Spacing.medium.value) {
             ForEach(0..<itemCount, id: \.self) { _ in
-                ShimmerDessertCard()
+                ShimmerMealCard()
             }
         }
         .themePadding(.all, .medium)
@@ -173,12 +173,12 @@ struct ShimmerDessertGrid: View {
         Text("Shimmer Effect Demo")
             .themeHeadline()
         
-        ShimmerDessertCard()
-        
+        ShimmerMealCard()
+
         Text("Grid Example")
             .themeBody()
         
-        ShimmerDessertGrid(itemCount: 3)
+        ShimmerMealGrid(itemCount: 3)
     }
     .themePadding(.all, .large)
     .background(Color.backgroundPrimary)

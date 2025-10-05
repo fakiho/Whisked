@@ -53,22 +53,8 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
             throw errorToSimulate
         }
         
-        // Filter mock desserts based on category
+        // Filter mock meal based on category
         // For mock purposes, return all desserts for any category request
-        return mockDesserts
-    }
-    
-    func fetchDesserts() async throws -> [Meal] {
-        // Simulate network delay if enabled
-        if shouldSimulateNetworkDelay {
-            try await Task.sleep(nanoseconds: UInt64(networkDelayDuration * 1_000_000_000))
-        }
-        
-        // Simulate error if enabled
-        if shouldSimulateError {
-            throw errorToSimulate
-        }
-        
         return mockDesserts
     }
     

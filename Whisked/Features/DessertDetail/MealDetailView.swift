@@ -1,5 +1,5 @@
 //
-//  WhiskedDessertDetailView.swift
+//  MealDetailView.swift
 //  Whisked
 //
 //  Created by Ali FAKIH on 10/5/25.
@@ -8,14 +8,14 @@
 import SwiftUI
 import ThemeKit
 
-/// View displaying detailed information about a specific dessert with hero animations
-struct WhiskedDessertDetailView: View {
+/// View displaying detailed information about a specific meal with hero animations
+struct MealDetailView: View {
     
     // MARK: - Properties
     
     private let coordinator: WhiskedMainCoordinator
     private let mealID: String
-    @State private var viewModel: DessertDetailViewModel
+    @State private var viewModel: MealDetailViewModel
     
     // Animation states
     @State private var contentOpacity: Double = 0
@@ -31,7 +31,7 @@ struct WhiskedDessertDetailView: View {
     init(
         mealID: String, 
         coordinator: WhiskedMainCoordinator, 
-        viewModel: DessertDetailViewModel
+        viewModel: MealDetailViewModel
     ) {
         self.mealID = mealID
         self.coordinator = coordinator
@@ -411,7 +411,7 @@ private extension View {
 
 // MARK: - Responsive Layout Helpers
 
-private extension WhiskedDessertDetailView {
+private extension MealDetailView {
     
     /// Determines if we're running on iPad or large screen
     var isIpad: Bool {
@@ -466,10 +466,10 @@ private extension Button where Label == Text {
 #Preview("Success State") {
     @Previewable @Namespace var heroNamespace
     NavigationStack {
-        WhiskedDessertDetailView(
+        MealDetailView(
             mealID: "52893",
             coordinator: WhiskedMainCoordinator(),
-            viewModel: DessertDetailViewModel(
+            viewModel: MealDetailViewModel(
                 mealID: "52893",
                 networkService: MockNetworkService.success()
             )
@@ -480,10 +480,10 @@ private extension Button where Label == Text {
 #Preview("Error State") {
     @Previewable @Namespace var heroNamespace
     NavigationStack {
-        WhiskedDessertDetailView(
+        MealDetailView(
             mealID: "invalid",
             coordinator: WhiskedMainCoordinator(),
-            viewModel: DessertDetailViewModel(
+            viewModel: MealDetailViewModel(
                 mealID: "invalid",
                 networkService: MockNetworkService.notFoundError()
             )

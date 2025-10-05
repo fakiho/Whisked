@@ -1,5 +1,5 @@
 //
-//  WhiskedDessertListView.swift
+//  WhiskedMealListView.swift
 //  Whisked
 //
 //  Created by Ali FAKIH on 10/5/25.
@@ -8,13 +8,13 @@
 import SwiftUI
 import ThemeKit
 
-/// View displaying the list of desserts with advanced animations and theming
-struct WhiskedDessertListView: View {
-    
+/// View displaying the list of meals for a category with advanced animations and theming
+struct MealListView: View {
+
     // MARK: - Properties
     
     @State private var coordinator: WhiskedMainCoordinator
-    @State private var viewModel: DessertListViewModel
+    @State private var viewModel: MealListViewModel
     
     // Animation state
     @State private var hasAppeared = false
@@ -23,7 +23,7 @@ struct WhiskedDessertListView: View {
     
     init(
         coordinator: WhiskedMainCoordinator, 
-        viewModel: DessertListViewModel
+        viewModel: MealListViewModel
     ) {
         self.coordinator = coordinator
         self.viewModel = viewModel
@@ -32,30 +32,25 @@ struct WhiskedDessertListView: View {
     // MARK: - Body
     
     var body: some View {
-        NavigationStack(path: $coordinator.navigationPath) {
-            contentView
-                .navigationTitle("Desserts")
-                .navigationBarTitleDisplayMode(.large)
-                .background(Color.backgroundPrimary)
-                .refreshable {
-                    await viewModel.refresh()
+        contentView
+            .navigationTitle(viewModel.category.name)
+            .navigationBarTitleDisplayMode(.large)
+            .background(Color.backgroundPrimary)
+            .refreshable {
+                await viewModel.refresh()
+            }
+            .task {
+                if viewModel.meals.isEmpty {
+                    await viewModel.fetchMeals()
                 }
-                .task {
-                    if viewModel.desserts.isEmpty {
-                        await viewModel.fetchDesserts()
+            }
+            .accessibilityRotor("Meals") {
+                ForEach(viewModel.meals) { meal in
+                    AccessibilityRotorEntry(meal.strMeal, id: meal.id) {
+                        // This will focus on the specific meal
                     }
                 }
-                .navigationDestination(for: WhiskedMainCoordinator.Destination.self) { destination in
-                    coordinator.view(for: destination)
-                }
-                .accessibilityRotor("Desserts") {
-                    ForEach(viewModel.desserts) { dessert in
-                        AccessibilityRotorEntry(dessert.strMeal, id: dessert.id) {
-                            // This will focus on the specific dessert
-                        }
-                    }
-                }
-        }
+            }
     }
     
     // MARK: - Content Views
@@ -66,7 +61,7 @@ struct WhiskedDessertListView: View {
         case .loading:
             loadingView
         case .success:
-            dessertListView
+            mealListView
         case .error:
             errorView
         }
@@ -77,30 +72,30 @@ struct WhiskedDessertListView: View {
             VStack(spacing: Theme.Spacing.large.value) {
                 // Hero section with shimmer
                 VStack(spacing: Theme.Spacing.medium.value) {
-                    Text("Loading delicious desserts...")
+                    Text("Cooking delicious meals...")
                         .themeHeadline()
                         .foregroundColor(.textSecondary)
                         .themePadding(.top, .extraLarge)
                     
-                    Text("Preparing your sweet treats")
+                    Text("Preparing your meals")
                         .themeBody()
                         .foregroundColor(.textSecondary)
                 }
                 .themePadding(.horizontal, .large)
                 
                 // Shimmer grid
-                ShimmerDessertGrid(itemCount: 6)
+                ShimmerMealGrid(itemCount: 6)
                     .themePadding(.horizontal, .medium)
             }
         }
         .background(Color.backgroundPrimary)
-        .accessibilityLabel("Loading desserts")
-        .accessibilityHint("Please wait while we fetch delicious dessert recipes")
+        .accessibilityLabel("Loading meals")
+        .accessibilityHint("Please wait while we fetch delicious meal recipes")
     }
     
-    private var dessertListView: some View {
+    private var mealListView: some View {
         ScrollView {
-            dessertListContent
+            mealListContent
         }
         .background(Color.backgroundPrimary)
         .onAppear {
@@ -108,14 +103,14 @@ struct WhiskedDessertListView: View {
                 hasAppeared = true
             }
         }
-        .accessibilityLabel("Dessert list")
-        .accessibilityHint("Swipe up and down to browse dessert recipes")
+        .accessibilityLabel("Meal list")
+        .accessibilityHint("Swipe up and down to browse meal recipes")
     }
     
-    private var dessertListContent: some View {
+    private var mealListContent: some View {
         LazyVStack(spacing: Theme.Spacing.medium.value) {
             headerSection
-            dessertCardsSection
+            mealCardsSection
             bottomSpacing
         }
     }
@@ -127,7 +122,7 @@ struct WhiskedDessertListView: View {
                 .foregroundColor(.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            Text("Discover \(viewModel.desserts.count) delicious dessert recipes")
+            Text("Discover \(viewModel.meals.count) delicious meal recipes")
                 .themeBody()
                 .foregroundColor(.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -136,12 +131,12 @@ struct WhiskedDessertListView: View {
         .themePadding(.top, .medium)
     }
     
-    private var dessertCardsSection: some View {
-        ForEach(Array(viewModel.desserts.enumerated()), id: \.element.id) { index, dessert in
-            DessertCard(
-                meal: dessert,
+    private var mealCardsSection: some View {
+        ForEach(Array(viewModel.meals.enumerated()), id: \.element.id) { index, meal in
+            MealCard(
+                meal: meal,
                 onTap: {
-                    coordinator.showDessertDetail(dessertId: dessert.idMeal)
+                                            coordinator.showMealDetail(mealId: meal.idMeal)
                 }
             )
             .opacity(hasAppeared ? 1 : 0)
@@ -174,7 +169,7 @@ struct WhiskedDessertListView: View {
                         .themeDisplayLarge()
                         .foregroundColor(.textPrimary)
                     
-                    Text(viewModel.state.errorMessage ?? "Something went wrong while loading desserts")
+                    Text(viewModel.state.errorMessage ?? "Something went wrong while loading meals")
                         .themeBody()
                         .foregroundColor(.textSecondary)
                         .multilineTextAlignment(.center)
@@ -198,14 +193,14 @@ struct WhiskedDessertListView: View {
         .refreshable {
             await viewModel.refresh()
         }
-        .accessibilityLabel("Error loading desserts")
-        .accessibilityHint("Tap try again to reload the dessert list")
+        .accessibilityLabel("Error loading meals")
+        .accessibilityHint("Tap try again to reload the meal list")
     }
 }
 
-// MARK: - DessertCard
+// MARK: - MealCard
 
-private struct DessertCard: View {
+private struct MealCard: View {
     let meal: Meal
     let onTap: () -> Void
     
@@ -309,16 +304,16 @@ private extension Button where Label == Text {
 
 #Preview("Success State") {
     @Previewable @Namespace var heroNamespace
-    WhiskedDessertListView(
+    MealListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: DessertListViewModel(networkService: MockNetworkService.success(), category: .dessert)
+        viewModel: MealListViewModel(networkService: MockNetworkService.success(), category: .dessert)
     )
 }
 
 #Preview("Loading State") {
     @Previewable @Namespace var heroNamespace
-    let viewModel = DessertListViewModel(networkService: MockNetworkService.success(), category: .dessert)
-    WhiskedDessertListView(
+    let viewModel = MealListViewModel(networkService: MockNetworkService.success(), category: .dessert)
+    MealListView(
         coordinator: WhiskedMainCoordinator(),
         viewModel: viewModel
     )
@@ -326,8 +321,8 @@ private extension Button where Label == Text {
 
 #Preview("Error State") {
     @Previewable @Namespace var heroNamespace
-    WhiskedDessertListView(
+    MealListView(
         coordinator: WhiskedMainCoordinator(),
-        viewModel: DessertListViewModel(networkService: MockNetworkService.networkError(), category: .dessert)
+        viewModel: MealListViewModel(networkService: MockNetworkService.networkError(), category: .dessert)
     )
 }

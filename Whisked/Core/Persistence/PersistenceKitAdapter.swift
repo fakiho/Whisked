@@ -34,36 +34,36 @@ final class PersistenceKitAdapter: ObservableObject {
     
     // MARK: - Public Methods
     
-    /// Checks if a dessert is marked as favorite
-    func isFavorite(_ dessertId: String) -> Bool {
-        favorites.contains(dessertId)
+    /// Checks if a meal is marked as favorite
+    func isFavorite(_ mealId: String) -> Bool {
+        favorites.contains(mealId)
     }
     
-    /// Toggles the favorite status of a dessert
-    func toggleFavorite(_ dessertId: String) {
+    /// Toggles the favorite status of a meal
+    func toggleFavorite(_ mealId: String) {
         Task {
             // TODO: Use PersistenceService once available
-            // try await persistenceService.toggleFavorite(mealID: dessertId)
-            
+            // try await persistenceService.toggleFavorite(mealID: mealId)
+
             // Temporary implementation using UserDefaults
-            if favorites.contains(dessertId) {
-                favorites.remove(dessertId)
+            if favorites.contains(mealId) {
+                favorites.remove(mealId)
             } else {
-                favorites.insert(dessertId)
+                favorites.insert(mealId)
             }
             saveFavorites()
             loadFavorites()
         }
     }
     
-    /// Adds a dessert to favorites
-    func addToFavorites(_ dessertId: String) {
+    /// Adds a meal to favorites
+    func addToFavorites(_ mealId: String) {
         Task {
             // TODO: Use PersistenceService once available
-            // try await persistenceService.addToFavorites(mealID: dessertId)
+            // try await persistenceService.addToFavorites(mealID: mealId)
             
             // Temporary implementation
-            favorites.insert(dessertId)
+            favorites.insert(mealId)
             saveFavorites()
             loadFavorites()
         }

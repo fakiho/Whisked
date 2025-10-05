@@ -73,46 +73,6 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
         }
     }
     
-    func fetchDesserts() async throws -> [Meal] {
-        let urlString = "\(baseURL)/filter.php?c=Dessert"
-        
-        guard let url = URL(string: urlString) else {
-            throw NetworkError.invalidURL(urlString)
-        }
-        
-        do {
-            let (data, response) = try await session.data(from: url)
-            
-            // Validate HTTP response
-            try validateHTTPResponse(response, data: data)
-            
-            // Check for empty data
-            guard !data.isEmpty else {
-                throw NetworkError.noData
-            }
-            
-            // Decode the response
-            let mealsResponse = try jsonDecoder.decode(MealsResponse.self, from: data)
-            
-            // Validate we have meals in the response
-            guard !mealsResponse.meals.isEmpty else {
-                throw NetworkError.emptyResponse
-            }
-            
-            // Return sorted meals for consistent UI experience
-            return mealsResponse.meals.sorted { $0.strMeal < $1.strMeal }
-            
-        } catch let error as NetworkError {
-            throw error
-        } catch let decodingError as DecodingError {
-            throw NetworkError.decodingError(decodingError)
-        } catch let urlError as URLError {
-            throw mapURLError(urlError)
-        } catch {
-            throw NetworkError.networkError(error)
-        }
-    }
-    
     func fetchMealDetail(id: String) async throws -> MealDetail {
         let urlString = "\(baseURL)/lookup.php?i=\(id)"
         

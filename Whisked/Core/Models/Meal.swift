@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Model representing a meal from TheMealDB API dessert list endpoint
+/// Model representing a meal from TheMealDB API meal list endpoint
 struct Meal: Identifiable, Codable, Hashable, Sendable {
     
     // MARK: - Properties

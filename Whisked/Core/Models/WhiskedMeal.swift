@@ -1,5 +1,5 @@
 //
-//  WhiskedDessert.swift
+//  WhiskedMeal.swift
 //  Whisked
 //
 //  Created by Ali FAKIH on 10/5/25.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// Model representing a dessert from TheMealDB API
-struct WhiskedDessert: Identifiable, Codable, Hashable, Sendable {
+/// Model representing a meal from TheMealDB API
+struct WhiskedMeal: Identifiable, Codable, Hashable, Sendable {
     
     // MARK: - Properties
     
@@ -25,8 +25,8 @@ struct WhiskedDessert: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-/// Model representing detailed information about a dessert
-struct WhiskedDessertDetail: Identifiable, Codable, Sendable {
+/// Model representing detailed information about a meal
+struct WhiskedMealDetail: Identifiable, Codable, Sendable {
     
     // MARK: - Properties
     

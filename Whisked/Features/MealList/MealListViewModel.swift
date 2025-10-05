@@ -1,5 +1,5 @@
 //
-//  DessertListViewModel.swift
+//  MealListViewModel.swift
 //  Whisked
 //
 //  Created by Ali FAKIH on 10/5/25.
@@ -7,18 +7,18 @@
 
 import Foundation
 
-/// ViewModel for managing the dessert list screen state and data
+/// ViewModel for managing the meal list screen state and data
 @MainActor
 @Observable
-final class DessertListViewModel {
-    
+final class MealListViewModel {
+
     // MARK: - Published Properties
     
     /// Current view state
     private(set) var state: ViewState = .loading
     
-    /// Array of desserts fetched from the API
-    private(set) var desserts: [Meal] = []
+    /// Array of meals fetched from the API
+    private(set) var meals: [Meal] = []
     
     /// The category being filtered, if any
     private(set) var category: MealCategory
@@ -41,11 +41,11 @@ final class DessertListViewModel {
     // MARK: - Public Methods
     
     /// Fetches meals from the API based on category and updates the view state
-    func fetchDesserts() async {
+    func fetchMeals() async {
         state = .loading
         
         do {
-            desserts = try await networkService.fetchMealsByCategory(category.id)
+            meals = try await networkService.fetchMealsByCategory(category.name)
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)
@@ -61,7 +61,7 @@ final class DessertListViewModel {
     func refresh() async {
         // Don't change state to loading during refresh to avoid UI flicker
         do {
-            desserts = try await networkService.fetchMealsByCategory(category.id)
+            meals = try await networkService.fetchMealsByCategory(category.name)
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)
@@ -73,9 +73,9 @@ final class DessertListViewModel {
         }
     }
     
-    /// Retries fetching desserts after an error
+    /// Retries fetching meals after an error
     func retry() async {
-        await fetchDesserts()
+        await fetchMeals()
     }
     
     // MARK: - Private Methods
@@ -109,7 +109,7 @@ final class DessertListViewModel {
             case .decodingError:
                 return "Unable to process server response. Please try again."
             case .emptyResponse:
-                return "No desserts found. Please try again later."
+                return "No meals found. Please try again later."
             default:
                 return "Something went wrong. Please try again."
             }
@@ -121,9 +121,9 @@ final class DessertListViewModel {
 
 // MARK: - ViewState
 
-extension DessertListViewModel {
-    
-    /// Enumeration representing the possible states of the dessert list view
+extension MealListViewModel {
+
+    /// Enumeration representing the possible states of the category list view
     enum ViewState: Equatable, Sendable {
         case loading
         case success

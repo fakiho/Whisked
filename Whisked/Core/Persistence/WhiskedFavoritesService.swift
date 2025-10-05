@@ -32,32 +32,32 @@ final class WhiskedFavoritesService: ObservableObject {
     /// Checks if a dessert is marked as favorite
     /// - Parameter dessertId: The dessert ID to check
     /// - Returns: True if the dessert is a favorite, false otherwise
-    func isFavorite(_ dessertId: String) -> Bool {
-        favorites.contains(dessertId)
+    func isFavorite(_ mealId: String) -> Bool {
+        favorites.contains(mealId)
     }
     
     /// Toggles the favorite status of a dessert
     /// - Parameter dessertId: The dessert ID to toggle
-    func toggleFavorite(_ dessertId: String) {
-        if favorites.contains(dessertId) {
-            favorites.remove(dessertId)
+    func toggleFavorite(_ mealId: String) {
+        if favorites.contains(mealId) {
+            favorites.remove(mealId)
         } else {
-            favorites.insert(dessertId)
+            favorites.insert(mealId)
         }
         saveFavorites()
     }
     
     /// Adds a dessert to favorites
     /// - Parameter dessertId: The dessert ID to add
-    func addToFavorites(_ dessertId: String) {
-        favorites.insert(dessertId)
+    func addToFavorites(_ mealId: String) {
+        favorites.insert(mealId)
         saveFavorites()
     }
     
     /// Removes a dessert from favorites
     /// - Parameter dessertId: The dessert ID to remove
-    func removeFromFavorites(_ dessertId: String) {
-        favorites.remove(dessertId)
+    func removeFromFavorites(_ mealId: String) {
+        favorites.remove(mealId)
         saveFavorites()
     }
     

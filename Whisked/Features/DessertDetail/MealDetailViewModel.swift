@@ -1,5 +1,5 @@
 //
-//  DessertDetailViewModel.swift
+//  MealDetailViewModel.swift
 //  Whisked
 //
 //  Created by Ali FAKIH on 10/5/25.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-/// ViewModel for managing the dessert detail screen state and data
+/// ViewModel for managing the meal detail screen state and data
 @MainActor
 @Observable
-final class DessertDetailViewModel {
+final class MealDetailViewModel {
     
     // MARK: - Published Properties
     
@@ -106,7 +106,7 @@ final class DessertDetailViewModel {
             case .decodingError:
                 return "Unable to process server response. Please try again."
             case .mealNotFound:
-                return "This dessert recipe could not be found. It may have been removed."
+                return "This meal recipe could not be found. It may have been removed."
             case .emptyResponse:
                 return "No recipe details found. Please try again later."
             default:
@@ -120,9 +120,9 @@ final class DessertDetailViewModel {
 
 // MARK: - ViewState
 
-extension DessertDetailViewModel {
+extension MealDetailViewModel {
     
-    /// Enumeration representing the possible states of the dessert detail view
+    /// Enumeration representing the possible states of the meal detail view
     enum ViewState: Equatable, Sendable {
         case loading
         case success(MealDetail)

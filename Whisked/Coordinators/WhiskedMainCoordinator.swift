@@ -27,7 +27,7 @@ final class WhiskedMainCoordinator {
     enum Destination: Hashable, Sendable {
         case categoryList
         case mealsByCategory(category: MealCategory)
-        case dessertDetail(dessertId: String)
+        case mealDetail(mealId: String)
     }
     
     // MARK: - Initialization
@@ -48,11 +48,11 @@ final class WhiskedMainCoordinator {
     
     /// Creates a meal list view for a specific category
     /// - Parameter category: The meal category to display
-    /// - Returns: Configured WhiskedDessertListView with category filter
-    func createMealsByCategoryView(category: MealCategory) -> WhiskedDessertListView {
-        let viewModel = DessertListViewModel(networkService: networkService, category: category)
-        return WhiskedDessertListView(
-            coordinator: self, 
+    /// - Returns: Configured MealListView with category filter
+    func createMealsByCategoryView(category: MealCategory) -> MealListView {
+        let viewModel = MealListViewModel(networkService: networkService, category: category)
+        return MealListView(
+            coordinator: self,
             viewModel: viewModel
         )
     }
@@ -70,13 +70,13 @@ final class WhiskedMainCoordinator {
         navigationPath.append(Destination.mealsByCategory(category: category))
     }
     
-    /// Shows the dessert detail view for a specific dessert
-    /// - Parameter dessertId: The unique identifier of the dessert
-    func showDessertDetail(dessertId: String) {
-        navigationPath.append(Destination.dessertDetail(dessertId: dessertId))
+    /// Shows the meal detail view for a specific category
+    /// - Parameter mealId: The unique identifier of the meal
+    func showMealDetail(mealId: String) {
+        navigationPath.append(Destination.mealDetail(mealId: mealId))
     }
     
-    /// Pops to the root view (dessert list)
+    /// Pops to the root view (meal list)
     func popToRoot() {
         navigationPath.removeLast(navigationPath.count)
     }
@@ -98,19 +98,19 @@ final class WhiskedMainCoordinator {
             createCategoryListView()
         case .mealsByCategory(let category):
             createMealsByCategoryView(category: category)
-        case .dessertDetail(let dessertId):
-            createDessertDetailView(mealID: dessertId)
+        case .mealDetail(let mealId):
+            createMealDetailView(mealID: mealId)
         }
     }
     
     // MARK: - Private Factory Methods
     
-    /// Creates the dessert detail view with proper dependency injection
+    /// Creates the meal detail view with proper dependency injection
     /// - Parameter mealID: The meal ID to display details for
-    /// - Returns: Configured WhiskedDessertDetailView
-    private func createDessertDetailView(mealID: String) -> WhiskedDessertDetailView {
-        let viewModel = DessertDetailViewModel(mealID: mealID, networkService: networkService)
-        return WhiskedDessertDetailView(
+    /// - Returns: Configured MealDetailView
+    private func createMealDetailView(mealID: String) -> MealDetailView {
+        let viewModel = MealDetailViewModel(mealID: mealID, networkService: networkService)
+        return MealDetailView(
             mealID: mealID, 
             coordinator: self, 
             viewModel: viewModel

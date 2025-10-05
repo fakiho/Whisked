@@ -53,12 +53,12 @@ extension View {
 
 // MARK: - Accessibility Rotors
 
-struct DessertAccessibilityRotor: AccessibilityRotorContent {
-    let desserts: [Meal]
-    
+struct MealAccessibilityRotor: AccessibilityRotorContent {
+    let meals: [Meal]
+
     var body: some AccessibilityRotorContent {
-        ForEach(desserts) { dessert in
-            AccessibilityRotorEntry(dessert.strMeal, id: dessert.id)
+        ForEach(meals) { meal in
+            AccessibilityRotorEntry(meal.strMeal, id: meal.id)
         }
     }
 }
@@ -117,11 +117,11 @@ extension Font {
 
 struct VoiceOverHelpers {
     
-    /// Provides contextual information for dessert cards
+    /// Provides contextual information for meals cards
     /// - Parameter meal: The meal object
     /// - Returns: Comprehensive accessibility label
-    static func dessertCardLabel(for meal: Meal) -> String {
-        return "\(meal.strMeal), dessert recipe. Double tap to view detailed recipe and cooking instructions."
+    static func mealCardLabel(for meal: Meal) -> String {
+        return "\(meal.strMeal), meal recipe. Double tap to view detailed recipe and cooking instructions."
     }
     
     /// Provides contextual information for ingredient cards
@@ -174,7 +174,7 @@ enum AccessibilityConstants {
     }
     
     enum Hints {
-        static let dessertCard = "Double tap to view detailed recipe"
+        static let mealCard = "Double tap to view detailed recipe"
         static let retryButton = "Tap to try loading the content again"
         static let refreshControl = "Pull down to refresh the list"
         static let navigationBack = "Returns to the previous screen"
