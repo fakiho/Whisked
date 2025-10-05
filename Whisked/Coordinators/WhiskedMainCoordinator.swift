@@ -30,6 +30,7 @@ final class WhiskedMainCoordinator {
         case categoryList
         case mealsByCategory(category: MealCategory)
         case mealDetail(mealId: String)
+        case favorites
     }
     
     // MARK: - Initialization
@@ -53,7 +54,7 @@ final class WhiskedMainCoordinator {
     /// Creates the main category list view with proper dependency injection
     /// - Returns: Configured CategoryListView
     func createCategoryListView() -> CategoryListView {
-        return CategoryListView(coordinator: self, networkService: networkService)
+        return CategoryListView(coordinator: self, networkService: networkService, persistenceService: persistenceService)
     }
     
     /// Creates a meal list view for a specific category
@@ -69,6 +70,12 @@ final class WhiskedMainCoordinator {
             coordinator: self,
             viewModel: viewModel
         )
+    }
+    
+    /// Creates the favorites view showing all saved favorite meals
+    /// - Returns: Configured FavoritesView
+    func createFavoritesView() -> FavoritesView {
+        return FavoritesView(coordinator: self, persistenceService: persistenceService)
     }
     
     // MARK: - Navigation Methods
@@ -88,6 +95,11 @@ final class WhiskedMainCoordinator {
     /// - Parameter mealId: The unique identifier of the meal
     func showMealDetail(mealId: String) {
         navigationPath.append(Destination.mealDetail(mealId: mealId))
+    }
+    
+    /// Shows the favorites view with all saved favorite meals
+    func showFavorites() {
+        navigationPath.append(Destination.favorites)
     }
     
     /// Pops to the root view (meal list)
@@ -114,6 +126,8 @@ final class WhiskedMainCoordinator {
             createMealsByCategoryView(category: category)
         case .mealDetail(let mealId):
             createMealDetailView(mealID: mealId)
+        case .favorites:
+            createFavoritesView()
         }
     }
     

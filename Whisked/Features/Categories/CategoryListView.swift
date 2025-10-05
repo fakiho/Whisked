@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ThemeKit
+import PersistenceKit
 
 /// View displaying available meal categories for user selection
 struct CategoryListView: View {
@@ -15,12 +16,15 @@ struct CategoryListView: View {
     
     @StateObject private var viewModel: CategoryListViewModel
     private let coordinator: WhiskedMainCoordinator
+    private let persistenceService: PersistenceService?
+    @State private var favoritesCount: Int = 0
     
     // MARK: - Initialization
     
-    init(coordinator: WhiskedMainCoordinator, networkService: NetworkServiceProtocol = NetworkService()) {
+    init(coordinator: WhiskedMainCoordinator, networkService: NetworkServiceProtocol = NetworkService(), persistenceService: PersistenceService? = nil) {
         self._viewModel = StateObject(wrappedValue: CategoryListViewModel(networkService: networkService))
         self.coordinator = coordinator
+        self.persistenceService = persistenceService
     }
     
     // MARK: - Body
@@ -31,9 +35,11 @@ struct CategoryListView: View {
             .navigationBarTitleDisplayMode(.large)
             .task {
                 await viewModel.loadCategories()
+                await loadFavoritesCount()
             }
             .refreshable {
                 await viewModel.refreshCategories()
+                await loadFavoritesCount()
             }
     }
     
@@ -96,6 +102,22 @@ struct CategoryListView: View {
     private func loadedView(categories: [MealCategory]) -> some View {
         ScrollView {
             LazyVStack(spacing: 16) {
+                // Favorites card - always show at the top
+                FavoritesCard(
+                    favoritesCount: favoritesCount,
+                    onTap: {
+                        coordinator.showFavorites()
+                    }
+                )
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.8).combined(with: .opacity),
+                    removal: .scale(scale: 0.8).combined(with: .opacity)
+                ))
+                .animation(
+                    .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0),
+                    value: viewModel.loadingState
+                )
+                
                 ForEach(Array(viewModel.displayedCategories.enumerated()), id: \.element.id) { index, category in
                     CategoryCard(
                         category: category,
@@ -166,6 +188,27 @@ struct CategoryListView: View {
             .controlSize(.large)
         }
         .padding()
+    }
+    
+    // MARK: - Private Methods
+    
+    /// Loads the count of favorite meals from persistence service
+    private func loadFavoritesCount() async {
+        guard let persistenceService = persistenceService else {
+            favoritesCount = 0
+            return
+        }
+        
+        do {
+            let count = try await persistenceService.getOfflineMealsCount()
+            await MainActor.run {
+                favoritesCount = count
+            }
+        } catch {
+            await MainActor.run {
+                favoritesCount = 0
+            }
+        }
     }
 }
 
@@ -270,6 +313,59 @@ private struct CategoryCardShimmerView: View {
                     y: 2
                 )
         }
+    }
+}
+
+// MARK: - Favorites Card
+
+private struct FavoritesCard: View {
+    
+    let favoritesCount: Int
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // SF Symbol heart icon
+                Image(systemName: "heart.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.red)
+                    .frame(width: 80, height: 80)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.red.opacity(0.1))
+                    }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Favorites")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    
+                    Text(favoritesCount == 0 ? "No favorite meals yet" : "\(favoritesCount) favorite meal\(favoritesCount == 1 ? "" : "s")")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.backgroundSecondary)
+                    .shadow(
+                        color: Color.black.opacity(0.1),
+                        radius: 8,
+                        x: 0,
+                        y: 2
+                    )
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
