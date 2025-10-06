@@ -1,21 +1,30 @@
 //
-//  Category.swift
-//  Whisked
+//  MealCategory.swift
+//  NetworkKit
 //
-//  Created by Ali FAKIH on 10/5/25.
+//  Created by Ali FAKIH on 10/6/25.
 //
 
 import Foundation
 
 /// Model representing a meal category from TheMealDB API
-struct MealCategory: Identifiable, Codable, Hashable, Sendable {
+public struct MealCategory: Identifiable, Codable, Hashable, Sendable {
     
     // MARK: - Properties
     
-    let id: String
-    let name: String
-    let description: String
-    let thumbnailURL: String
+    public let id: String
+    public let name: String
+    public let description: String
+    public let thumbnailURL: String
+    
+    // MARK: - Initializer
+    
+    public init(id: String, name: String, description: String, thumbnailURL: String) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.thumbnailURL = thumbnailURL
+    }
     
     // MARK: - Coding Keys
     
@@ -29,7 +38,7 @@ struct MealCategory: Identifiable, Codable, Hashable, Sendable {
     // MARK: - Static Categories
     
     /// Predefined categories that we know work well with the API
-    static let supportedCategories: [MealCategory] = [
+    public static let supportedCategories: [MealCategory] = [
         MealCategory(
             id: "1",
             name: "Dessert",
@@ -65,7 +74,7 @@ struct MealCategory: Identifiable, Codable, Hashable, Sendable {
 
 // MARK: - MealCategory Extensions
 
-extension MealCategory {
+public extension MealCategory {
     
     /// Static dessert category with detailed description for preview purposes
     static let dessert: MealCategory = MealCategory(
@@ -85,6 +94,10 @@ extension MealCategory {
 }
 
 /// Response model for the categories list API
-struct CategoriesResponse: Codable, Sendable {
-    let categories: [MealCategory]
+public struct CategoriesResponse: Codable, Sendable {
+    public let categories: [MealCategory]
+    
+    public init(categories: [MealCategory]) {
+        self.categories = categories
+    }
 }

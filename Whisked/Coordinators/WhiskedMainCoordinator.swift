@@ -20,7 +20,7 @@ final class WhiskedMainCoordinator: ObservableObject {
     
     // MARK: - Dependencies
     
-    private let networkService: NetworkServiceProtocol
+    private let mealService: MealServiceProtocol
     @Published var persistenceService: PersistenceService?
     
     // MARK: - Destinations
@@ -35,10 +35,10 @@ final class WhiskedMainCoordinator: ObservableObject {
     
     // MARK: - Initialization
     
-    /// Initializes the coordinator with a network service
-    /// - Parameter networkService: The network service for data operations
-    init(networkService: NetworkServiceProtocol? = nil) {
-        self.networkService = networkService ?? NetworkService()
+    /// Initializes the coordinator with a meal service
+    /// - Parameter mealService: The meal service for data operations
+    init(mealService: MealServiceProtocol? = nil) {
+        self.mealService = mealService ?? MealService()
     }
     
     // MARK: - Configuration
@@ -54,7 +54,7 @@ final class WhiskedMainCoordinator: ObservableObject {
     /// Creates the main category list view with proper dependency injection
     /// - Returns: Configured CategoryListView
     func createCategoryListView() -> CategoryListView {
-        return CategoryListView(coordinator: self, viewModel: CategoryListViewModel(networkService: networkService, persistenceService: persistenceService))
+        return CategoryListView(coordinator: self, viewModel: CategoryListViewModel(mealService: mealService, persistenceService: persistenceService))
     }
     
     /// Creates a meal list view for a specific category
@@ -62,7 +62,7 @@ final class WhiskedMainCoordinator: ObservableObject {
     /// - Returns: Configured MealListView with category filter
     func createMealsByCategoryView(category: MealCategory) -> MealListView {
         let viewModel = MealListViewModel(
-            networkService: networkService, 
+            mealService: mealService, 
             category: category, 
             persistenceService: persistenceService
         )
@@ -139,7 +139,7 @@ final class WhiskedMainCoordinator: ObservableObject {
     private func createMealDetailView(mealID: String) -> MealDetailView {
         let viewModel = MealDetailViewModel(
             mealID: mealID, 
-            networkService: networkService,
+            mealService: mealService,
             persistenceService: persistenceService
         )
         return MealDetailView(

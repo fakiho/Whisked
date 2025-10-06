@@ -7,7 +7,7 @@
 
 import SwiftUI
 import ThemeKit
-
+import NetworkKit
 // MARK: - Accessibility Extensions
 
 extension View {
@@ -58,7 +58,7 @@ struct MealAccessibilityRotor: AccessibilityRotorContent {
 
     var body: some AccessibilityRotorContent {
         ForEach(meals) { meal in
-            AccessibilityRotorEntry(meal.strMeal, id: meal.id)
+            AccessibilityRotorEntry(meal.name, id: meal.id)
         }
     }
 }
@@ -121,7 +121,7 @@ struct VoiceOverHelpers {
     /// - Parameter meal: The meal object
     /// - Returns: Comprehensive accessibility label
     static func mealCardLabel(for meal: Meal) -> String {
-        return "\(meal.strMeal), meal recipe. Double tap to view detailed recipe and cooking instructions."
+        return "\(meal.name), meal recipe. Double tap to view detailed recipe and cooking instructions."
     }
     
     /// Provides contextual information for ingredient cards

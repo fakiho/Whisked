@@ -7,8 +7,6 @@
 
 import SwiftUI
 import ThemeKit
-import PersistenceKit
-import Combine
 
 /// View displaying available meal categories for user selection
 struct CategoryListView: View {
@@ -430,21 +428,4 @@ private struct FavoritesCard: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-}
-
-// MARK: - Previews
-
-#Preview("CategoryListView - Loaded") {
-    let coordinator = WhiskedMainCoordinator(networkService: MockNetworkService.success())
-    coordinator.createCategoryListView()
-}
-
-#Preview("CategoryListView - Loading") {
-    let coordinator = WhiskedMainCoordinator(networkService: MockNetworkService.slowNetwork())
-    coordinator.createCategoryListView()
-}
-
-#Preview("CategoryListView - Error") {
-    let coordinator = WhiskedMainCoordinator(networkService: MockNetworkService.networkError())
-    coordinator.createCategoryListView()
 }

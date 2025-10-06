@@ -1,8 +1,8 @@
 //
 //  NetworkService.swift
-//  Whisked
+//  NetworkKit
 //
-//  Created by Ali FAKIH on 10/5/25.
+//  Created by Ali FAKIH on 10/6/25.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ import Network
 import Combine
 
 /// Concrete implementation of NetworkServiceProtocol for live API calls
-nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject {
+public final class NetworkService: NetworkServiceProtocol, ObservableObject {
     
     // MARK: - Properties
     
@@ -24,14 +24,14 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
     /// - Parameter session: The URLSession to use for network requests. 
     ///   If not provided, uses URLSessionFactory.createOptimizedSession()
     ///   This allows for easy testing by injecting mock sessions
-    init(session: URLSession? = nil) {
+    public init(session: URLSession? = nil) {
         self.session = session ?? URLSessionFactory.createOptimizedSession()
         self.jsonDecoder = JSONDecoder()
     }
     
     // MARK: - NetworkServiceProtocol Conformance
     
-    func fetchCategories() async throws -> [MealCategory] {
+    public func fetchCategories() async throws -> [MealCategory] {
         let urlString = "\(baseURL)/categories.php"
         
         guard let url = URL(string: urlString) else {
@@ -71,7 +71,7 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
         }
     }
     
-    func fetchMealsByCategory(_ category: String) async throws -> [Meal] {
+    public func fetchMealsByCategory(_ category: String) async throws -> [Meal] {
         let urlString = "\(baseURL)/filter.php?c=\(category)"
         
         guard let url = URL(string: urlString) else {
@@ -111,7 +111,7 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
         }
     }
     
-    func fetchMealDetail(id: String) async throws -> MealDetail {
+    public func fetchMealDetail(id: String) async throws -> MealDetail {
         let urlString = "\(baseURL)/lookup.php?i=\(id)"
         
         guard let url = URL(string: urlString) else {

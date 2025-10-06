@@ -1,8 +1,8 @@
 //
 //  MockNetworkService.swift
-//  Whisked
+//  NetworkKit
 //
-//  Created by Ali FAKIH on 10/5/25.
+//  Created by Ali FAKIH on 10/6/25.
 //
 
 import Foundation
@@ -10,25 +10,29 @@ import Combine
 
 /// Mock implementation of NetworkServiceProtocol for testing and SwiftUI Previews
 @MainActor
-final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
+public final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
     
     // MARK: - Properties
     
     /// Controls whether the mock should simulate network delays
-    var shouldSimulateNetworkDelay: Bool = true
+    public var shouldSimulateNetworkDelay: Bool = true
     
     /// Controls whether the mock should simulate errors
-    var shouldSimulateError: Bool = false
+    public var shouldSimulateError: Bool = false
     
     /// The error to simulate when shouldSimulateError is true
-    var errorToSimulate: NetworkError = .networkError(URLError(.notConnectedToInternet))
+    public var errorToSimulate: NetworkError = .networkError(URLError(.notConnectedToInternet))
     
     /// Network delay duration in seconds
-    var networkDelayDuration: TimeInterval = 1.0
+    public var networkDelayDuration: TimeInterval = 1.0
+    
+    // MARK: - Initialization
+    
+    public init() {}
     
     // MARK: - NetworkServiceProtocol Conformance
     
-    func fetchCategories() async throws -> [MealCategory] {
+    public func fetchCategories() async throws -> [MealCategory] {
         // Simulate network delay if enabled
         if shouldSimulateNetworkDelay {
             try await Task.sleep(nanoseconds: UInt64(networkDelayDuration * 1_000_000_000))
@@ -42,7 +46,7 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
         return MealCategory.supportedCategories
     }
     
-    func fetchMealsByCategory(_ category: String) async throws -> [Meal] {
+    public func fetchMealsByCategory(_ category: String) async throws -> [Meal] {
         // Simulate network delay if enabled
         if shouldSimulateNetworkDelay {
             try await Task.sleep(nanoseconds: UInt64(networkDelayDuration * 1_000_000_000))
@@ -58,7 +62,7 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
         return mockDesserts
     }
     
-    func fetchMealDetail(id: String) async throws -> MealDetail {
+    public func fetchMealDetail(id: String) async throws -> MealDetail {
         // Simulate network delay if enabled
         if shouldSimulateNetworkDelay {
             try await Task.sleep(nanoseconds: UInt64(networkDelayDuration * 1_000_000_000))
@@ -139,17 +143,6 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
             strIngredient7: "Blackberrys",
             strIngredient8: "Cinnamon",
             strIngredient9: "Ice Cream",
-            strIngredient10: nil,
-            strIngredient11: nil,
-            strIngredient12: nil,
-            strIngredient13: nil,
-            strIngredient14: nil,
-            strIngredient15: nil,
-            strIngredient16: nil,
-            strIngredient17: nil,
-            strIngredient18: nil,
-            strIngredient19: nil,
-            strIngredient20: nil,
             strMeasure1: "120g",
             strMeasure2: "60g",
             strMeasure3: "60g",
@@ -158,18 +151,7 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
             strMeasure6: "30g",
             strMeasure7: "120g",
             strMeasure8: "1 tsp",
-            strMeasure9: "to serve",
-            strMeasure10: nil,
-            strMeasure11: nil,
-            strMeasure12: nil,
-            strMeasure13: nil,
-            strMeasure14: nil,
-            strMeasure15: nil,
-            strMeasure16: nil,
-            strMeasure17: nil,
-            strMeasure18: nil,
-            strMeasure19: nil,
-            strMeasure20: nil
+            strMeasure9: "to serve"
         ),
         MealDetail(
             idMeal: "52768",
@@ -185,17 +167,6 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
             strIngredient7: "ground almonds",
             strIngredient8: "almond extract",
             strIngredient9: "flaked almonds",
-            strIngredient10: nil,
-            strIngredient11: nil,
-            strIngredient12: nil,
-            strIngredient13: nil,
-            strIngredient14: nil,
-            strIngredient15: nil,
-            strIngredient16: nil,
-            strIngredient17: nil,
-            strIngredient18: nil,
-            strIngredient19: nil,
-            strIngredient20: nil,
             strMeasure1: "175g/6oz",
             strMeasure2: "75g/3oz",
             strMeasure3: "200g/7oz",
@@ -204,25 +175,14 @@ final class MockNetworkService: NetworkServiceProtocol, ObservableObject {
             strMeasure6: "2",
             strMeasure7: "75g/3oz",
             strMeasure8: "1 tsp",
-            strMeasure9: "25g/1oz",
-            strMeasure10: nil,
-            strMeasure11: nil,
-            strMeasure12: nil,
-            strMeasure13: nil,
-            strMeasure14: nil,
-            strMeasure15: nil,
-            strMeasure16: nil,
-            strMeasure17: nil,
-            strMeasure18: nil,
-            strMeasure19: nil,
-            strMeasure20: nil
+            strMeasure9: "25g/1oz"
         )
     ]
 }
 
 // MARK: - Mock Service Factory
 
-extension MockNetworkService {
+public extension MockNetworkService {
     
     /// Creates a mock service configured for successful responses
     static func success() -> MockNetworkService {

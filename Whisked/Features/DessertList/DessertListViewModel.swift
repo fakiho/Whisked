@@ -25,16 +25,16 @@ final class DessertListViewModel {
     
     // MARK: - Dependencies
     
-    private let networkService: NetworkServiceProtocol
+    private let mealService: MealServiceProtocol
     
     // MARK: - Initialization
     
-    /// Initializes the ViewModel with a network service and optional category
+    /// Initializes the ViewModel with a meal service and category
     /// - Parameters:
-    ///   - networkService: The network service for fetching meal data
-    ///   - category: Optional category to filter meals by
-    init(networkService: NetworkServiceProtocol, category: MealCategory) {
-        self.networkService = networkService
+    ///   - mealService: The meal service for fetching meal data
+    ///   - category: Category to filter meals by
+    init(mealService: MealServiceProtocol, category: MealCategory) {
+        self.mealService = mealService
         self.category = category
     }
     
@@ -45,7 +45,7 @@ final class DessertListViewModel {
         state = .loading
         
         do {
-            meals = try await networkService.fetchMealsByCategory(category.name)
+            meals = try await mealService.fetchMealsByCategory(category.name)
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)
@@ -61,7 +61,7 @@ final class DessertListViewModel {
     func refresh() async {
         // Don't change state to loading during refresh to avoid UI flicker
         do {
-            meals = try await networkService.fetchMealsByCategory(category.name)
+            meals = try await mealService.fetchMealsByCategory(category.name)
             state = .success
         } catch {
             // Don't show error for cancelled requests (common during pull-to-refresh)
@@ -80,42 +80,41 @@ final class DessertListViewModel {
     
     // MARK: - Private Methods
     
-    /// Maps network errors to user-friendly messages
+    /// Maps service errors to user-friendly messages
     private func mapErrorToUserFriendlyMessage(_ error: Error) -> String {
-        // Handle URLError specifically
+        // Handle URLError specifically (for cancelled requests)
         if let urlError = error as? URLError {
             switch urlError.code {
-            case .notConnectedToInternet:
-                return "No internet connection. Please check your network and try again."
-            case .timedOut:
-                return "Request timed out. Please try again."
             case .cancelled:
                 return "Request was cancelled. Please try again."
-            case .cannotFindHost, .cannotConnectToHost:
-                return "Cannot reach the server. Please try again later."
             default:
                 return "Network error occurred. Please try again."
             }
         }
         
-        if let networkError = error as? NetworkError {
-            switch networkError {
+        // Handle domain service errors
+        if let serviceError = error as? MealServiceError {
+            switch serviceError {
             case .noInternetConnection:
                 return "No internet connection. Please check your network and try again."
             case .timeout:
                 return "Request timed out. Please try again."
-            case .httpError(let statusCode, _):
+            case .serverError(let statusCode):
                 return "Server error (\(statusCode)). Please try again later."
-            case .decodingError:
+            case .invalidResponse:
                 return "Unable to process server response. Please try again."
-            case .emptyResponse:
+            case .noMealsFound:
                 return "No meals found. Please try again later."
-            default:
+            case .mealNotFound:
+                return "Meal not found. Please try again."
+            case .networkError(let message):
+                return "Network error: \(message)"
+            case .unknown:
                 return "Something went wrong. Please try again."
             }
-        } else {
-            return "An unexpected error occurred. Please try again."
         }
+        
+        return "An unexpected error occurred. Please try again."
     }
 }
 

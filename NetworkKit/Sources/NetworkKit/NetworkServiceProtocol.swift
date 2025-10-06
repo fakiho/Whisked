@@ -1,14 +1,14 @@
 //
 //  NetworkServiceProtocol.swift
-//  Whisked
+//  NetworkKit
 //
-//  Created by Ali FAKIH on 10/5/25.
+//  Created by Ali FAKIH on 10/6/25.
 //
 
 import Foundation
 
 /// Protocol defining the network service interface for fetching meal data
-protocol NetworkServiceProtocol: Sendable {
+public protocol NetworkServiceProtocol: Sendable {
     
     /// Fetches the list of available meal categories
     /// - Returns: Array of MealCategory objects

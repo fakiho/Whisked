@@ -1,14 +1,14 @@
 //
 //  NetworkError.swift
-//  Whisked
+//  NetworkKit
 //
-//  Created by Ali FAKIH on 10/5/25.
+//  Created by Ali FAKIH on 10/6/25.
 //
 
 import Foundation
 
 /// Comprehensive error types for network operations
-enum NetworkError: LocalizedError, Equatable, Sendable {
+public enum NetworkError: LocalizedError, Equatable, Sendable {
     
     // MARK: - Error Cases
     
@@ -47,7 +47,7 @@ enum NetworkError: LocalizedError, Equatable, Sendable {
     
     // MARK: - LocalizedError Conformance
     
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .invalidURL(let url):
             return "Invalid URL: \(url)"
@@ -74,7 +74,7 @@ enum NetworkError: LocalizedError, Equatable, Sendable {
         }
     }
     
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case .invalidURL:
             return "The URL provided is malformed or invalid"
@@ -101,7 +101,7 @@ enum NetworkError: LocalizedError, Equatable, Sendable {
         }
     }
     
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .invalidURL:
             return "Contact the app developer to report this issue"
@@ -124,7 +124,7 @@ enum NetworkError: LocalizedError, Equatable, Sendable {
     
     // MARK: - Equatable Conformance
     
-    static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
         switch (lhs, rhs) {
         case (.invalidURL(let lhsURL), .invalidURL(let rhsURL)):
             return lhsURL == rhsURL

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ThemeKit
+import NetworkKit
 
 /// View displaying detailed information about a specific meal with hero animations
 struct MealDetailView: View {
@@ -137,7 +138,7 @@ struct MealDetailView: View {
             }
         }
         .background(Color.backgroundPrimary)
-        .accessibilityLabel("Recipe details for \(mealDetail.strMeal)")
+        .accessibilityLabel("Recipe details for \(mealDetail.name)")
     }
     
     @ViewBuilder
@@ -154,7 +155,7 @@ struct MealDetailView: View {
     private func mealHeaderView(mealDetail: MealDetail) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.large.value) {
             // Recipe header image with smooth fade-in animation
-            AsyncImage(url: URL(string: mealDetail.strMealThumb)) { image in
+            AsyncImage(url: URL(string: mealDetail.thumbnailURL)) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -198,7 +199,7 @@ struct MealDetailView: View {
             
             // Meal Information
             VStack(alignment: .leading, spacing: Theme.Spacing.medium.value) {
-                Text(mealDetail.strMeal)
+                Text(mealDetail.name)
                     .themeDisplayLarge()
                     .foregroundColor(.textPrimary)
                     .opacity(contentOpacity)
@@ -476,35 +477,5 @@ private extension Button where Label == Text {
             .background(Color.accent)
             .cornerRadius(Theme.CornerRadius.medium)
             .shadow(color: Color.accent.opacity(0.3), radius: 8, x: 0, y: 4)
-    }
-}
-
-// MARK: - Previews
-
-#Preview("Success State") {
-    @Previewable @Namespace var heroNamespace
-    NavigationStack {
-        MealDetailView(
-            mealID: "52893",
-            coordinator: WhiskedMainCoordinator(),
-            viewModel: MealDetailViewModel(
-                mealID: "52893",
-                networkService: MockNetworkService.success()
-            )
-        )
-    }
-}
-
-#Preview("Error State") {
-    @Previewable @Namespace var heroNamespace
-    NavigationStack {
-        MealDetailView(
-            mealID: "invalid",
-            coordinator: WhiskedMainCoordinator(),
-            viewModel: MealDetailViewModel(
-                mealID: "invalid",
-                networkService: MockNetworkService.notFoundError()
-            )
-        )
     }
 }

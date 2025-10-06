@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ThemeKit
+import NetworkKit
 
 /// View displaying the list of meals for a category with advanced animations and theming
 struct MealListView: View {
@@ -61,7 +62,7 @@ struct MealListView: View {
             }
             .accessibilityRotor("Meals") {
                 ForEach(viewModel.filteredMeals) { meal in
-                    AccessibilityRotorEntry(meal.strMeal, id: meal.id) {
+                    AccessibilityRotorEntry(meal.name, id: meal.id) {
                         // This will focus on the specific meal
                     }
                 }
@@ -134,9 +135,9 @@ struct MealListView: View {
             ForEach(Array(viewModel.filteredMeals.enumerated()), id: \.element.id) { index, meal in
                 MealCard(
                     meal: meal,
-                    isFavorite: viewModel.isFavorite(mealID: meal.idMeal),
+                    isFavorite: viewModel.isFavorite(mealID: meal.id),
                     onTap: {
-                        coordinator.showMealDetail(mealId: meal.idMeal)
+                        coordinator.showMealDetail(mealId: meal.id)
                     }
                 )
                 .opacity(hasAppeared ? 1 : 0)
@@ -252,7 +253,7 @@ private struct MealCard: View {
         } perform: {
             // Long press action if needed
         }
-        .accessibilityLabel(meal.strMeal)
+        .accessibilityLabel(meal.name)
         .accessibilityHint("Double tap to view detailed recipe")
         .accessibilityAddTraits(.isButton)
     }
@@ -279,7 +280,7 @@ private struct MealCard: View {
     }
     
     private var cardImage: some View {
-        AsyncImage(url: URL(string: meal.strMealThumb)) { image in
+        AsyncImage(url: URL(string: meal.thumbnailURL)) { image in
             image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -298,7 +299,7 @@ private struct MealCard: View {
     
     private var cardText: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
-            Text(meal.strMeal)
+            Text(meal.name)
                 .themeHeadline()
                 .foregroundColor(.textPrimary)
                 .multilineTextAlignment(.leading)
@@ -354,31 +355,4 @@ private extension Button where Label == Text {
             .cornerRadius(Theme.CornerRadius.medium)
             .shadow(color: Color.accent.opacity(0.3), radius: 8, x: 0, y: 4)
     }
-}
-
-// MARK: - Previews
-
-#Preview("Success State") {
-    @Previewable @Namespace var heroNamespace
-    MealListView(
-        coordinator: WhiskedMainCoordinator(),
-        viewModel: MealListViewModel(networkService: MockNetworkService.success(), category: .dessert)
-    )
-}
-
-#Preview("Loading State") {
-    @Previewable @Namespace var heroNamespace
-    let viewModel = MealListViewModel(networkService: MockNetworkService.success(), category: .dessert)
-    MealListView(
-        coordinator: WhiskedMainCoordinator(),
-        viewModel: viewModel
-    )
-}
-
-#Preview("Error State") {
-    @Previewable @Namespace var heroNamespace
-    MealListView(
-        coordinator: WhiskedMainCoordinator(),
-        viewModel: MealListViewModel(networkService: MockNetworkService.networkError(), category: .dessert)
-    )
 }

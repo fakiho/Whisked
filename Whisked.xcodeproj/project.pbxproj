@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5BD17E422E93DFA300C822E0 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5BD17E412E93DFA300C822E0 /* NetworkKit */; };
 		5BFDA4852E9262CB00552805 /* PersistenceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5BFDA4842E9262CB00552805 /* PersistenceKit */; };
 		5BFDA4872E9263CB00552805 /* ThemeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5BFDA4862E9263CB00552805 /* ThemeKit */; };
 /* End PBXBuildFile section */
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BD17E422E93DFA300C822E0 /* NetworkKit in Frameworks */,
 				5BFDA4852E9262CB00552805 /* PersistenceKit in Frameworks */,
 				5BFDA4872E9263CB00552805 /* ThemeKit in Frameworks */,
 			);
@@ -121,6 +123,7 @@
 			packageProductDependencies = (
 				5BFDA4842E9262CB00552805 /* PersistenceKit */,
 				5BFDA4862E9263CB00552805 /* ThemeKit */,
+				5BD17E412E93DFA300C822E0 /* NetworkKit */,
 			);
 			productName = Whisked;
 			productReference = 5BFDA40B2E923F1D00552805 /* Whisked.app */;
@@ -208,6 +211,7 @@
 			packageReferences = (
 				5BFDA4832E9262CB00552805 /* XCLocalSwiftPackageReference "PersistenceKit" */,
 				5BFDA4882E9263CB00552805 /* XCLocalSwiftPackageReference "ThemeKit" */,
+				5BD17E402E93DFA300C822E0 /* XCLocalSwiftPackageReference "NetworkKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5BFDA40C2E923F1D00552805 /* Products */;
@@ -612,6 +616,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		5BD17E402E93DFA300C822E0 /* XCLocalSwiftPackageReference "NetworkKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = NetworkKit;
+		};
 		5BFDA4832E9262CB00552805 /* XCLocalSwiftPackageReference "PersistenceKit" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = PersistenceKit;
@@ -623,6 +631,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5BD17E412E93DFA300C822E0 /* NetworkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkKit;
+		};
 		5BFDA4842E9262CB00552805 /* PersistenceKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PersistenceKit;

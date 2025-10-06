@@ -9,3 +9,4 @@ Whisked.xcodeproj/xcuserdata/*
 .vscode/*
 Whisked.code-workspace
 build-project.sh
+NetworkKit/.build/*

@@ -2,12 +2,13 @@
 //  CategoryListViewModel.swift
 //  Whisked
 //
-//  Created by GitHub Copilot on 10/5/25.
+//  Created by Ali FAKIH on 10/5/25.
 //
 
 import Foundation
 import Combine
 import PersistenceKit
+
 /// ViewModel managing category list state and business logic
 @MainActor
 final class CategoryListViewModel: ObservableObject {
@@ -21,13 +22,13 @@ final class CategoryListViewModel: ObservableObject {
 
     // MARK: - Private Properties
     private let persistenceService: PersistenceServiceProtocol?
-    private let networkService: NetworkServiceProtocol
+    private let mealService: MealServiceProtocol
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
     
-    init(networkService: NetworkServiceProtocol = NetworkService(), persistenceService: PersistenceServiceProtocol?) {
-        self.networkService = networkService
+    init(mealService: MealServiceProtocol, persistenceService: PersistenceServiceProtocol?) {
+        self.mealService = mealService
         self.persistenceService = persistenceService
     }
     
@@ -67,7 +68,7 @@ final class CategoryListViewModel: ObservableObject {
 
         loadingState = .loading
         do {
-            let categories = try await networkService.fetchCategories()
+            let categories = try await mealService.fetchCategories()
             allCategories = categories
             loadingState = .loaded(categories)
         } catch {

@@ -1,18 +1,18 @@
 //
 //  URLSessionFactory.swift
-//  Whisked
+//  NetworkKit
 //
-//  Created by Ali FAKIH on 10/5/25.
+//  Created by Ali FAKIH on 10/6/25.
 //
 
 import Foundation
 
 /// Factory for creating configured URLSession instances
-enum URLSessionFactory {
+public enum URLSessionFactory {
     
     /// Creates a URLSession optimized for the Whisked app's network requirements
     /// - Returns: Configured URLSession with timeouts and connectivity settings
-    nonisolated static func createOptimizedSession() -> URLSession {
+    public static func createOptimizedSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30.0
         configuration.timeoutIntervalForResource = 60.0
@@ -24,7 +24,7 @@ enum URLSessionFactory {
     
     /// Creates a URLSession for testing with shorter timeouts
     /// - Returns: Configured URLSession optimized for testing
-    nonisolated static func createTestSession() -> URLSession {
+    public static func createTestSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 5.0
         configuration.timeoutIntervalForResource = 10.0
@@ -35,7 +35,7 @@ enum URLSessionFactory {
     
     /// Creates a URLSession with no caching for fresh data requests
     /// - Returns: Configured URLSession that bypasses cache
-    nonisolated static func createNoCacheSession() -> URLSession {
+    public static func createNoCacheSession() -> URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30.0
         configuration.timeoutIntervalForResource = 60.0

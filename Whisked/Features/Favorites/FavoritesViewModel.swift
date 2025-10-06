@@ -2,12 +2,13 @@
 //  FavoritesViewModel.swift
 //  Whisked
 //
-//  Created by GitHub Copilot on 10/5/25.
+//  Created by Ali FAKIH on 10/5/25.
 //
 
 import Foundation
-import Combine
+import SwiftUI
 import PersistenceKit
+import Combine
 
 /// ViewModel managing favorites list state and business logic
 @MainActor

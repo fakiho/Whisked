@@ -7,10 +7,8 @@
 
 import Foundation
 import PersistenceKit
-
-/// Temporary placeholder protocol for PersistenceService
-import Foundation
-import SwiftUI
+import Combine
+import NetworkKit
 
 /// ViewModel for managing the meal list screen state and data with client-side pagination
 @MainActor
@@ -53,22 +51,22 @@ final class MealListViewModel {
     
     // MARK: - Dependencies
     
-    private let networkService: NetworkServiceProtocol
+    private let mealService: MealServiceProtocol
     private nonisolated let persistenceService: PersistenceKit.PersistenceServiceProtocol?
     
     // MARK: - Initialization
     
-    /// Initializes the ViewModel with a network service, category, and optional persistence service
+    /// Initializes the ViewModel with a meal service, category, and optional persistence service
     /// - Parameters:
-    ///   - networkService: The network service for fetching meal data
+    ///   - mealService: The meal service for fetching meal data
     ///   - category: Category to filter meals by
     ///   - persistenceService: The persistence service for favorite management (optional for now)
     init(
-        networkService: NetworkServiceProtocol, 
+        mealService: MealServiceProtocol, 
         category: MealCategory,
         persistenceService: PersistenceKit.PersistenceServiceProtocol? = nil
     ) {
-        self.networkService = networkService
+        self.mealService = mealService
         self.category = category
         self.persistenceService = persistenceService
     }
@@ -90,7 +88,7 @@ final class MealListViewModel {
         do {
             // Load favorites and meals concurrently
             async let favoritesTask: Set<String> = loadFavoriteIDs()
-            async let mealsTask: [Meal] = networkService.fetchMealsByCategory(category.name)
+            async let mealsTask: [Meal] = mealService.fetchMealsByCategory(category.name)
             
             // Wait for both to complete
             let (favorites, fetchedMeals) = try await (favoritesTask, mealsTask)
@@ -210,7 +208,7 @@ final class MealListViewModel {
         } else {
             // Filter meals based on name containing the query (case-insensitive)
             filteredMeals = allMeals.filter { meal in
-                meal.strMeal.localizedCaseInsensitiveContains(query)
+                meal.name.localizedCaseInsensitiveContains(query)
             }
         }
     }

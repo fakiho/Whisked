@@ -32,23 +32,23 @@ final class MealDetailViewModel {
     
     // MARK: - Dependencies
     
-    private let networkService: NetworkServiceProtocol
+    private let mealService: MealServiceProtocol
     private nonisolated let persistenceService: PersistenceKit.PersistenceServiceProtocol?
     
     // MARK: - Initialization
     
-    /// Initializes the ViewModel with a meal ID, network service, and optional persistence service
+    /// Initializes the ViewModel with a meal ID, meal service, and optional persistence service
     /// - Parameters:
     ///   - mealID: The unique identifier of the meal to fetch details for
-    ///   - networkService: The network service for fetching meal detail data
+    ///   - mealService: The meal service for fetching meal detail data
     ///   - persistenceService: The persistence service for offline storage (optional for now)
     init(
         mealID: String, 
-        networkService: NetworkServiceProtocol,
+        mealService: MealServiceProtocol,
         persistenceService: PersistenceKit.PersistenceServiceProtocol? = nil
     ) {
         self.mealID = mealID
-        self.networkService = networkService
+        self.mealService = mealService
         self.persistenceService = persistenceService
     }
     
@@ -82,7 +82,7 @@ final class MealDetailViewModel {
             }
             
             // Step 2: Not found offline or no persistence service, fetch from network
-            let mealDetail = try await networkService.fetchMealDetail(id: mealID)
+            let mealDetail = try await mealService.fetchMealDetail(id: mealID)
             
             // Update favorite status if persistence service is available
             if let service = persistenceService {
@@ -166,7 +166,7 @@ final class MealDetailViewModel {
             }
             
             // Fetch from network
-            let mealDetail = try await networkService.fetchMealDetail(id: mealID)
+            let mealDetail = try await mealService.fetchMealDetail(id: mealID)
             
             // Update favorite status if persistence service is available
             if let service = persistenceService {
@@ -218,21 +218,23 @@ final class MealDetailViewModel {
             }
         }
         
-        if let networkError = error as? NetworkError {
-            switch networkError {
+        if let serviceError = error as? MealServiceError {
+            switch serviceError {
             case .noInternetConnection:
                 return "No internet connection. Please check your network and try again."
             case .timeout:
                 return "Request timed out. Please try again."
-            case .httpError(let statusCode, _):
+            case .serverError(let statusCode):
                 return "Server error (\(statusCode)). Please try again later."
-            case .decodingError:
+            case .invalidResponse:
                 return "Unable to process server response. Please try again."
             case .mealNotFound:
                 return "This meal recipe could not be found. It may have been removed."
-            case .emptyResponse:
+            case .noMealsFound:
                 return "No recipe details found. Please try again later."
-            default:
+            case .networkError(let message):
+                return "Network error: \(message)"
+            case .unknown:
                 return "Something went wrong. Please try again."
             }
         } else {
@@ -257,7 +259,7 @@ extension MealDetailViewModel {
             case (.loading, .loading):
                 return true
             case (.success(let lhsMeal), .success(let rhsMeal)):
-                return lhsMeal.idMeal == rhsMeal.idMeal
+                return lhsMeal.id == rhsMeal.id
             case (.error(let lhsMessage), .error(let rhsMessage)):
                 return lhsMessage == rhsMessage
             default:
