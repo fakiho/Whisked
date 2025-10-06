@@ -111,7 +111,11 @@ struct MealListView: View {
     
     private var mealListView: some View {
         ScrollView {
-            mealListContent
+            if viewModel.filteredMeals.isEmpty && viewModel.isSearchActive {
+                emptySearchView
+            } else {
+                mealListContent
+            }
         }
         .background(Color.backgroundPrimary)
         .onAppear {
@@ -194,6 +198,53 @@ struct MealListView: View {
     
     private var bottomSpacing: some View {
         Spacer(minLength: Theme.Spacing.large.value)
+    }
+    
+    /// Empty state view shown when search returns no results
+    private var emptySearchView: some View {
+        VStack(spacing: Theme.Spacing.extraLarge.value) {
+            Spacer(minLength: 100)
+            
+            // Search icon with theme colors
+            Image(systemName: "magnifyingglass.circle")
+                .font(.system(size: 80))
+                .foregroundColor(.textSecondary)
+                .opacity(0.6)
+            
+            VStack(spacing: Theme.Spacing.medium.value) {
+                Text(LocalizedStrings.mealsEmptySearchTitle)
+                    .themeDisplayLarge()
+                    .foregroundColor(.textPrimary)
+                    .multilineTextAlignment(.center)
+                
+                if !searchText.isEmpty {
+                    Text(LocalizedStrings.mealsEmptySearchQuery(query: searchText))
+                        .themeHeadline()
+                        .foregroundColor(.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .themePadding(.horizontal, .large)
+                }
+                
+                Text(LocalizedStrings.mealsEmptySearchDescription)
+                    .themeBody()
+                    .foregroundColor(.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .themePadding(.horizontal, .large)
+                
+                Text(LocalizedStrings.mealsEmptySearchSuggestion)
+                    .themeCaption()
+                    .foregroundColor(.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .themePadding(.horizontal, .large)
+                    .themePadding(.top, .small)
+            }
+            
+            Spacer(minLength: 100)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 600)
+        .accessibilityLabel("No search results found")
+        .accessibilityHint("Try adjusting your search terms")
     }
     
     private var errorView: some View {

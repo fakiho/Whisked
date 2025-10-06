@@ -38,6 +38,13 @@ enum LocalizedStrings {
     static let mealsTryAgain = NSLocalizedString("meals.try_again", comment: "Try again button")
     static let mealsTapToView = NSLocalizedString("meals.tap_to_view", comment: "Tap to view recipe hint")
     static let mealsLoadingMore = NSLocalizedString("meals.loading_more", comment: "Loading more meals indicator")
+    static let mealsEmptySearchTitle = NSLocalizedString("meals.empty_search.title", comment: "Empty search results title")
+    static let mealsEmptySearchDescription = NSLocalizedString("meals.empty_search.description", comment: "Empty search results description")
+    static let mealsEmptySearchSuggestion = NSLocalizedString("meals.empty_search.suggestion", comment: "Empty search results suggestion")
+    
+    static func mealsEmptySearchQuery(query: String) -> String {
+        String(format: NSLocalizedString("meals.empty_search.query", comment: "No results for search query"), query)
+    }
     
     static func mealsLoading(category: String) -> String {
         String(format: NSLocalizedString("meals.loading", comment: "Loading meals for category"), category)

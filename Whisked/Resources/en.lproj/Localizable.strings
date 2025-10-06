@@ -35,6 +35,10 @@
 "meals.error.default" = "Something went wrong while loading meals";
 "meals.try_again" = "Try Again";
 "meals.tap_to_view" = "Tap to view recipe";
+"meals.empty_search.title" = "No Results Found";
+"meals.empty_search.description" = "We couldn't find any recipes matching your search.";
+"meals.empty_search.suggestion" = "Try adjusting your search terms or browse all recipes.";
+"meals.empty_search.query" = "No results for \"%@\"";
 
 // MARK: - Meal Detail
 "meal_detail.ingredients" = "Ingredients";

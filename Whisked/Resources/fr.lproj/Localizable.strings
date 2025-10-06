@@ -35,6 +35,10 @@
 "meals.error.default" = "Une erreur s'est produite lors du chargement des repas";
 "meals.try_again" = "Réessayer";
 "meals.tap_to_view" = "Appuyer pour voir la recette";
+"meals.empty_search.title" = "Aucun Résultat";
+"meals.empty_search.description" = "Nous n'avons trouvé aucune recette correspondant à votre recherche.";
+"meals.empty_search.suggestion" = "Essayez d'ajuster vos termes de recherche ou parcourez toutes les recettes.";
+"meals.empty_search.query" = "Aucun résultat pour \"%@\"";
 
 // MARK: - Meal Detail
 "meal_detail.ingredients" = "Ingrédients";
