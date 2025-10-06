@@ -20,17 +20,55 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
     
     // MARK: - Initialization
     
-    /// Initializes the NetworkService with a URLSession
+    /// Initializes the NetworkService with dependency injection support
     /// - Parameter session: The URLSession to use for network requests. 
     ///   If not provided, uses URLSessionFactory.createOptimizedSession()
+    ///   This allows for easy testing by injecting mock sessions
     init(session: URLSession? = nil) {
         self.session = session ?? URLSessionFactory.createOptimizedSession()
         self.jsonDecoder = JSONDecoder()
-    }    // MARK: - NetworkServiceProtocol Conformance
+    }
+    
+    // MARK: - NetworkServiceProtocol Conformance
     
     func fetchCategories() async throws -> [MealCategory] {
-        // Return predefined categories as this API doesn't provide a categories endpoint
-        return MealCategory.supportedCategories
+        let urlString = "\(baseURL)/categories.php"
+        
+        guard let url = URL(string: urlString) else {
+            throw NetworkError.invalidURL(urlString)
+        }
+        
+        do {
+            let (data, response) = try await session.data(from: url)
+            
+            // Validate HTTP response
+            try validateHTTPResponse(response, data: data)
+            
+            // Check for empty data
+            guard !data.isEmpty else {
+                throw NetworkError.noData
+            }
+            
+            // Decode the response
+            let categoriesResponse = try jsonDecoder.decode(CategoriesResponse.self, from: data)
+            
+            // Validate we have categories in the response
+            guard !categoriesResponse.categories.isEmpty else {
+                throw NetworkError.emptyResponse
+            }
+            
+            // Return sorted categories for consistent UI experience
+            return categoriesResponse.categories.sorted { $0.name < $1.name }
+            
+        } catch let error as NetworkError {
+            throw error
+        } catch let decodingError as DecodingError {
+            throw NetworkError.decodingError(decodingError)
+        } catch let urlError as URLError {
+            throw mapURLError(urlError)
+        } catch {
+            throw NetworkError.networkError(error)
+        }
     }
     
     func fetchMealsByCategory(_ category: String) async throws -> [Meal] {
@@ -115,6 +153,10 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
     // MARK: - Private Helper Methods
     
     /// Validates HTTP response and status codes
+    /// - Parameters:
+    ///   - response: The URLResponse received from the network request
+    ///   - data: The data received from the network request
+    /// - Throws: NetworkError if the response is invalid or contains an error status code
     private func validateHTTPResponse(_ response: URLResponse, data: Data) throws {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.unknown
@@ -128,7 +170,9 @@ nonisolated final class NetworkService: NetworkServiceProtocol, ObservableObject
         }
     }
     
-    /// Maps URLError to appropriate NetworkError
+    /// Maps URLError to appropriate NetworkError for consistent error handling
+    /// - Parameter urlError: The URLError to be mapped
+    /// - Returns: A corresponding NetworkError case
     private func mapURLError(_ urlError: URLError) -> NetworkError {
         switch urlError.code {
         case .notConnectedToInternet, .networkConnectionLost:
