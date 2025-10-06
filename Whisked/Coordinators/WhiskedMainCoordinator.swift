@@ -25,11 +25,10 @@ final class WhiskedMainCoordinator: ObservableObject {
     /// Persistence service for managing offline favorites
     private var persistenceService: PersistenceService {
         let contextManager = SwiftDataContextManager.shared
-        do {
-            return try contextManager.createPersistenceService()
-        } catch {
-            fatalError("Could not create PersistenceService: \(error)")
+        guard let context = contextManager.context else {
+            fatalError("Could not get context from SwiftDataContextManager")
         }
+        return PersistenceService(modelContext: context)
     }
 
     // MARK: - Destinations

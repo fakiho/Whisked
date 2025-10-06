@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import PersistenceKit
 // MARK: - Extensions for PersistenceKit Integration
 
 /// Extension to handle conversion from domain Ingredient to PersistenceKit format
@@ -78,6 +78,24 @@ extension MealDetail {
             name: strMeal,
             instructions: strInstructions,
             thumbnailURL: strMealThumb,
+            ingredients: domainIngredients
+        )
+    }
+    
+    /// Creates a domain MealDetail from OfflineMealData
+    /// - Parameter data: The OfflineMealData containing all meal information
+    /// - Returns: A complete domain MealDetail instance
+    static func fromOfflineMealData(_ data: OfflineMealData) -> MealDetail {
+        // Convert PersistenceKit.Ingredient to domain Ingredient
+        let domainIngredients = data.ingredients.map { persistenceIngredient in
+            Ingredient(name: persistenceIngredient.name, measure: persistenceIngredient.measure)
+        }
+        
+        return MealDetail(
+            id: data.idMeal,
+            name: data.strMeal,
+            instructions: data.strInstructions,
+            thumbnailURL: data.strMealThumb,
             ingredients: domainIngredients
         )
     }

@@ -9,12 +9,6 @@ import Foundation
 import SwiftUI
 import PersistenceKit
 
-// Import Core types
-extension MealDetailViewModel {
-    // Using types from the app's Core module
-}
-
-/// ViewModel for managing the meal detail screen state and data with offline-first capability
 @MainActor
 @Observable
 final class MealDetailViewModel {
@@ -66,12 +60,13 @@ final class MealDetailViewModel {
             if let service = persistenceService,
                let offlineMealData = try await service.fetchFavoriteMeal(by: mealID) {
                 // Found offline! Convert to MealDetail and display immediately
+                let ingredientTuples = offlineMealData.ingredients.map { ($0.name, $0.measure) }
                 let mealDetail = MealDetail.fromOfflineData(
                     idMeal: offlineMealData.idMeal,
                     strMeal: offlineMealData.strMeal,
                     strMealThumb: offlineMealData.strMealThumb,
                     strInstructions: offlineMealData.strInstructions,
-                    ingredients: offlineMealData.ingredients
+                    ingredients: ingredientTuples
                 )
                 
                 await MainActor.run {
@@ -151,12 +146,13 @@ final class MealDetailViewModel {
             // Check offline first, then network if needed
             if let service = persistenceService,
                let offlineMealData = try await service.fetchFavoriteMeal(by: mealID) {
+                let ingredientTuples = offlineMealData.ingredients.map { ($0.name, $0.measure) }
                 let mealDetail = MealDetail.fromOfflineData(
                     idMeal: offlineMealData.idMeal,
                     strMeal: offlineMealData.strMeal,
                     strMealThumb: offlineMealData.strMealThumb,
                     strInstructions: offlineMealData.strInstructions,
-                    ingredients: offlineMealData.ingredients
+                    ingredients: ingredientTuples
                 )
                 await MainActor.run {
                     isFavorite = true

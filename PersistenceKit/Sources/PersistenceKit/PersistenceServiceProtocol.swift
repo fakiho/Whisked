@@ -11,15 +11,8 @@ import Foundation
 public protocol PersistenceServiceProtocol: Sendable {
     func saveFavoriteMeal(idMeal: String, strMeal: String, strMealThumb: String, strInstructions: String, ingredients: [(name: String, measure: String)]) async throws
     func deleteFavoriteMeal(by idMeal: String) async throws
-    func fetchFavoriteMeal(by idMeal: String) async throws -> (idMeal: String, strMeal: String, strMealThumb: String, strInstructions: String, ingredients: [(name: String, measure: String)])?
+    func fetchFavoriteMeal(by idMeal: String) async throws -> OfflineMealData?
     func fetchFavoriteIDs() async throws -> Set<String>
     func getOfflineMealsCount() async throws -> Int
-    func fetchAllOfflineMeals() async throws -> [(
-        idMeal: String,
-        strMeal: String,
-        strMealThumb: String,
-        strInstructions: String,
-        ingredients: [(name: String, measure: String)],
-        dateSaved: Date
-    )]
+    func fetchAllOfflineMeals() async throws -> [OfflineMealData]
 }

@@ -91,15 +91,9 @@ public actor PersistenceService: PersistenceServiceProtocol {
     
     /// Fetches a specific offline meal by ID
     /// - Parameter idMeal: The unique identifier of the meal
-    /// - Returns: Tuple with meal data if found, nil otherwise
+    /// - Returns: OfflineMealData object if found, nil otherwise
     /// - Throws: Error if the fetch operation fails
-    public func fetchFavoriteMeal(by idMeal: String) async throws -> (
-        idMeal: String,
-        strMeal: String,
-        strMealThumb: String,
-        strInstructions: String,
-        ingredients: [(name: String, measure: String)]
-    )? {
+    public func fetchFavoriteMeal(by idMeal: String) async throws -> OfflineMealData? {
         let descriptor = FetchDescriptor<OfflineMeal>(
             predicate: #Predicate { $0.idMeal == idMeal }
         )
@@ -107,14 +101,13 @@ public actor PersistenceService: PersistenceServiceProtocol {
         let meals = try modelContext.fetch(descriptor)
         guard let meal = meals.first else { return nil }
         
-        let ingredientTuples = meal.ingredients.map { ($0.name, $0.measure) }
-        
-        return (
+        return OfflineMealData(
             idMeal: meal.idMeal,
             strMeal: meal.strMeal,
             strMealThumb: meal.strMealThumb,
             strInstructions: meal.strInstructions,
-            ingredients: ingredientTuples
+            ingredients: meal.ingredients,
+            dateSaved: meal.dateSaved
         )
     }
     
@@ -141,29 +134,21 @@ public actor PersistenceService: PersistenceServiceProtocol {
     }
     
     /// Retrieves all offline meals sorted by date saved (most recent first)
-    /// - Returns: An array of tuples containing all offline meal data
+    /// - Returns: An array of OfflineMealData objects
     /// - Throws: Error if the fetch operation fails
-    public func fetchAllOfflineMeals() async throws -> [(
-        idMeal: String,
-        strMeal: String,
-        strMealThumb: String,
-        strInstructions: String,
-        ingredients: [(name: String, measure: String)],
-        dateSaved: Date
-    )] {
+    public func fetchAllOfflineMeals() async throws -> [OfflineMealData] {
         let descriptor = FetchDescriptor<OfflineMeal>(
             sortBy: [SortDescriptor(\.dateSaved, order: .reverse)]
         )
         
         let meals = try modelContext.fetch(descriptor)
         return meals.map { meal in
-            let ingredientTuples = meal.ingredients.map { ($0.name, $0.measure) }
-            return (
+            OfflineMealData(
                 idMeal: meal.idMeal,
                 strMeal: meal.strMeal,
                 strMealThumb: meal.strMealThumb,
                 strInstructions: meal.strInstructions,
-                ingredients: ingredientTuples,
+                ingredients: meal.ingredients,
                 dateSaved: meal.dateSaved
             )
         }

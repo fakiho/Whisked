@@ -27,6 +27,34 @@ public struct Ingredient: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
+/// Sendable data transfer object for OfflineMeal
+public struct OfflineMealData: Identifiable, Sendable {
+    public let idMeal: String
+    public let strMeal: String
+    public let strMealThumb: String
+    public let strInstructions: String
+    public let ingredients: [Ingredient]
+    public let dateSaved: Date
+    
+    public var id: String { idMeal }
+    
+    public init(
+        idMeal: String,
+        strMeal: String,
+        strMealThumb: String,
+        strInstructions: String,
+        ingredients: [Ingredient],
+        dateSaved: Date
+    ) {
+        self.idMeal = idMeal
+        self.strMeal = strMeal
+        self.strMealThumb = strMealThumb
+        self.strInstructions = strInstructions
+        self.ingredients = ingredients
+        self.dateSaved = dateSaved
+    }
+}
+
 /// SwiftData model representing a complete offline meal with all recipe details
 @Model
 public final class OfflineMeal {
