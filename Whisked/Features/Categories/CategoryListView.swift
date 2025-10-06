@@ -69,9 +69,9 @@ struct CategoryListView: View {
     }
 
     private var emptyView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Theme.Spacing.large.value) {
             Image(systemName: "tray")
-                .font(.system(size: 48))
+                .font(.system(size: Theme.IconSize.extraLarge))
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(LocalizedStrings.accessibilityCategoryImage)
 
@@ -84,29 +84,29 @@ struct CategoryListView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
-        .padding()
+        .themePaddingLarge()
         .accessibilityElement(children: .combine)
         .accessibilityLabel(LocalizedStrings.accessibilityEmptyView)
     }
 
     private var loadingView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Theme.Spacing.large.value) {
             // Hero section with shimmer
             VStack(spacing: Theme.Spacing.medium.value) {
                 Text(LocalizedStrings.categoriesLoading)
                     .font(.headline)
                     .foregroundColor(.secondary)
-                    .padding(.top, 20)
+                    .themePadding(.top, Theme.Spacing.large)
                 
                 Text(LocalizedStrings.categoriesLoadingDescription)
                     .font(.body)
                     .foregroundColor(.secondary)
             }
-            .padding(.horizontal)
+            .themePaddingMedium(.horizontal)
             
             // Grid shimmer with improved padding
             ShimmerCategoryGrid(itemCount: 6) // 6 categories in 2-column grid
-                .padding(.horizontal, Theme.Spacing.large.value)
+                .themePadding(.horizontal, Theme.Spacing.large)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(LocalizedStrings.accessibilityLoadingView)
@@ -115,7 +115,7 @@ struct CategoryListView: View {
     
     private func loadedView(categories: [MealCategory]) -> some View {
         ScrollView {
-            LazyVStack(spacing: 16) {
+            LazyVStack(spacing: Theme.Spacing.medium.value) {
                 // Favorites card - always show at the top
                 FavoritesCard(
                     favoritesCount: viewModel.favoritesCount,
@@ -138,16 +138,16 @@ struct CategoryListView: View {
                         )
                     }
                 }
-                .padding(.horizontal, Theme.Spacing.large.value)
+                .themePadding(.horizontal, Theme.Spacing.large)
             }
-            .padding()
+            .themePaddingMedium()
         }
     }
     
     private func errorView(error: Error) -> some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Theme.Spacing.large.value) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 48))
+                .font(.system(size: Theme.IconSize.extraLarge))
                 .foregroundStyle(.red)
                 .accessibilityLabel(LocalizedStrings.accessibilityErrorLoading)
             
@@ -169,7 +169,7 @@ struct CategoryListView: View {
             .controlSize(.large)
             .accessibilityHint(LocalizedStrings.accessibilityRetryHint)
         }
-        .padding()
+        .themePaddingLarge()
         .accessibilityElement(children: .combine)
         .accessibilityLabel(LocalizedStrings.accessibilityErrorView)
     }
@@ -184,24 +184,24 @@ private struct CategoryCard: View {
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
+            HStack(spacing: Theme.Spacing.medium.value) {
                 AsyncImage(url: URL(string: category.thumbnailURL)) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                         .fill(Color.backgroundSecondary)
                         .overlay {
                             Image(systemName: "photo")
-                                .font(.title2)
+                                .font(.system(size: Theme.IconSize.medium))
                                 .foregroundStyle(.secondary)
                         }
                 }
                 .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .themeCornerRadius(Theme.CornerRadius.large)
                 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
                     Text(category.name)
                         .font(.headline)
                         .foregroundStyle(.primary)
@@ -220,62 +220,19 @@ private struct CategoryCard: View {
                     .font(.body.weight(.medium))
                     .foregroundStyle(.tertiary)
             }
-            .padding()
+            .themePaddingMedium()
             .background {
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.extraLarge)
                     .fill(Color.backgroundSecondary)
                     .shadow(
                         color: Color.black.opacity(0.1),
-                        radius: 8,
+                        radius: Theme.Spacing.small.value,
                         x: 0,
                         y: 2
                     )
             }
         }
         .buttonStyle(PlainButtonStyle())
-    }
-}
-
-// MARK: - Category Card Shimmer
-
-private struct CategoryCardShimmerView: View {
-    
-    var body: some View {
-        HStack(spacing: 16) {
-            ShimmerView()
-                .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            
-            VStack(alignment: .leading, spacing: 8) {
-                ShimmerView()
-                    .frame(height: 20)
-                    .frame(maxWidth: 120)
-                
-                ShimmerView()
-                    .frame(height: 16)
-                    .frame(maxWidth: 200)
-                
-                ShimmerView()
-                    .frame(height: 16)
-                    .frame(maxWidth: 160)
-            }
-            
-            Spacer()
-            
-            ShimmerView()
-                .frame(width: 20, height: 20)
-        }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.backgroundSecondary)
-                .shadow(
-                    color: Color.black.opacity(0.1),
-                    radius: 8,
-                    x: 0,
-                    y: 2
-                )
-        }
     }
 }
 
@@ -286,25 +243,25 @@ private struct CategoryGridCard: View {
     let category: MealCategory
     let onTap: () -> Void
     
-    // Device-specific sizing
+    // Device-specific sizing using theme values
     private var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
     }
     
     private var cardSpacing: CGFloat {
-        isIPad ? 16 : 12
+        isIPad ? Theme.Spacing.medium.value : Theme.Spacing.small.value
     }
     
     private var cardPadding: CGFloat {
-        isIPad ? 20 : 16
+        isIPad ? Theme.Spacing.large.value : Theme.Spacing.medium.value
     }
     
     private var cornerRadius: CGFloat {
-        isIPad ? 20 : 16
+        isIPad ? Theme.CornerRadius.extraLarge : Theme.CornerRadius.extraLarge
     }
     
     private var imageAspectRatio: CGFloat {
-        isIPad ? 16/9 : 3/2  // Slightly taller on iPad for better proportions
+        isIPad ? 16/9 : 3/2
     }
     
     private var titleFont: Font {
@@ -323,19 +280,19 @@ private struct CategoryGridCard: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                         .fill(Color.backgroundSecondary)
                         .overlay {
                             Image(systemName: "photo")
-                                .font(isIPad ? .largeTitle : .title)
+                                .font(.system(size: isIPad ? Theme.IconSize.extraLarge : Theme.IconSize.large))
                                 .foregroundStyle(.secondary)
                         }
                         .accessibilityLabel(LocalizedStrings.accessibilityCategoryImage)
                 }
                 .aspectRatio(imageAspectRatio, contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .themeCornerRadius(Theme.CornerRadius.large)
                 
-                VStack(spacing: isIPad ? 6 : 4) {
+                VStack(spacing: isIPad ? Theme.Spacing.small.value : Theme.Spacing.extraSmall.value) {
                     Text(category.name)
                         .font(titleFont)
                         .foregroundStyle(.primary)
@@ -350,8 +307,8 @@ private struct CategoryGridCard: View {
                         .lineLimit(isIPad ? 3 : 2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.horizontal, isIPad ? 12 : 8)
-                .frame(minHeight: isIPad ? 70 : 50) // More space for text on iPad
+                .themePadding(.horizontal, isIPad ? Theme.Spacing.small : Theme.Spacing.extraSmall)
+                .frame(minHeight: isIPad ? 70 : 50)
             }
             .padding(cardPadding)
             .background {
@@ -359,9 +316,9 @@ private struct CategoryGridCard: View {
                     .fill(Color.backgroundSecondary)
                     .shadow(
                         color: Color.black.opacity(0.1),
-                        radius: isIPad ? 12 : 8,
+                        radius: isIPad ? Theme.Spacing.small.value : Theme.Spacing.extraSmall.value,
                         x: 0,
-                        y: isIPad ? 4 : 2
+                        y: isIPad ? Theme.Spacing.extraSmall.value : 2
                     )
             }
         }
@@ -382,18 +339,18 @@ private struct FavoritesCard: View {
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
+            HStack(spacing: Theme.Spacing.medium.value) {
                 // SF Symbol heart icon
                 Image(systemName: "heart.fill")
-                    .font(.largeTitle)
+                    .font(.system(size: Theme.IconSize.large))
                     .foregroundStyle(.red)
                     .frame(width: 80, height: 80)
                     .background {
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: Theme.CornerRadius.large)
                             .fill(Color.red.opacity(0.1))
                     }
                 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
                     Text(LocalizedStrings.favoritesCardTitle)
                         .font(.headline)
                         .foregroundStyle(.primary)
@@ -410,13 +367,13 @@ private struct FavoritesCard: View {
                     .font(.body.weight(.medium))
                     .foregroundStyle(.tertiary)
             }
-            .padding()
+            .themePaddingMedium()
             .background {
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.extraLarge)
                     .fill(Color.backgroundSecondary)
                     .shadow(
                         color: Color.black.opacity(0.1),
-                        radius: 8,
+                        radius: Theme.Spacing.small.value,
                         x: 0,
                         y: 2
                     )
