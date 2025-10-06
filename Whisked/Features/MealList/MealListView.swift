@@ -22,7 +22,6 @@ struct MealListView: View {
     
     // Search state
     @State private var searchText = ""
-    @State private var searchTask: Task<Void, Never>?
     
     // MARK: - Initialization
     
@@ -43,7 +42,7 @@ struct MealListView: View {
             .background(Color.backgroundPrimary)
             .searchable(text: $searchText, prompt: LocalizedStrings.mealsSearchPlaceholder)
             .onChange(of: searchText) { _, newValue in
-                performDebouncedSearch(query: newValue)
+                viewModel.performDebouncedSearch(query: newValue)
             }
             .refreshable {
                 await viewModel.refresh()
@@ -291,24 +290,7 @@ struct MealListView: View {
     }
     
     // MARK: - Search Methods
-    
-    /// Performs debounced search with a 300ms delay to improve performance
-    private func performDebouncedSearch(query: String) {
-        // Cancel previous search task
-        searchTask?.cancel()
-        
-        // Create new search task with debouncing
-        searchTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
-            
-            // Check if task was cancelled
-            if !Task.isCancelled {
-                await MainActor.run {
-                    viewModel.filterMeals(with: query)
-                }
-            }
-        }
-    }
+    // Search logic is now properly handled in the ViewModel
 }
 
 // MARK: - MealCard

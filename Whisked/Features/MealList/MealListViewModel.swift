@@ -78,6 +78,9 @@ final class MealListViewModel {
     /// Flag to prevent multiple simultaneous fetch operations
     private var hasFetchedData = false
     
+    /// Task for managing debounced search operations
+    private var searchTask: Task<Void, Never>?
+    
     // MARK: - Dependencies
     
     private let mealService: MealServiceProtocol
@@ -276,6 +279,35 @@ final class MealListViewModel {
             // Search is active - show all matching results from the complete dataset
             filteredMeals = allMeals.filter { meal in
                 meal.name.localizedCaseInsensitiveContains(query)
+            }
+        }
+    }
+    
+    /// Performs debounced search with a 300ms delay to improve performance
+    /// This method handles the Task management and debouncing logic in the ViewModel
+    /// Uses proper Swift concurrency patterns without unsafe annotations
+    /// - Parameter query: The search query to filter meals
+    func performDebouncedSearch(query: String) {
+        // Cancel previous search task
+        searchTask?.cancel()
+        
+        // Create new search task with debouncing
+        searchTask = Task { @MainActor in
+            do {
+                try await Task.sleep(nanoseconds: 300_000_000) // 300ms
+                
+                // Check if task was cancelled during sleep
+                try Task.checkCancellation()
+                
+                // Perform the search on MainActor
+                filterMeals(with: query)
+                
+            } catch is CancellationError {
+                // Task was cancelled, which is expected behavior
+                return
+            } catch {
+                // Handle any other errors
+                print("Search task error: \(error)")
             }
         }
     }
