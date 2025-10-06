@@ -12,7 +12,6 @@ import NetworkKit
 // MARK: - Previews
 
 #Preview("Success State") {
-    @Previewable @Namespace var heroNamespace
     NavigationStack {
         MealDetailView(
             mealID: "52893",
@@ -26,7 +25,6 @@ import NetworkKit
 }
 
 #Preview("Error State") {
-    @Previewable @Namespace var heroNamespace
     NavigationStack {
         MealDetailView(
             mealID: "invalid",
