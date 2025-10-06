@@ -13,3 +13,7 @@ import SwiftData
 
 // Export public types
 public typealias PersistenceKitModelContainer = ModelContainer
+
+// Main exports from PersistenceKit
+// SwiftDataContextManager, PersistenceService, OfflineMeal, and other types are automatically available
+// when importing PersistenceKit

@@ -20,7 +20,6 @@ struct WhiskedApp: App {
     /// Shared model container for SwiftData persistence
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
             OfflineMeal.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
