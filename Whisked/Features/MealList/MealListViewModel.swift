@@ -105,7 +105,7 @@ final class MealListViewModel {
             if let urlError = error as? URLError, urlError.code == .cancelled {
                 return
             }
-            let errorMessage = mapErrorToUserFriendlyMessage(error)
+            let errorMessage = MealListErrorMapper.mapErrorToUserFriendlyMessage(error)
             state = .error(errorMessage)
         }
     }
@@ -248,45 +248,7 @@ final class MealListViewModel {
         }
     }
     
-    // MARK: - Private Methods
-    
-    /// Maps network errors to user-friendly messages
-    private func mapErrorToUserFriendlyMessage(_ error: Error) -> String {
-        // Handle URLError specifically
-        if let urlError = error as? URLError {
-            switch urlError.code {
-            case .notConnectedToInternet:
-                return "No internet connection. Please check your network and try again."
-            case .timedOut:
-                return "Request timed out. Please try again."
-            case .cancelled:
-                return "Request was cancelled. Please try again."
-            case .cannotFindHost, .cannotConnectToHost:
-                return "Cannot reach the server. Please try again later."
-            default:
-                return "Network error occurred. Please try again."
-            }
-        }
-        
-        if let networkError = error as? NetworkError {
-            switch networkError {
-            case .noInternetConnection:
-                return "No internet connection. Please check your network and try again."
-            case .timeout:
-                return "Request timed out. Please try again."
-            case .httpError(let statusCode, _):
-                return "Server error (\(statusCode)). Please try again later."
-            case .decodingError:
-                return "Unable to process server response. Please try again."
-            case .emptyResponse:
-                return "No meals found. Please try again later."
-            default:
-                return "Something went wrong. Please try again."
-            }
-        } else {
-            return "An unexpected error occurred. Please try again."
-        }
-    }
+
 }
 
 // MARK: - ViewState

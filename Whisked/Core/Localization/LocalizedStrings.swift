@@ -90,6 +90,20 @@ enum LocalizedStrings {
     static let errorUnknownTitle = NSLocalizedString("error.unknown.title", comment: "Unknown error title")
     static let errorUnknownDescription = NSLocalizedString("error.unknown.description", comment: "Unknown error description")
     
+    // MARK: - Meal List Specific Error Messages
+    static let errorMealsNoInternet = NSLocalizedString("error.meals.no_internet", comment: "No internet connection error for meals")
+    static let errorMealsTimeout = NSLocalizedString("error.meals.timeout", comment: "Request timeout error for meals")
+    static let errorMealsCancelled = NSLocalizedString("error.meals.cancelled", comment: "Request cancelled error for meals")
+    static let errorMealsCannotReachServer = NSLocalizedString("error.meals.cannot_reach_server", comment: "Cannot reach server error for meals")
+    static let errorMealsNetworkError = NSLocalizedString("error.meals.network_error", comment: "Network error for meals")
+    static let errorMealsDecodingError = NSLocalizedString("error.meals.decoding_error", comment: "Decoding error for meals")
+    static let errorMealsNoMealsFound = NSLocalizedString("error.meals.no_meals_found", comment: "No meals found error")
+    static let errorMealsUnexpectedError = NSLocalizedString("error.meals.unexpected_error", comment: "Unexpected error for meals")
+    
+    static func errorMealsServerError(statusCode: Int) -> String {
+        String(format: NSLocalizedString("error.meals.server_error", comment: "Server error for meals with status code"), statusCode)
+    }
+    
     // MARK: - Accessibility
     static let accessibilityMealList = NSLocalizedString("accessibility.meal_list", comment: "Meal list accessibility label")
     static let accessibilityMealListHint = NSLocalizedString("accessibility.meal_list_hint", comment: "Meal list accessibility hint")

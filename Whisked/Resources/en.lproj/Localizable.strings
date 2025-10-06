@@ -75,6 +75,17 @@
 "error.unknown.title" = "Something Went Wrong";
 "error.unknown.description" = "An unexpected error occurred. Please try again.";
 
+// MARK: - Meal List Specific Error Messages
+"error.meals.no_internet" = "No internet connection. Please check your network and try again.";
+"error.meals.timeout" = "Request timed out. Please try again.";
+"error.meals.cancelled" = "Request was cancelled. Please try again.";
+"error.meals.cannot_reach_server" = "Cannot reach the server. Please try again later.";
+"error.meals.network_error" = "Network error occurred. Please try again.";
+"error.meals.server_error" = "Server error (%d). Please try again later.";
+"error.meals.decoding_error" = "Unable to process server response. Please try again.";
+"error.meals.no_meals_found" = "No meals found. Please try again later.";
+"error.meals.unexpected_error" = "An unexpected error occurred. Please try again.";
+
 // MARK: - Accessibility
 "accessibility.meal_list" = "Meal list";
 "accessibility.meal_list_hint" = "Swipe up and down to browse meal recipes";

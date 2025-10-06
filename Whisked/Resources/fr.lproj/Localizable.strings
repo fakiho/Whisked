@@ -75,6 +75,17 @@
 "error.unknown.title" = "Une Erreur s'est Produite";
 "error.unknown.description" = "Une erreur inattendue s'est produite. Veuillez réessayer.";
 
+// MARK: - Meal List Specific Error Messages
+"error.meals.no_internet" = "Aucune connexion internet. Veuillez vérifier votre réseau et réessayer.";
+"error.meals.timeout" = "Délai d'attente de la requête dépassé. Veuillez réessayer.";
+"error.meals.cancelled" = "La requête a été annulée. Veuillez réessayer.";
+"error.meals.cannot_reach_server" = "Impossible d'atteindre le serveur. Veuillez réessayer plus tard.";
+"error.meals.network_error" = "Erreur réseau survenue. Veuillez réessayer.";
+"error.meals.server_error" = "Erreur serveur (%d). Veuillez réessayer plus tard.";
+"error.meals.decoding_error" = "Impossible de traiter la réponse du serveur. Veuillez réessayer.";
+"error.meals.no_meals_found" = "Aucun repas trouvé. Veuillez réessayer plus tard.";
+"error.meals.unexpected_error" = "Une erreur inattendue s'est produite. Veuillez réessayer.";
+
 // MARK: - Accessibility
 "accessibility.meal_list" = "Liste des repas";
 "accessibility.meal_list_hint" = "Glissez vers le haut et le bas pour parcourir les recettes";
