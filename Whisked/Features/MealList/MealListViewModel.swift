@@ -25,6 +25,12 @@ final class MealListViewModel {
     /// Array of meals currently displayed to the user (paginated subset)
     private(set) var meals: [Meal] = []
     
+    /// Array of filtered meals based on search query
+    private(set) var filteredMeals: [Meal] = []
+    
+    /// Current search query
+    private(set) var searchQuery: String = ""
+    
     /// The category being filtered, if any
     private(set) var category: MealCategory
     
@@ -165,6 +171,11 @@ final class MealListViewModel {
         // Append to displayed meals (not replace - this is pagination)
         meals.append(contentsOf: newMeals)
         
+        // Update filtered meals if no search is active
+        if searchQuery.isEmpty {
+            filteredMeals = meals
+        }
+        
         // Update pagination state
         currentPage += 1
         
@@ -188,6 +199,22 @@ final class MealListViewModel {
         await fetchAllMeals()
     }
     
+    /// Filters meals based on search query with case-insensitive matching
+    /// - Parameter query: The search query to filter meals
+    func filterMeals(with query: String) {
+        searchQuery = query
+        
+        if query.isEmpty {
+            // Show all displayed meals when search is empty
+            filteredMeals = meals
+        } else {
+            // Filter meals based on name containing the query (case-insensitive)
+            filteredMeals = allMeals.filter { meal in
+                meal.strMeal.localizedCaseInsensitiveContains(query)
+            }
+        }
+    }
+    
     // MARK: - Private Methods
     
     /// Loads the first page after successful API fetch
@@ -208,6 +235,9 @@ final class MealListViewModel {
         // Load first page of meals directly
         let firstPageMeals = Array(allMeals[0..<endIndex])
         meals = firstPageMeals
+        
+        // Initialize filtered meals with displayed meals
+        filteredMeals = meals
         
         // Update pagination state
         currentPage = 1

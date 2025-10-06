@@ -16,9 +16,22 @@ struct CategoryListView: View {
     // MARK: - Properties
     
     @StateObject private var viewModel: CategoryListViewModel
-    @ObservedObject private var coordinator: WhiskedMainCoordinator
+    private let coordinator: WhiskedMainCoordinator
     private let persistenceService: PersistenceService?
     @State private var favoritesCount: Int = 0
+    
+    // MARK: - Device-specific Grid Layout
+    
+    /// Fixed grid columns based on device type to prevent overlapping
+    private var gridColumns: [GridItem] {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // iPad: 3 fixed columns with flexible sizing
+            return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.medium.value), count: 3)
+        } else {
+            // iPhone: 2 fixed columns with flexible sizing
+            return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.medium.value), count: 2)
+        }
+    }
     
     // MARK: - Initialization
     
@@ -100,11 +113,23 @@ struct CategoryListView: View {
     
     private var loadingView: some View {
         VStack(spacing: 20) {
-            ForEach(0..<6, id: \.self) { _ in
-                CategoryCardShimmerView()
+            // Hero section with shimmer
+            VStack(spacing: Theme.Spacing.medium.value) {
+                Text(LocalizedStrings.categoriesLoading)
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 20)
+                
+                Text(LocalizedStrings.categoriesLoadingDescription)
+                    .font(.body)
+                    .foregroundColor(.secondary)
             }
+            .padding(.horizontal)
+            
+            // Grid shimmer with improved padding
+            ShimmerCategoryGrid(itemCount: 6) // 6 categories in 2-column grid
+                .padding(.horizontal, Theme.Spacing.large.value)
         }
-        .padding()
     }
     
     private func loadedView(categories: [MealCategory]) -> some View {
@@ -126,26 +151,33 @@ struct CategoryListView: View {
                     value: viewModel.loadingState
                 )
                 
-                ForEach(Array(viewModel.displayedCategories.enumerated()), id: \.element.id) { index, category in
-                    CategoryCard(
-                        category: category,
-                        onTap: {
-                            coordinator.showMealsByCategory(category)
+                // Categories grid with device-specific adaptive sizing
+                LazyVGrid(
+                    columns: gridColumns,
+                    spacing: Theme.Spacing.medium.value
+                ) {
+                    ForEach(Array(viewModel.displayedCategories.enumerated()), id: \.element.id) { index, category in
+                        CategoryGridCard(
+                            category: category,
+                            onTap: {
+                                coordinator.showMealsByCategory(category)
+                            }
+                        )
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 0.8).combined(with: .opacity),
+                            removal: .scale(scale: 0.8).combined(with: .opacity)
+                        ))
+                        .animation(
+                            .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0)
+                            .delay(Double(index) * 0.1),
+                            value: viewModel.loadingState
+                        )
+                        .onAppear {
+                            viewModel.checkForLoadMore(category: category)
                         }
-                    )
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 0.8).combined(with: .opacity),
-                        removal: .scale(scale: 0.8).combined(with: .opacity)
-                    ))
-                    .animation(
-                        .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0)
-                        .delay(Double(index) * 0.1),
-                        value: viewModel.loadingState
-                    )
-                    .onAppear {
-                        viewModel.checkForLoadMore(category: category)
                     }
                 }
+                .padding(.horizontal, Theme.Spacing.large.value)
                 
                 // Load more indicator
                 if viewModel.hasMorePages {
@@ -321,6 +353,95 @@ private struct CategoryCardShimmerView: View {
                     y: 2
                 )
         }
+    }
+}
+
+// MARK: - Category Grid Card
+
+private struct CategoryGridCard: View {
+    
+    let category: MealCategory
+    let onTap: () -> Void
+    
+    // Device-specific sizing
+    private var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
+    private var cardSpacing: CGFloat {
+        isIPad ? 16 : 12
+    }
+    
+    private var cardPadding: CGFloat {
+        isIPad ? 20 : 16
+    }
+    
+    private var cornerRadius: CGFloat {
+        isIPad ? 20 : 16
+    }
+    
+    private var imageAspectRatio: CGFloat {
+        isIPad ? 4/3 : 3/2  // Slightly taller on iPad for better proportions
+    }
+    
+    private var titleFont: Font {
+        isIPad ? .title3 : .headline
+    }
+    
+    private var descriptionFont: Font {
+        isIPad ? .body : .caption
+    }
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: cardSpacing) {
+                AsyncImage(url: URL(string: category.thumbnailURL)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.backgroundSecondary)
+                        .overlay {
+                            Image(systemName: "photo")
+                                .font(isIPad ? .largeTitle : .title)
+                                .foregroundStyle(.secondary)
+                        }
+                }
+                .aspectRatio(imageAspectRatio, contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                
+                VStack(spacing: isIPad ? 6 : 4) {
+                    Text(category.name)
+                        .font(titleFont)
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    Text(category.description)
+                        .font(descriptionFont)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(isIPad ? 3 : 2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.horizontal, isIPad ? 12 : 8)
+                .frame(minHeight: isIPad ? 70 : 50) // More space for text on iPad
+            }
+            .padding(cardPadding)
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(Color.backgroundSecondary)
+                    .shadow(
+                        color: Color.black.opacity(0.1),
+                        radius: isIPad ? 12 : 8,
+                        x: 0,
+                        y: isIPad ? 4 : 2
+                    )
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

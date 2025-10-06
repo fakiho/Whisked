@@ -19,6 +19,10 @@ struct MealListView: View {
     // Animation state
     @State private var hasAppeared = false
     
+    // Search state
+    @State private var searchText = ""
+    @State private var searchTask: Task<Void, Never>?
+    
     // MARK: - Initialization
     
     init(
@@ -36,6 +40,10 @@ struct MealListView: View {
             .navigationTitle(viewModel.category.name)
             .navigationBarTitleDisplayMode(.large)
             .background(Color.backgroundPrimary)
+            .searchable(text: $searchText, prompt: LocalizedStrings.mealsSearchPlaceholder)
+            .onChange(of: searchText) { _, newValue in
+                performDebouncedSearch(query: newValue)
+            }
             .refreshable {
                 await viewModel.refresh()
             }
@@ -52,7 +60,7 @@ struct MealListView: View {
                 }
             }
             .accessibilityRotor("Meals") {
-                ForEach(viewModel.meals) { meal in
+                ForEach(viewModel.filteredMeals) { meal in
                     AccessibilityRotorEntry(meal.strMeal, id: meal.id) {
                         // This will focus on the specific meal
                     }
@@ -79,12 +87,12 @@ struct MealListView: View {
             VStack(spacing: Theme.Spacing.large.value) {
                 // Hero section with shimmer - only shown during initial fetch
                 VStack(spacing: Theme.Spacing.medium.value) {
-                    Text("Exploring \(viewModel.category.name) recipes...")
+                    Text(LocalizedStrings.mealsLoading(category: viewModel.category.name))
                         .themeHeadline()
                         .foregroundColor(.textSecondary)
                         .themePadding(.top, .extraLarge)
                     
-                    Text("Fetching complete meal catalog")
+                    Text(LocalizedStrings.mealsLoadingDescription)
                         .themeBody()
                         .foregroundColor(.textSecondary)
                 }
@@ -123,7 +131,7 @@ struct MealListView: View {
     
     private var mealCardsSection: some View {
         VStack(spacing: Theme.Spacing.medium.value) {
-            ForEach(Array(viewModel.meals.enumerated()), id: \.element.id) { index, meal in
+            ForEach(Array(viewModel.filteredMeals.enumerated()), id: \.element.id) { index, meal in
                 MealCard(
                     meal: meal,
                     isFavorite: viewModel.isFavorite(mealID: meal.idMeal),
@@ -142,7 +150,7 @@ struct MealListView: View {
             }
             .padding(.horizontal, Theme.Spacing.medium.value)
             
-            if viewModel.state.canLoadMore {
+            if viewModel.state.canLoadMore && searchText.isEmpty {
                 paginationTrigger
             }
         }
@@ -172,18 +180,18 @@ struct MealListView: View {
                     .foregroundColor(.warning)
                 
                 VStack(spacing: Theme.Spacing.medium.value) {
-                    Text("Oops!")
+                    Text(LocalizedStrings.mealsErrorTitle)
                         .themeDisplayLarge()
                         .foregroundColor(.textPrimary)
                     
-                    Text(viewModel.state.errorMessage ?? "Something went wrong while loading meals")
+                    Text(viewModel.state.errorMessage ?? LocalizedStrings.mealsErrorDefault)
                         .themeBody()
                         .foregroundColor(.textSecondary)
                         .multilineTextAlignment(.center)
                         .themePadding(.horizontal, .large)
                 }
                 
-                Button("Try Again") {
+                Button(LocalizedStrings.mealsTryAgain) {
                     Task {
                         await viewModel.retry()
                     }
@@ -200,8 +208,28 @@ struct MealListView: View {
         .refreshable {
             await viewModel.refresh()
         }
-        .accessibilityLabel("Error loading meals")
-        .accessibilityHint("Tap try again to reload the meal list")
+        .accessibilityLabel(LocalizedStrings.accessibilityMealList)
+        .accessibilityHint(LocalizedStrings.accessibilityMealListHint)
+    }
+    
+    // MARK: - Search Methods
+    
+    /// Performs debounced search with a 300ms delay to improve performance
+    private func performDebouncedSearch(query: String) {
+        // Cancel previous search task
+        searchTask?.cancel()
+        
+        // Create new search task with debouncing
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
+            
+            // Check if task was cancelled
+            if !Task.isCancelled {
+                await MainActor.run {
+                    viewModel.filterMeals(with: query)
+                }
+            }
+        }
     }
 }
 
@@ -276,7 +304,7 @@ private struct MealCard: View {
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            Text("Tap to view recipe")
+            Text(LocalizedStrings.mealsTapToView)
                 .themeCaption()
                 .foregroundColor(.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -293,7 +321,7 @@ private struct MealCard: View {
                     .foregroundColor(.error) // Using red color for favorite
                     .scaleEffect(isPressed ? 1.2 : 1.0)
                     .animation(.easeInOut(duration: 0.1), value: isPressed)
-                    .accessibilityLabel("Favorited")
+                    .accessibilityLabel(LocalizedStrings.accessibilityFavorited)
             } else {
                 // Empty space to maintain layout consistency
                 Image(systemName: "heart")

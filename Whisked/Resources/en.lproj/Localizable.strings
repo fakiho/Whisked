@@ -1,0 +1,94 @@
+/* 
+  Localizable.strings (English)
+  Whisked
+  
+  Created by GitHub Copilot on 10/5/25.
+*/
+
+// MARK: - Navigation & General
+"app.title" = "Whisked";
+"navigation.back" = "Back";
+"navigation.done" = "Done";
+"navigation.cancel" = "Cancel";
+"navigation.retry" = "Retry";
+"navigation.close" = "Close";
+
+// MARK: - Category List
+"categories.title" = "Meal Categories";
+"categories.loading" = "Exploring meal categories...";
+"categories.loading_description" = "Loading delicious options";
+"categories.load_more" = "Load More";
+"categories.loading_more" = "Loading more categories...";
+"categories.empty.title" = "No Categories Available";
+"categories.empty.description" = "No meal categories could be loaded at this time.";
+"categories.error.title" = "Unable to Load Categories";
+"categories.error.description" = "Please check your internet connection and try again.";
+
+// MARK: - Meal List
+"meals.search_placeholder" = "Search meals...";
+"meals.loading" = "Exploring %@ recipes...";
+"meals.loading_description" = "Fetching complete meal catalog";
+"meals.error.title" = "Oops!";
+"meals.error.default" = "Something went wrong while loading meals";
+"meals.try_again" = "Try Again";
+"meals.tap_to_view" = "Tap to view recipe";
+
+// MARK: - Meal Detail
+"meal_detail.ingredients" = "Ingredients";
+"meal_detail.instructions" = "Instructions";
+"meal_detail.favorite.add" = "Add to Favorites";
+"meal_detail.favorite.remove" = "Remove from Favorites";
+"meal_detail.favorite.added" = "Added to Favorites";
+"meal_detail.favorite.removed" = "Removed from Favorites";
+"meal_detail.loading" = "Loading recipe details...";
+"meal_detail.error.title" = "Recipe Not Found";
+"meal_detail.error.description" = "Unable to load recipe details. Please try again.";
+
+// MARK: - Favorites
+"favorites.title" = "Favorites";
+"favorites.count_zero" = "No favorite meals yet";
+"favorites.count_one" = "1 favorite meal";
+"favorites.count_many" = "%d favorite meals";
+"favorites.empty.title" = "No Favorites Yet";
+"favorites.empty.description" = "Meals you favorite will appear here for easy access.";
+"favorites.empty.browse" = "Browse Recipes";
+
+// MARK: - Loading States
+"loading.default" = "Loading...";
+"loading.please_wait" = "Please wait...";
+"loading.categories" = "Loading categories...";
+"loading.meals" = "Loading meals...";
+"loading.recipe" = "Loading recipe...";
+
+// MARK: - Error Messages
+"error.network.title" = "Connection Error";
+"error.network.description" = "Please check your internet connection and try again.";
+"error.server.title" = "Server Error";
+"error.server.description" = "The server is experiencing issues. Please try again later.";
+"error.timeout.title" = "Request Timeout";
+"error.timeout.description" = "The request took too long to complete. Please try again.";
+"error.unknown.title" = "Something Went Wrong";
+"error.unknown.description" = "An unexpected error occurred. Please try again.";
+
+// MARK: - Accessibility
+"accessibility.meal_list" = "Meal list";
+"accessibility.meal_list_hint" = "Swipe up and down to browse meal recipes";
+"accessibility.favorited" = "Favorited";
+"accessibility.loading_meals" = "Loading %@ meals";
+"accessibility.loading_hint" = "Please wait while we fetch the complete meal catalog";
+"accessibility.error_loading" = "Error loading meals";
+"accessibility.retry_hint" = "Tap try again to reload the meal list";
+
+// MARK: - Categories
+"category.dessert" = "Dessert";
+"category.breakfast" = "Breakfast";
+"category.chicken" = "Chicken";
+"category.pasta" = "Pasta";
+"category.seafood" = "Seafood";
+
+// MARK: - Category Descriptions
+"category.dessert.description" = "Sweet treats and desserts from around the world";
+"category.breakfast.description" = "Start your day right with these breakfast recipes";
+"category.chicken.description" = "Delicious chicken dishes from various cuisines";
+"category.pasta.description" = "Italian pasta dishes and noodle recipes";
+"category.seafood.description" = "Fresh seafood and fish recipes";

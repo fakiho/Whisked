@@ -1,0 +1,94 @@
+/* 
+  Localizable.strings (Français)
+  Whisked
+  
+  Created by GitHub Copilot on 10/5/25.
+*/
+
+// MARK: - Navigation & General
+"app.title" = "Whisked";
+"navigation.back" = "Retour";
+"navigation.done" = "Terminé";
+"navigation.cancel" = "Annuler";
+"navigation.retry" = "Réessayer";
+"navigation.close" = "Fermer";
+
+// MARK: - Category List
+"categories.title" = "Catégories de Repas";
+"categories.loading" = "Exploration des catégories de repas...";
+"categories.loading_description" = "Chargement des options délicieuses";
+"categories.load_more" = "Charger Plus";
+"categories.loading_more" = "Chargement de plus de catégories...";
+"categories.empty.title" = "Aucune Catégorie Disponible";
+"categories.empty.description" = "Aucune catégorie de repas n'a pu être chargée pour le moment.";
+"categories.error.title" = "Impossible de Charger les Catégories";
+"categories.error.description" = "Veuillez vérifier votre connexion internet et réessayer.";
+
+// MARK: - Meal List
+"meals.search_placeholder" = "Rechercher des repas...";
+"meals.loading" = "Exploration des recettes %@...";
+"meals.loading_description" = "Récupération du catalogue complet de repas";
+"meals.error.title" = "Oups !";
+"meals.error.default" = "Une erreur s'est produite lors du chargement des repas";
+"meals.try_again" = "Réessayer";
+"meals.tap_to_view" = "Appuyer pour voir la recette";
+
+// MARK: - Meal Detail
+"meal_detail.ingredients" = "Ingrédients";
+"meal_detail.instructions" = "Instructions";
+"meal_detail.favorite.add" = "Ajouter aux Favoris";
+"meal_detail.favorite.remove" = "Retirer des Favoris";
+"meal_detail.favorite.added" = "Ajouté aux Favoris";
+"meal_detail.favorite.removed" = "Retiré des Favoris";
+"meal_detail.loading" = "Chargement des détails de la recette...";
+"meal_detail.error.title" = "Recette Introuvable";
+"meal_detail.error.description" = "Impossible de charger les détails de la recette. Veuillez réessayer.";
+
+// MARK: - Favorites
+"favorites.title" = "Favoris";
+"favorites.count_zero" = "Aucun repas favori pour le moment";
+"favorites.count_one" = "1 repas favori";
+"favorites.count_many" = "%d repas favoris";
+"favorites.empty.title" = "Aucun Favori";
+"favorites.empty.description" = "Les repas que vous mettez en favori apparaîtront ici pour un accès facile.";
+"favorites.empty.browse" = "Parcourir les Recettes";
+
+// MARK: - Loading States
+"loading.default" = "Chargement...";
+"loading.please_wait" = "Veuillez patienter...";
+"loading.categories" = "Chargement des catégories...";
+"loading.meals" = "Chargement des repas...";
+"loading.recipe" = "Chargement de la recette...";
+
+// MARK: - Error Messages
+"error.network.title" = "Erreur de Connexion";
+"error.network.description" = "Veuillez vérifier votre connexion internet et réessayer.";
+"error.server.title" = "Erreur Serveur";
+"error.server.description" = "Le serveur rencontre des problèmes. Veuillez réessayer plus tard.";
+"error.timeout.title" = "Délai d'Attente Dépassé";
+"error.timeout.description" = "La requête a pris trop de temps. Veuillez réessayer.";
+"error.unknown.title" = "Une Erreur s'est Produite";
+"error.unknown.description" = "Une erreur inattendue s'est produite. Veuillez réessayer.";
+
+// MARK: - Accessibility
+"accessibility.meal_list" = "Liste des repas";
+"accessibility.meal_list_hint" = "Glissez vers le haut et le bas pour parcourir les recettes";
+"accessibility.favorited" = "Mis en favori";
+"accessibility.loading_meals" = "Chargement des repas %@";
+"accessibility.loading_hint" = "Veuillez patienter pendant que nous récupérons le catalogue complet de repas";
+"accessibility.error_loading" = "Erreur lors du chargement des repas";
+"accessibility.retry_hint" = "Appuyez sur réessayer pour recharger la liste des repas";
+
+// MARK: - Categories
+"category.dessert" = "Dessert";
+"category.breakfast" = "Petit-déjeuner";
+"category.chicken" = "Poulet";
+"category.pasta" = "Pâtes";
+"category.seafood" = "Fruits de Mer";
+
+// MARK: - Category Descriptions
+"category.dessert.description" = "Friandises sucrées et desserts du monde entier";
+"category.breakfast.description" = "Commencez bien votre journée avec ces recettes de petit-déjeuner";
+"category.chicken.description" = "Délicieux plats de poulet de diverses cuisines";
+"category.pasta.description" = "Plats de pâtes italiennes et recettes de nouilles";
+"category.seafood.description" = "Recettes fraîches de fruits de mer et de poisson";

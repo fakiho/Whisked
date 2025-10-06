@@ -19,11 +19,11 @@ final class FavoritesViewModel: ObservableObject {
     
     // MARK: - Private Properties
     
-    private let persistenceService: PersistenceService?
-    
+    private let persistenceService: PersistenceServiceProtocol?
+
     // MARK: - Initialization
     
-    init(persistenceService: PersistenceService?) {
+    init(persistenceService: PersistenceServiceProtocol?) {
         self.persistenceService = persistenceService
     }
     

@@ -19,7 +19,7 @@ struct FavoritesView: View {
     
     // MARK: - Initialization
     
-    init(coordinator: WhiskedMainCoordinator, persistenceService: PersistenceService?) {
+    init(coordinator: WhiskedMainCoordinator, persistenceService: PersistenceServiceProtocol?) {
         self._viewModel = StateObject(wrappedValue: FavoritesViewModel(persistenceService: persistenceService))
         self.coordinator = coordinator
     }

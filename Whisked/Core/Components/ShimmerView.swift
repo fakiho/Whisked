@@ -166,6 +166,107 @@ struct ShimmerMealGrid: View {
     }
 }
 
+/// Shimmer component for category grid cards
+struct ShimmerCategoryGrid: View {
+    let itemCount: Int
+    
+    init(itemCount: Int = 4) {
+        self.itemCount = itemCount
+    }
+    
+    // Fixed grid columns matching CategoryListView to prevent overlapping
+    private var gridColumns: [GridItem] {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // iPad: 3 fixed columns with flexible sizing
+            return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.medium.value), count: 3)
+        } else {
+            // iPhone: 2 fixed columns with flexible sizing
+            return Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.medium.value), count: 2)
+        }
+    }
+    
+    var body: some View {
+        LazyVGrid(
+            columns: gridColumns,
+            spacing: Theme.Spacing.medium.value
+        ) {
+            ForEach(0..<itemCount, id: \.self) { _ in
+                ShimmerCategoryCard()
+            }
+        }
+    }
+}
+
+/// Individual shimmer card for categories in grid layout
+struct ShimmerCategoryCard: View {
+    
+    // Device-specific sizing matching CategoryGridCard
+    private var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
+    private var cardSpacing: CGFloat {
+        isIPad ? 16 : 12
+    }
+    
+    private var cardPadding: CGFloat {
+        isIPad ? 20 : 16
+    }
+    
+    private var cornerRadius: CGFloat {
+        isIPad ? 20 : 16
+    }
+    
+    private var imageAspectRatio: CGFloat {
+        isIPad ? 4/3 : 3/2  // Slightly taller on iPad for better proportions
+    }
+    
+    var body: some View {
+        VStack(spacing: cardSpacing) {
+            // Image placeholder
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.backgroundTertiary)
+                .aspectRatio(imageAspectRatio, contentMode: .fit)
+            
+            VStack(spacing: isIPad ? 6 : 4) {
+                // Title placeholder
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
+                    .fill(Color.backgroundTertiary)
+                    .frame(height: isIPad ? 20 : 16)
+                
+                // Description placeholder
+                RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
+                    .fill(Color.backgroundTertiary)
+                    .frame(height: isIPad ? 16 : 12)
+                    .frame(maxWidth: isIPad ? 120 : 100)
+                
+                // Additional description line for iPad
+                if isIPad {
+                    RoundedRectangle(cornerRadius: Theme.CornerRadius.small)
+                        .fill(Color.backgroundTertiary)
+                        .frame(height: 14)
+                        .frame(maxWidth: 90)
+                }
+            }
+            .padding(.horizontal, isIPad ? 12 : 8)
+            .frame(minHeight: isIPad ? 70 : 50) // More space for text on iPad
+        }
+        .padding(cardPadding)
+        .background {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(Color.backgroundSecondary)
+                .shadow(
+                    color: Color.black.opacity(0.1),
+                    radius: isIPad ? 12 : 8,
+                    x: 0,
+                    y: isIPad ? 4 : 2
+                )
+        }
+        .overlay(ShimmerView())
+        .accessibilityHidden(true)
+    }
+}
+
 // MARK: - Preview
 
 #Preview("Shimmer View") {
