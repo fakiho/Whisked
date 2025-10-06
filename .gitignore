@@ -5,6 +5,7 @@ ThemeKit/.build/*
 DerivedData/*
 PersistenceKit/.swiftpm/*
 ThemeKit/.swiftpm/*
+NetworkKit/.swiftpm/*
 Whisked.xcodeproj/xcuserdata/*
 .vscode/*
 Whisked.code-workspace
