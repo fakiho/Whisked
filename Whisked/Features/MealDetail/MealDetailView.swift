@@ -27,6 +27,59 @@ struct MealDetailView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     
+    // MARK: - Device Helpers
+    
+    /// Check if running on iPad
+    private var isIpad: Bool {
+        horizontalSizeClass == .regular
+    }
+    
+    /// Check if in landscape orientation
+    private var isLandscape: Bool {
+        verticalSizeClass == .compact
+    }
+    
+    /// Adaptive image height based on device and orientation
+    private var adaptiveImageHeight: CGFloat {
+        if isIpad {
+            return isLandscape ? 300 : 400
+        } else {
+            return isLandscape ? 200 : 280
+        }
+    }
+    
+    /// Responsive font for meal title
+    private var mealTitleFont: Font {
+        if isIpad {
+            return .largeTitle.weight(.bold)
+        } else {
+            return .title.weight(.bold)
+        }
+    }
+    
+    /// Responsive font for section headers
+    private var sectionHeaderFont: Font {
+        if isIpad {
+            return .title2.weight(.semibold)
+        } else {
+            return .headline.weight(.semibold)
+        }
+    }
+    
+    /// Responsive content padding
+    private var contentPadding: CGFloat {
+        isIpad ? Theme.Spacing.extraLarge.value : Theme.Spacing.large.value
+    }
+    
+    /// Ingredients grid columns based on device
+    private var ingredientColumns: Int {
+        if isIpad {
+            return isLandscape ? 4 : 3
+        } else {
+            return isLandscape ? 3 : 2
+        }
+    }
+    
     // MARK: - Initialization
     
     init(
@@ -118,20 +171,11 @@ struct MealDetailView: View {
                 mealHeaderView(mealDetail: mealDetail)
                 
                 // Content sections with adaptive layout
-                if isIpad && !isLandscape {
-                    // iPad portrait: wider content layout
-                    VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge.value) {
-                        contentSections(mealDetail: mealDetail)
-                    }
-                    .frame(maxWidth: Theme.Layout.maxContentWidth)
-                    .frame(maxWidth: .infinity)
-                } else {
-                    // iPhone and iPad landscape: standard layout
-                    VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge.value) {
-                        contentSections(mealDetail: mealDetail)
-                    }
-                    .themePadding(.horizontal, .large)
+                VStack(alignment: .leading, spacing: Theme.Spacing.extraLarge.value) {
+                    contentSections(mealDetail: mealDetail)
                 }
+                .padding(.horizontal, contentPadding)
+                .frame(maxWidth: isIpad ? 900 : .infinity)
                 
                 // Bottom spacing
                 Spacer(minLength: Theme.Spacing.huge.value)
@@ -200,18 +244,19 @@ struct MealDetailView: View {
             // Meal Information
             VStack(alignment: .leading, spacing: Theme.Spacing.medium.value) {
                 Text(mealDetail.name)
-                    .themeDisplayLarge()
+                    .font(mealTitleFont)
                     .foregroundColor(.textPrimary)
+                    .multilineTextAlignment(.leading)
                     .opacity(contentOpacity)
                     .animation(.easeOut(duration: 0.6).delay(0.1), value: contentOpacity)
                 
-                HStack(spacing: Theme.Spacing.small.value) {
+                HStack(spacing: isIpad ? Theme.Spacing.medium.value : Theme.Spacing.small.value) {
                     Image(systemName: "clock.fill")
-                        .font(.system(size: Theme.IconSize.small))
+                        .font(.system(size: isIpad ? Theme.IconSize.medium : Theme.IconSize.small))
                         .foregroundColor(.accent)
                     
                     Text("Recipe Details")
-                        .themeBody()
+                        .font(isIpad ? .body.weight(.medium) : .body)
                         .foregroundColor(.textSecondary)
                     
                     Spacer()
@@ -223,7 +268,7 @@ struct MealDetailView: View {
                         }
                     }) {
                         Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
-                            .font(.system(size: Theme.IconSize.medium, weight: .medium))
+                            .font(.system(size: isIpad ? Theme.IconSize.large : Theme.IconSize.medium, weight: .medium))
                             .foregroundColor(viewModel.isFavorite ? .error : .textSecondary)
                             .scaleEffect(viewModel.isFavorite ? 1.1 : 1.0)
                             .animation(.easeInOut(duration: 0.2), value: viewModel.isFavorite)
@@ -240,38 +285,38 @@ struct MealDetailView: View {
     
     private func ingredientsSection(ingredients: [Ingredient]) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.large.value) {
-            HStack {
+            HStack(spacing: isIpad ? Theme.Spacing.medium.value : Theme.Spacing.small.value) {
                 Image(systemName: "list.bullet.clipboard")
-                    .font(.system(size: Theme.IconSize.medium))
+                    .font(.system(size: isIpad ? Theme.IconSize.large : Theme.IconSize.medium))
                     .foregroundColor(.accent)
                 
                 Text("Ingredients")
-                    .themeHeadline()
+                    .font(sectionHeaderFont)
                     .foregroundColor(.textPrimary)
                 
                 Spacer()
                 
                 Text("\(ingredients.count) items")
-                    .themeCaption()
+                    .font(isIpad ? .callout : .caption)
                     .foregroundColor(.textSecondary)
-                    .themePadding(.horizontal, .small)
-                    .themePadding(.vertical, .extraSmall)
+                    .padding(.horizontal, isIpad ? Theme.Spacing.medium.value : Theme.Spacing.small.value)
+                    .padding(.vertical, isIpad ? Theme.Spacing.small.value : Theme.Spacing.extraSmall.value)
                     .background(Color.backgroundSecondary)
                     .cornerRadius(Theme.CornerRadius.small)
             }
             
-            // Simple vertical stack with manual column layout
-            VStack(spacing: Theme.Spacing.medium.value) {
-                ForEach(ingredients.chunked(into: isIpad ? 3 : 2), id: \.self) { row in
-                    HStack(spacing: Theme.Spacing.medium.value) {
+            // Responsive grid layout with device-specific columns
+            VStack(spacing: isIpad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
+                ForEach(ingredients.chunked(into: ingredientColumns), id: \.self) { row in
+                    HStack(spacing: isIpad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
                         ForEach(row, id: \.id) { ingredient in
-                            IngredientCard(ingredient: ingredient)
+                            IngredientCard(ingredient: ingredient, isIpad: isIpad)
                                 .frame(maxWidth: .infinity)
                         }
                         
                         // Fill remaining space if row is incomplete
-                        if row.count < (isIpad ? 3 : 2) {
-                            ForEach(0..<((isIpad ? 3 : 2) - row.count), id: \.self) { _ in
+                        if row.count < ingredientColumns {
+                            ForEach(0..<(ingredientColumns - row.count), id: \.self) { _ in
                                 Color.clear
                                     .frame(maxWidth: .infinity)
                             }
@@ -286,29 +331,29 @@ struct MealDetailView: View {
     
     private func instructionsSection(instructions: String) -> some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.large.value) {
-            HStack {
+            HStack(spacing: isIpad ? Theme.Spacing.medium.value : Theme.Spacing.small.value) {
                 Image(systemName: "text.document")
-                    .font(.system(size: Theme.IconSize.medium))
+                    .font(.system(size: isIpad ? Theme.IconSize.large : Theme.IconSize.medium))
                     .foregroundColor(.accent)
                 
                 Text("Instructions")
-                    .themeHeadline()
+                    .font(sectionHeaderFont)
                     .foregroundColor(.textPrimary)
             }
             
             Text(instructions)
-                .themeBody()
+                .font(isIpad ? .body.weight(.regular) : .body)
                 .foregroundColor(.textPrimary)
-                .lineSpacing(6)
+                .lineSpacing(isIpad ? 8 : 6)
                 .multilineTextAlignment(.leading)
-                .themePadding(.all, .large)
+                .padding(.all, isIpad ? Theme.Spacing.extraLarge.value : Theme.Spacing.large.value)
                 .background(Color.backgroundSecondary)
-                .cornerRadius(Theme.CornerRadius.large)
+                .cornerRadius(isIpad ? Theme.CornerRadius.extraLarge : Theme.CornerRadius.large)
                 .shadow(
                     color: Color.black.opacity(0.05),
-                    radius: 8,
+                    radius: isIpad ? 12 : 8,
                     x: 0,
-                    y: 4
+                    y: isIpad ? 6 : 4
                 )
         }
         .accessibilityElement(children: .contain)
@@ -371,33 +416,58 @@ private extension Array {
 
 private struct IngredientCard: View {
     let ingredient: Ingredient
+    let isIpad: Bool
+    
+    private var cardHeight: CGFloat {
+        isIpad ? 100 : 80
+    }
+    
+    private var cardPadding: CGFloat {
+        isIpad ? Theme.Spacing.large.value : Theme.Spacing.medium.value
+    }
+    
+    private var emojiSize: CGFloat {
+        isIpad ? 28 : 20
+    }
+    
+    private var emojiFrameSize: CGFloat {
+        isIpad ? 32 : 24
+    }
+    
+    private var titleFont: Font {
+        isIpad ? .title3.weight(.semibold) : .headline
+    }
+    
+    private var measureFont: Font {
+        isIpad ? .body : .subheadline
+    }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .top, spacing: 8) {
+        VStack(alignment: .leading, spacing: isIpad ? 6 : 4) {
+            HStack(alignment: .top, spacing: isIpad ? 12 : 8) {
                 Text(IngredientEmojiMapper.emoji(for: ingredient.name))
-                    .font(.system(size: 20))
-                    .frame(width: 24, height: 24, alignment: .center)
+                    .font(.system(size: emojiSize))
+                    .frame(width: emojiFrameSize, height: emojiFrameSize, alignment: .center)
                     .accessibilityHidden(true)
                 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: isIpad ? 4 : 2) {
                     Text(ingredient.name)
-                        .font(.headline)
+                        .font(titleFont)
                         .foregroundColor(.primary)
                         .lineLimit(2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text(ingredient.measure)
-                        .font(.subheadline)
+                        .font(measureFont)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
-        .frame(height: 80)
+        .frame(height: cardHeight)
         .frame(maxWidth: .infinity)
-        .padding(12)
+        .padding(cardPadding)
         .background(Color(.systemGray6))
         .cornerRadius(12)
         .accessibilityElement(children: .combine)
@@ -428,42 +498,7 @@ private extension View {
     }
 }
 
-// MARK: - Responsive Layout Helpers
 
-private extension MealDetailView {
-    
-    /// Determines if we're running on iPad or large screen
-    var isIpad: Bool {
-        horizontalSizeClass == .regular && verticalSizeClass == .regular
-    }
-    
-    /// Determines if we're in landscape orientation
-    var isLandscape: Bool {
-        horizontalSizeClass == .regular && verticalSizeClass == .compact
-    }
-    
-    /// Adaptive image height based on device and orientation
-    var adaptiveImageHeight: CGFloat {
-        if isIpad {
-            return isLandscape ? 300 : 400  // iPad landscape/portrait
-        } else if isLandscape {
-            return 200  // iPhone landscape
-        } else {
-            return 280  // iPhone portrait (default)
-        }
-    }
-    
-    /// Adaptive content layout for different screen sizes
-    var shouldUseCompactLayout: Bool {
-        horizontalSizeClass == .compact || isLandscape
-    }
-    
-    /// Adaptive grid columns for ingredients based on screen size
-    var adaptiveGridColumns: [GridItem] {
-        let columnCount = isIpad ? 3 : 2  // 3 columns on iPad, 2 on iPhone
-        return Array(repeating: GridItem(.flexible(minimum: 140, maximum: 200), spacing: Theme.Spacing.medium.value), count: columnCount)
-    }
-}
 
 // MARK: - Button Style Extension
 

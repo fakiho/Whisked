@@ -23,6 +23,10 @@ struct MealListView: View {
     // Search state
     @State private var searchText = ""
     
+    // Device and screen size detection for iPad support
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    
     // MARK: - Initialization
     
     init(
@@ -73,6 +77,46 @@ struct MealListView: View {
             .accessibilityValue(LocalizedStrings.accessibilityRecipeCount(viewModel.filteredMeals.count))
     }
     
+    // MARK: - Responsive Design Helpers
+    
+    /// Determines if we're running on iPad or large screen
+    private var isIPad: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .regular
+    }
+    
+    /// Determines if we're in landscape orientation
+    private var isLandscape: Bool {
+        horizontalSizeClass == .regular && verticalSizeClass == .compact
+    }
+    
+    /// Adaptive content width for iPad layouts
+    private var adaptiveContentWidth: CGFloat? {
+        if isIPad && !isLandscape {
+            return Theme.Layout.maxContentWidth
+        }
+        return nil
+    }
+    
+    /// Adaptive icon size based on device
+    private var adaptiveIconSize: CGFloat {
+        if isIPad {
+            return Theme.IconSize.extraLarge
+        } else if isLandscape {
+            return Theme.IconSize.large
+        } else {
+            return Theme.IconSize.extraLarge
+        }
+    }
+    
+    /// Adaptive minimum height for empty states
+    private var adaptiveMinHeight: CGFloat {
+        if isIPad {
+            return isLandscape ? 500 : 700
+        } else {
+            return isLandscape ? 400 : 600
+        }
+    }
+    
     // MARK: - Content Views
     
     @ViewBuilder
@@ -93,19 +137,23 @@ struct MealListView: View {
                 // Hero section with shimmer - only shown during initial fetch
                 VStack(spacing: Theme.Spacing.medium.value) {
                     Text(LocalizedStrings.mealsLoading(category: viewModel.category.name))
-                        .themeHeadline()
+                        .font(isIPad ? .themeDisplayLarge() : .themeHeadline())
                         .foregroundColor(.textSecondary)
-                        .themePadding(.top, .extraLarge)
+                        .themePadding(.top, isIPad ? .huge : .extraLarge)
                     
                     Text(LocalizedStrings.mealsLoadingDescription)
-                        .themeBody()
+                        .font(isIPad ? .themeHeadline() : .themeBody())
                         .foregroundColor(.textSecondary)
                 }
-                .themePadding(.horizontal, .large)
+                .themePadding(.horizontal, isIPad ? .extraLarge : .large)
+                .frame(maxWidth: adaptiveContentWidth)
+                .frame(maxWidth: .infinity)
                 
                 // Shimmer grid - represents loading state for initial fetch only
-                ShimmerMealGrid(itemCount: 6)
-                    .themePadding(.horizontal, .medium)
+                ShimmerMealGrid(itemCount: isIPad ? 9 : 6)
+                    .themePadding(.horizontal, isIPad ? .large : .medium)
+                    .frame(maxWidth: adaptiveContentWidth)
+                    .frame(maxWidth: .infinity)
             }
         }
         .background(Color.backgroundPrimary)
@@ -136,12 +184,13 @@ struct MealListView: View {
     }
     
     private var mealListContent: some View {
-        LazyVStack(spacing: Theme.Spacing.medium.value) {
+        LazyVStack(spacing: isIPad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
             // Meal cards with efficient pagination
             ForEach(Array(viewModel.filteredMeals.enumerated()), id: \.element.id) { index, meal in
                 MealCard(
                     meal: meal,
                     isFavorite: viewModel.isFavorite(mealID: meal.id),
+                    isIPad: isIPad,
                     onTap: {
                         coordinator.showMealDetail(mealId: meal.id)
                     }
@@ -150,10 +199,12 @@ struct MealListView: View {
                 .scaleEffect(hasAppeared ? 1 : 0.8)
                 .animation(
                     .spring(response: 0.6, dampingFraction: 0.8)
-                    .delay(Double(index) * 0.05),
+                    .delay(Double(index) * (isIPad ? 0.03 : 0.05)),
                     value: hasAppeared
                 )
-                .padding(.horizontal, Theme.Spacing.medium.value)
+                .themePadding(.horizontal, isIPad ? .large : .medium)
+                .frame(maxWidth: adaptiveContentWidth)
+                .frame(maxWidth: .infinity)
                 .onAppear {
                     // Only trigger pagination on specific threshold items for efficiency
                     if viewModel.shouldTriggerPagination(for: index) {
@@ -195,16 +246,16 @@ struct MealListView: View {
     
     /// Loading more indicator shown at the bottom when paginating
     private var loadingMoreView: some View {
-        HStack(spacing: Theme.Spacing.medium.value) {
+        HStack(spacing: isIPad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
             ProgressView()
-                .scaleEffect(0.8)
+                .scaleEffect(isIPad ? 1.0 : 0.8)
                 .tint(.textSecondary)
             
             Text(LocalizedStrings.mealsLoadingMore)
-                .themeCaption()
+                .font(isIPad ? .themeBody() : .themeCaption())
                 .foregroundColor(.textSecondary)
         }
-        .padding(.vertical, Theme.Spacing.large.value)
+        .themePadding(.vertical, isIPad ? .extraLarge : .large)
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(LocalizedStrings.mealsLoadingMore)
@@ -212,52 +263,54 @@ struct MealListView: View {
     }
     
     private var bottomSpacing: some View {
-        Spacer(minLength: Theme.Spacing.large.value)
+        Spacer(minLength: isIPad ? Theme.Spacing.extraLarge.value : Theme.Spacing.large.value)
     }
     
     /// Empty state view shown when search returns no results
     private var emptySearchView: some View {
-        VStack(spacing: Theme.Spacing.extraLarge.value) {
-            Spacer(minLength: 100)
+        VStack(spacing: isIPad ? Theme.Spacing.huge.value : Theme.Spacing.extraLarge.value) {
+            Spacer(minLength: isIPad ? 120 : 100)
             
-            // Search icon with theme colors
+            // Search icon with theme colors and adaptive sizing
             Image(systemName: "magnifyingglass.circle")
-                .font(.system(size: 80))
+                .font(.system(size: adaptiveIconSize))
                 .foregroundColor(.textSecondary)
                 .opacity(0.6)
             
-            VStack(spacing: Theme.Spacing.medium.value) {
+            VStack(spacing: isIPad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
                 Text(LocalizedStrings.mealsEmptySearchTitle)
-                    .themeDisplayLarge()
+                    .font(isIPad ? .themeDisplayLarge() : .themeDisplayMedium())
                     .foregroundColor(.textPrimary)
                     .multilineTextAlignment(.center)
                 
                 if !searchText.isEmpty {
                     Text(LocalizedStrings.mealsEmptySearchQuery(query: searchText))
-                        .themeHeadline()
+                        .font(isIPad ? .themeDisplayMedium() : .themeHeadline())
                         .foregroundColor(.textSecondary)
                         .multilineTextAlignment(.center)
-                        .themePadding(.horizontal, .large)
+                        .themePadding(.horizontal, isIPad ? .extraLarge : .large)
                 }
                 
                 Text(LocalizedStrings.mealsEmptySearchDescription)
-                    .themeBody()
+                    .font(isIPad ? .themeHeadline() : .themeBody())
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
-                    .themePadding(.horizontal, .large)
+                    .themePadding(.horizontal, isIPad ? .extraLarge : .large)
                 
                 Text(LocalizedStrings.mealsEmptySearchSuggestion)
-                    .themeCaption()
+                    .font(isIPad ? .themeBody() : .themeCaption())
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
-                    .themePadding(.horizontal, .large)
-                    .themePadding(.top, .small)
+                    .themePadding(.horizontal, isIPad ? .extraLarge : .large)
+                    .themePadding(.top, isIPad ? .medium : .small)
             }
+            .frame(maxWidth: adaptiveContentWidth)
+            .frame(maxWidth: .infinity)
             
-            Spacer(minLength: 100)
+            Spacer(minLength: isIPad ? 120 : 100)
         }
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 600)
+        .frame(minHeight: adaptiveMinHeight)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(LocalizedStrings.accessibilityEmptySearch)
         .accessibilityHint(LocalizedStrings.accessibilityEmptySearchHint)
@@ -266,38 +319,40 @@ struct MealListView: View {
     
     private var errorView: some View {
         ScrollView {
-            VStack(spacing: Theme.Spacing.extraLarge.value) {
-                Spacer(minLength: 100)
+            VStack(spacing: isIPad ? Theme.Spacing.huge.value : Theme.Spacing.extraLarge.value) {
+                Spacer(minLength: isIPad ? 120 : 100)
                 
-                // Error icon with theme colors
+                // Error icon with theme colors and adaptive sizing
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 60))
+                    .font(.system(size: isIPad ? Theme.IconSize.extraLarge : Theme.IconSize.large))
                     .foregroundColor(.warning)
                 
-                VStack(spacing: Theme.Spacing.medium.value) {
+                VStack(spacing: isIPad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
                     Text(LocalizedStrings.mealsErrorTitle)
-                        .themeDisplayLarge()
+                        .font(isIPad ? .themeDisplayLarge() : .themeDisplayMedium())
                         .foregroundColor(.textPrimary)
                     
                     Text(viewModel.state.errorMessage ?? LocalizedStrings.mealsErrorDefault)
-                        .themeBody()
+                        .font(isIPad ? .themeHeadline() : .themeBody())
                         .foregroundColor(.textSecondary)
                         .multilineTextAlignment(.center)
-                        .themePadding(.horizontal, .large)
+                        .themePadding(.horizontal, isIPad ? .extraLarge : .large)
                 }
+                .frame(maxWidth: adaptiveContentWidth)
+                .frame(maxWidth: .infinity)
                 
                 Button(LocalizedStrings.mealsTryAgain) {
                     Task {
                         await viewModel.retry()
                     }
                 }
-                .themeButton()
-                .themePadding(.horizontal, .large)
+                .themeButton(isIPad: isIPad)
+                .themePadding(.horizontal, isIPad ? .extraLarge : .large)
                 
-                Spacer(minLength: 100)
+                Spacer(minLength: isIPad ? 120 : 100)
             }
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 600)
+            .frame(minHeight: adaptiveMinHeight)
         }
         .background(Color.backgroundPrimary)
         .refreshable {
@@ -317,6 +372,7 @@ struct MealListView: View {
 private struct MealCard: View {
     let meal: Meal
     let isFavorite: Bool
+    let isIPad: Bool
     let onTap: () -> Void
     
     @State private var isPressed = false
@@ -339,21 +395,21 @@ private struct MealCard: View {
     }
     
     private var cardContent: some View {
-        HStack(spacing: Theme.Spacing.medium.value) {
+        HStack(spacing: isIPad ? Theme.Spacing.large.value : Theme.Spacing.medium.value) {
             cardImage
             cardText
             Spacer()
             favoriteIcon
             chevronIcon
         }
-        .themePadding(.all, .medium)
+        .themePadding(.all, isIPad ? .large : .medium)
         .background(Color.backgroundSecondary)
-        .cornerRadius(Theme.CornerRadius.large)
+        .themeCornerRadius(isIPad ? Theme.CornerRadius.extraLarge : Theme.CornerRadius.large)
         .shadow(
             color: Color.black.opacity(0.05),
-            radius: isPressed ? 2 : 8,
+            radius: isPressed ? (isIPad ? 4 : 2) : (isIPad ? 12 : 8),
             x: 0,
-            y: isPressed ? 1 : 4
+            y: isPressed ? (isIPad ? 2 : 1) : (isIPad ? 6 : 4)
         )
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.easeInOut(duration: 0.1), value: isPressed)
@@ -365,30 +421,31 @@ private struct MealCard: View {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
         } placeholder: {
-            RoundedRectangle(cornerRadius: Theme.CornerRadius.medium)
+            RoundedRectangle(cornerRadius: isIPad ? Theme.CornerRadius.large : Theme.CornerRadius.medium)
                 .fill(Color.backgroundSecondary)
                 .overlay {
                     Image(systemName: "photo")
-                        .font(.system(size: Theme.IconSize.medium))
+                        .font(.system(size: isIPad ? Theme.IconSize.large : Theme.IconSize.medium))
                         .foregroundColor(.textSecondary)
                 }
         }
-        .frame(width: 80, height: 80)
-        .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.medium))
+        .frame(width: isIPad ? 100 : 80, height: isIPad ? 100 : 80)
+        .clipShape(RoundedRectangle(cornerRadius: isIPad ? Theme.CornerRadius.large : Theme.CornerRadius.medium))
         .accessibilityLabel(LocalizedStrings.accessibilityMealImage)
         .accessibilityHidden(true) // Image is decorative, meal name is already in card label
     }
     
     private var cardText: some View {
-        VStack(alignment: .leading, spacing: Theme.Spacing.small.value) {
+        VStack(alignment: .leading, spacing: isIPad ? Theme.Spacing.medium.value : Theme.Spacing.small.value) {
             Text(meal.name)
-                .themeHeadline()
+                .font(isIPad ? .themeDisplayMedium() : .themeHeadline())
                 .foregroundColor(.textPrimary)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(isIPad ? 3 : 2)
             
             Text(LocalizedStrings.mealsTapToView)
-                .themeCaption()
+                .font(isIPad ? .themeBody() : .themeCaption())
                 .foregroundColor(.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -400,7 +457,7 @@ private struct MealCard: View {
         Group {
             if isFavorite {
                 Image(systemName: "heart.fill")
-                    .font(.system(size: Theme.IconSize.small, weight: .medium))
+                    .font(.system(size: isIPad ? Theme.IconSize.medium : Theme.IconSize.small, weight: .medium))
                     .foregroundColor(.error) // Using red color for favorite
                     .scaleEffect(isPressed ? 1.2 : 1.0)
                     .animation(.easeInOut(duration: 0.1), value: isPressed)
@@ -408,7 +465,7 @@ private struct MealCard: View {
             } else {
                 // Empty space to maintain layout consistency
                 Image(systemName: "heart")
-                    .font(.system(size: Theme.IconSize.small, weight: .medium))
+                    .font(.system(size: isIPad ? Theme.IconSize.medium : Theme.IconSize.small, weight: .medium))
                     .foregroundColor(.clear)
                     .accessibilityHidden(true)
             }
@@ -417,7 +474,7 @@ private struct MealCard: View {
     
     private var chevronIcon: some View {
         Image(systemName: "chevron.right")
-            .font(.system(size: Theme.IconSize.small, weight: .medium))
+            .font(.system(size: isIPad ? Theme.IconSize.medium : Theme.IconSize.small, weight: .medium))
             .foregroundColor(.textSecondary)
             .scaleEffect(isPressed ? 1.2 : 1.0)
             .animation(.easeInOut(duration: 0.1), value: isPressed)
@@ -427,14 +484,19 @@ private struct MealCard: View {
 // MARK: - Button Style Extension
 
 private extension Button where Label == Text {
-    func themeButton() -> some View {
+    func themeButton(isIPad: Bool = false) -> some View {
         self
-            .font(.themeButton())
+            .font(isIPad ? .themeDisplayMedium() : .themeButton())
             .foregroundColor(.white)
-            .themePadding(.horizontal, .extraLarge)
-            .themePadding(.vertical, .medium)
+            .themePadding(.horizontal, isIPad ? .huge : .extraLarge)
+            .themePadding(.vertical, isIPad ? .large : .medium)
             .background(Color.accent)
-            .cornerRadius(Theme.CornerRadius.medium)
-            .shadow(color: Color.accent.opacity(0.3), radius: 8, x: 0, y: 4)
+            .themeCornerRadius(isIPad ? Theme.CornerRadius.large : Theme.CornerRadius.medium)
+            .shadow(
+                color: Color.accent.opacity(0.3), 
+                radius: isIPad ? 12 : 8, 
+                x: 0, 
+                y: isIPad ? 6 : 4
+            )
     }
 }
