@@ -11,3 +11,7 @@ Whisked.xcodeproj/xcuserdata/*
 Whisked.code-workspace
 build-project.sh
 NetworkKit/.build/*
+build/*
+NetworkKit/build/*
+PersistenceKit/build/*
+ThemeKit/build/*
