@@ -108,6 +108,56 @@
 "accessibility.empty_view" = "Empty categories view";
 "accessibility.error_view" = "Error loading categories view";
 
+// MARK: - Enhanced Accessibility
+"accessibility.meal_card" = "Meal card";
+"accessibility.meal_card_hint" = "Double tap to view detailed recipe";
+"accessibility.meal_image" = "Meal image";
+"accessibility.search_bar" = "Search meals";
+"accessibility.search_bar_hint" = "Type to search for recipes";
+"accessibility.favorite_button" = "Favorite button";
+"accessibility.favorite_button_add" = "Add to favorites";
+"accessibility.favorite_button_remove" = "Remove from favorites";
+"accessibility.favorite_button_hint" = "Double tap to toggle favorite status";
+"accessibility.ingredient_card" = "Ingredient";
+"accessibility.ingredient_card_hint" = "Ingredient for this recipe";
+"accessibility.instructions_section" = "Cooking instructions";
+"accessibility.instructions_section_hint" = "Step by step cooking instructions";
+"accessibility.ingredients_section" = "Recipe ingredients";
+"accessibility.ingredients_section_hint" = "List of ingredients needed for this recipe";
+"accessibility.meal_header" = "Recipe header";
+"accessibility.meal_header_hint" = "Recipe image and basic information";
+"accessibility.pagination_trigger" = "Loading more recipes";
+"accessibility.pagination_hint" = "Automatically loading additional recipes";
+"accessibility.empty_search" = "No search results";
+"accessibility.empty_search_hint" = "No recipes found for your search terms";
+"accessibility.shimmer_loading" = "Loading content";
+"accessibility.shimmer_hint" = "Content is loading, please wait";
+"accessibility.favorites_empty" = "No favorite recipes";
+"accessibility.favorites_empty_hint" = "Your favorite recipes will appear here";
+"accessibility.remove_favorite" = "Remove from favorites";
+"accessibility.remove_favorite_hint" = "Double tap to remove this recipe from favorites";
+"accessibility.recipe_count" = "%d recipes available";
+"accessibility.ingredient_count" = "%d ingredients";
+"accessibility.navigation_back" = "Go back";
+"accessibility.navigation_back_hint" = "Return to previous screen";
+
+// MARK: - Additional UI Strings
+"ui.recipe" = "Recipe";
+"ui.loading_image" = "Loading image...";
+"ui.recipe_details" = "Recipe Details";
+"ui.items" = "items";
+"ui.showing_recipes" = "Showing %d recipes";
+"ui.categories_grid" = "Categories grid";
+"ui.favorite_recipe" = "Favorite recipe";
+"ui.double_tap_recipe_details" = "Double tap to view recipe details";
+"ui.saved_with_ingredients" = "Saved %@, %d ingredients";
+"ui.no_results_for" = "No results for %@";
+"ui.explore_meals" = "Explore Meals";
+"ui.unable_to_load_favorites" = "Unable to Load Favorites";
+"ui.error_loading_favorites" = "There was an error loading your favorite meals.";
+"ui.retry" = "Retry";
+"ui.loading_favorites" = "Loading favorites...";
+
 // MARK: - Categories
 "category.dessert" = "Dessert";
 "category.breakfast" = "Breakfast";

@@ -28,7 +28,7 @@ struct FavoritesView: View {
     
     var body: some View {
         contentView
-            .navigationTitle("Favorites")
+            .navigationTitle(LocalizedStrings.favoritesNavigationTitle)
             .navigationBarTitleDisplayMode(.large)
             .task {
                 await viewModel.loadFavorites()
@@ -45,7 +45,7 @@ struct FavoritesView: View {
         switch viewModel.loadingState {
         case .idle:
             VStack {
-                ProgressView("Loading favorites...")
+                ProgressView(LocalizedStrings.uiLoadingFavorites)
                     .progressViewStyle(CircularProgressViewStyle())
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

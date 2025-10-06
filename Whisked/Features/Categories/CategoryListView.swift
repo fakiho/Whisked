@@ -111,6 +111,7 @@ struct CategoryListView: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(LocalizedStrings.accessibilityLoadingView)
         .accessibilityHint(LocalizedStrings.accessibilityLoadingHint)
+        .accessibilityAddTraits(.updatesFrequently)
     }
     
     private func loadedView(categories: [MealCategory]) -> some View {
@@ -139,6 +140,9 @@ struct CategoryListView: View {
                     }
                 }
                 .themePadding(.horizontal, Theme.Spacing.large)
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(LocalizedStrings.uiCategoriesGrid)
+                .accessibilityValue(LocalizedStrings.accessibilityRecipeCount(viewModel.allCategories.count))
             }
             .themePaddingMedium()
         }

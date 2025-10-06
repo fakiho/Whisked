@@ -133,6 +133,45 @@ enum LocalizedStrings {
     
     static let accessibilityLoadingHint = NSLocalizedString("accessibility.loading_hint", comment: "Loading accessibility hint")
     
+    // MARK: - Enhanced Accessibility
+    static let accessibilityMealCard = NSLocalizedString("accessibility.meal_card", comment: "Meal card accessibility label")
+    static let accessibilityMealCardHint = NSLocalizedString("accessibility.meal_card_hint", comment: "Meal card accessibility hint")
+    static let accessibilityMealImage = NSLocalizedString("accessibility.meal_image", comment: "Meal image accessibility label")
+    static let accessibilitySearchBar = NSLocalizedString("accessibility.search_bar", comment: "Search bar accessibility label")
+    static let accessibilitySearchBarHint = NSLocalizedString("accessibility.search_bar_hint", comment: "Search bar accessibility hint")
+    static let accessibilityFavoriteButton = NSLocalizedString("accessibility.favorite_button", comment: "Favorite button accessibility label")
+    static let accessibilityFavoriteButtonAdd = NSLocalizedString("accessibility.favorite_button_add", comment: "Add to favorites accessibility label")
+    static let accessibilityFavoriteButtonRemove = NSLocalizedString("accessibility.favorite_button_remove", comment: "Remove from favorites accessibility label")
+    static let accessibilityFavoriteButtonHint = NSLocalizedString("accessibility.favorite_button_hint", comment: "Favorite button accessibility hint")
+    static let accessibilityIngredientCard = NSLocalizedString("accessibility.ingredient_card", comment: "Ingredient card accessibility label")
+    static let accessibilityIngredientCardHint = NSLocalizedString("accessibility.ingredient_card_hint", comment: "Ingredient card accessibility hint")
+    static let accessibilityInstructionsSection = NSLocalizedString("accessibility.instructions_section", comment: "Instructions section accessibility label")
+    static let accessibilityInstructionsSectionHint = NSLocalizedString("accessibility.instructions_section_hint", comment: "Instructions section accessibility hint")
+    static let accessibilityIngredientsSection = NSLocalizedString("accessibility.ingredients_section", comment: "Ingredients section accessibility label")
+    static let accessibilityIngredientsSectionHint = NSLocalizedString("accessibility.ingredients_section_hint", comment: "Ingredients section accessibility hint")
+    static let accessibilityMealHeader = NSLocalizedString("accessibility.meal_header", comment: "Meal header accessibility label")
+    static let accessibilityMealHeaderHint = NSLocalizedString("accessibility.meal_header_hint", comment: "Meal header accessibility hint")
+    static let accessibilityPaginationTrigger = NSLocalizedString("accessibility.pagination_trigger", comment: "Pagination trigger accessibility label")
+    static let accessibilityPaginationHint = NSLocalizedString("accessibility.pagination_hint", comment: "Pagination accessibility hint")
+    static let accessibilityEmptySearch = NSLocalizedString("accessibility.empty_search", comment: "Empty search accessibility label")
+    static let accessibilityEmptySearchHint = NSLocalizedString("accessibility.empty_search_hint", comment: "Empty search accessibility hint")
+    static let accessibilityShimmerLoading = NSLocalizedString("accessibility.shimmer_loading", comment: "Shimmer loading accessibility label")
+    static let accessibilityShimmerHint = NSLocalizedString("accessibility.shimmer_hint", comment: "Shimmer accessibility hint")
+    static let accessibilityFavoritesEmpty = NSLocalizedString("accessibility.favorites_empty", comment: "Empty favorites accessibility label")
+    static let accessibilityFavoritesEmptyHint = NSLocalizedString("accessibility.favorites_empty_hint", comment: "Empty favorites accessibility hint")
+    static let accessibilityRemoveFavorite = NSLocalizedString("accessibility.remove_favorite", comment: "Remove favorite accessibility label")
+    static let accessibilityRemoveFavoriteHint = NSLocalizedString("accessibility.remove_favorite_hint", comment: "Remove favorite accessibility hint")
+    static let accessibilityNavigationBack = NSLocalizedString("accessibility.navigation_back", comment: "Navigation back accessibility label")
+    static let accessibilityNavigationBackHint = NSLocalizedString("accessibility.navigation_back_hint", comment: "Navigation back accessibility hint")
+    
+    static func accessibilityRecipeCount(_ count: Int) -> String {
+        String(format: NSLocalizedString("accessibility.recipe_count", comment: "Recipe count accessibility"), count)
+    }
+    
+    static func accessibilityIngredientCount(_ count: Int) -> String {
+        String(format: NSLocalizedString("accessibility.ingredient_count", comment: "Ingredient count accessibility"), count)
+    }
+    
     // MARK: - Categories
     static let categoryDessert = NSLocalizedString("category.dessert", comment: "Dessert category")
     static let categoryBreakfast = NSLocalizedString("category.breakfast", comment: "Breakfast category")
@@ -146,4 +185,30 @@ enum LocalizedStrings {
     static let categoryChickenDescription = NSLocalizedString("category.chicken.description", comment: "Chicken category description")
     static let categoryPastaDescription = NSLocalizedString("category.pasta.description", comment: "Pasta category description")
     static let categorySeafoodDescription = NSLocalizedString("category.seafood.description", comment: "Seafood category description")
+    
+    // MARK: - Additional UI Strings
+    static let uiRecipe = NSLocalizedString("ui.recipe", comment: "Recipe label")
+    static let uiLoadingImage = NSLocalizedString("ui.loading_image", comment: "Loading image text")
+    static let uiRecipeDetails = NSLocalizedString("ui.recipe_details", comment: "Recipe details label")
+    static let uiItems = NSLocalizedString("ui.items", comment: "Items count label")
+    static let uiCategoriesGrid = NSLocalizedString("ui.categories_grid", comment: "Categories grid label")
+    static let uiFavoriteRecipe = NSLocalizedString("ui.favorite_recipe", comment: "Favorite recipe label")
+    static let uiDoubleTapRecipeDetails = NSLocalizedString("ui.double_tap_recipe_details", comment: "Double tap for recipe details hint")
+    static let uiExploreMeals = NSLocalizedString("ui.explore_meals", comment: "Explore meals button")
+    static let uiUnableToLoadFavorites = NSLocalizedString("ui.unable_to_load_favorites", comment: "Unable to load favorites error")
+    static let uiErrorLoadingFavorites = NSLocalizedString("ui.error_loading_favorites", comment: "Error loading favorites message")
+    static let uiRetry = NSLocalizedString("ui.retry", comment: "Retry button")
+    static let uiLoadingFavorites = NSLocalizedString("ui.loading_favorites", comment: "Loading favorites message")
+    
+    static func uiShowingRecipes(_ count: Int) -> String {
+        String(format: NSLocalizedString("ui.showing_recipes", comment: "Showing recipes count"), count)
+    }
+    
+    static func uiSavedWithIngredients(date: String, ingredientCount: Int) -> String {
+        String(format: NSLocalizedString("ui.saved_with_ingredients", comment: "Saved date with ingredient count"), date, ingredientCount)
+    }
+    
+    static func uiNoResultsFor(query: String) -> String {
+        String(format: NSLocalizedString("ui.no_results_for", comment: "No results for query"), query)
+    }
 }

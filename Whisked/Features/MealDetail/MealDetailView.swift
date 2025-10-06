@@ -43,7 +43,7 @@ struct MealDetailView: View {
     
     var body: some View {
         contentView
-            .navigationTitle("Recipe")
+            .navigationTitle(LocalizedStrings.uiRecipe)
             .navigationBarTitleDisplayMode(.inline)
             .background(Color.backgroundPrimary)
             .refreshable {

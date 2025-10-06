@@ -108,6 +108,56 @@
 "accessibility.empty_view" = "Vue des catégories vides";
 "accessibility.error_view" = "Vue d'erreur de chargement des catégories";
 
+// MARK: - Enhanced Accessibility
+"accessibility.meal_card" = "Carte de repas";
+"accessibility.meal_card_hint" = "Appuyez deux fois pour voir la recette détaillée";
+"accessibility.meal_image" = "Image du repas";
+"accessibility.search_bar" = "Rechercher des repas";
+"accessibility.search_bar_hint" = "Tapez pour rechercher des recettes";
+"accessibility.favorite_button" = "Bouton favori";
+"accessibility.favorite_button_add" = "Ajouter aux favoris";
+"accessibility.favorite_button_remove" = "Retirer des favoris";
+"accessibility.favorite_button_hint" = "Appuyez deux fois pour basculer le statut de favori";
+"accessibility.ingredient_card" = "Ingrédient";
+"accessibility.ingredient_card_hint" = "Ingrédient pour cette recette";
+"accessibility.instructions_section" = "Instructions de cuisson";
+"accessibility.instructions_section_hint" = "Instructions de cuisson étape par étape";
+"accessibility.ingredients_section" = "Ingrédients de la recette";
+"accessibility.ingredients_section_hint" = "Liste des ingrédients nécessaires pour cette recette";
+"accessibility.meal_header" = "En-tête de recette";
+"accessibility.meal_header_hint" = "Image de recette et informations de base";
+"accessibility.pagination_trigger" = "Chargement de plus de recettes";
+"accessibility.pagination_hint" = "Chargement automatique de recettes supplémentaires";
+"accessibility.empty_search" = "Aucun résultat de recherche";
+"accessibility.empty_search_hint" = "Aucune recette trouvée pour vos termes de recherche";
+"accessibility.shimmer_loading" = "Chargement du contenu";
+"accessibility.shimmer_hint" = "Le contenu se charge, veuillez patienter";
+"accessibility.favorites_empty" = "Aucune recette favorite";
+"accessibility.favorites_empty_hint" = "Vos recettes favorites apparaîtront ici";
+"accessibility.remove_favorite" = "Retirer des favoris";
+"accessibility.remove_favorite_hint" = "Appuyez deux fois pour retirer cette recette des favoris";
+"accessibility.recipe_count" = "%d recettes disponibles";
+"accessibility.ingredient_count" = "%d ingrédients";
+"accessibility.navigation_back" = "Retour";
+"accessibility.navigation_back_hint" = "Retourner à l'écran précédent";
+
+// MARK: - Additional UI Strings
+"ui.recipe" = "Recette";
+"ui.loading_image" = "Chargement de l'image...";
+"ui.recipe_details" = "Détails de la recette";
+"ui.items" = "éléments";
+"ui.showing_recipes" = "Affichage de %d recettes";
+"ui.categories_grid" = "Grille des catégories";
+"ui.favorite_recipe" = "Recette favorite";
+"ui.double_tap_recipe_details" = "Appuyez deux fois pour voir les détails de la recette";
+"ui.saved_with_ingredients" = "Sauvegardé %@, %d ingrédients";
+"ui.no_results_for" = "Aucun résultat pour %@";
+"ui.explore_meals" = "Explorer les Repas";
+"ui.unable_to_load_favorites" = "Impossible de Charger les Favoris";
+"ui.error_loading_favorites" = "Une erreur s'est produite lors du chargement de vos repas favoris.";
+"ui.retry" = "Réessayer";
+"ui.loading_favorites" = "Chargement des favoris...";
+
 // MARK: - Categories
 "category.dessert" = "Dessert";
 "category.breakfast" = "Petit-déjeuner";

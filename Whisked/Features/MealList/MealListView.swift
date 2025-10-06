@@ -41,6 +41,8 @@ struct MealListView: View {
             .navigationBarTitleDisplayMode(.large)
             .background(Color.backgroundPrimary)
             .searchable(text: $searchText, prompt: LocalizedStrings.mealsSearchPlaceholder)
+            .accessibilityLabel(LocalizedStrings.accessibilitySearchBar)
+            .accessibilityHint(LocalizedStrings.accessibilitySearchBarHint)
             .onChange(of: searchText) { _, newValue in
                 viewModel.performDebouncedSearch(query: newValue)
             }
@@ -66,6 +68,9 @@ struct MealListView: View {
                     }
                 }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("\(viewModel.category.name) recipes")
+            .accessibilityValue(LocalizedStrings.accessibilityRecipeCount(viewModel.filteredMeals.count))
     }
     
     // MARK: - Content Views
@@ -104,8 +109,10 @@ struct MealListView: View {
             }
         }
         .background(Color.backgroundPrimary)
-        .accessibilityLabel("Loading \(viewModel.category.name) meals")
-        .accessibilityHint("Please wait while we fetch the complete meal catalog")
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(LocalizedStrings.accessibilityLoadingMeals(category: viewModel.category.name))
+        .accessibilityHint(LocalizedStrings.accessibilityLoadingHint)
+        .accessibilityAddTraits(.updatesFrequently)
     }
     
     private var mealListView: some View {
@@ -122,8 +129,10 @@ struct MealListView: View {
                 hasAppeared = true
             }
         }
-        .accessibilityLabel("Meal list")
-        .accessibilityHint("Swipe up and down to browse meal recipes")
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(LocalizedStrings.accessibilityMealList)
+        .accessibilityHint(LocalizedStrings.accessibilityMealListHint)
+        .accessibilityValue("Showing \(viewModel.filteredMeals.count) recipes")
     }
     
     private var mealListContent: some View {
@@ -178,6 +187,10 @@ struct MealListView: View {
                     viewModel.loadNextPage()
                 }
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(LocalizedStrings.accessibilityPaginationTrigger)
+            .accessibilityHint(LocalizedStrings.accessibilityPaginationHint)
+            .accessibilityAddTraits(.updatesFrequently)
     }
     
     /// Loading more indicator shown at the bottom when paginating
@@ -193,6 +206,9 @@ struct MealListView: View {
         }
         .padding(.vertical, Theme.Spacing.large.value)
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(LocalizedStrings.mealsLoadingMore)
+        .accessibilityAddTraits(.updatesFrequently)
     }
     
     private var bottomSpacing: some View {
@@ -242,8 +258,10 @@ struct MealListView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(minHeight: 600)
-        .accessibilityLabel("No search results found")
-        .accessibilityHint("Try adjusting your search terms")
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(LocalizedStrings.accessibilityEmptySearch)
+        .accessibilityHint(LocalizedStrings.accessibilityEmptySearchHint)
+        .accessibilityValue(searchText.isEmpty ? "" : LocalizedStrings.uiNoResultsFor(query: searchText))
     }
     
     private var errorView: some View {
@@ -285,8 +303,9 @@ struct MealListView: View {
         .refreshable {
             await viewModel.refresh()
         }
-        .accessibilityLabel(LocalizedStrings.accessibilityMealList)
-        .accessibilityHint(LocalizedStrings.accessibilityMealListHint)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(LocalizedStrings.accessibilityErrorLoading)
+        .accessibilityHint(LocalizedStrings.accessibilityRetryHint)
     }
     
     // MARK: - Search Methods
@@ -312,8 +331,10 @@ private struct MealCard: View {
         } perform: {
             // Long press action if needed
         }
-        .accessibilityLabel(meal.name)
-        .accessibilityHint("Double tap to view detailed recipe")
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(LocalizedStrings.accessibilityMealCard), \(meal.name)")
+        .accessibilityHint(LocalizedStrings.accessibilityMealCardHint)
+        .accessibilityValue(isFavorite ? LocalizedStrings.accessibilityFavorited : "")
         .accessibilityAddTraits(.isButton)
     }
     
@@ -354,6 +375,8 @@ private struct MealCard: View {
         }
         .frame(width: 80, height: 80)
         .clipShape(RoundedRectangle(cornerRadius: Theme.CornerRadius.medium))
+        .accessibilityLabel(LocalizedStrings.accessibilityMealImage)
+        .accessibilityHidden(true) // Image is decorative, meal name is already in card label
     }
     
     private var cardText: some View {
