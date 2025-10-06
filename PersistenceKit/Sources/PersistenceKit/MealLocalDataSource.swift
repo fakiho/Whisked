@@ -28,16 +28,6 @@ public class MealLocalDataSource {
         self.container = container
         self.context = context
     }
-    
-    /// Creates a MealLocalDataSource using the shared SwiftDataContextManager
-    /// - Returns: A configured MealLocalDataSource instance
-    public static func createWithSharedContext() -> MealLocalDataSource {
-        let contextManager = SwiftDataContextManager.shared
-        return MealLocalDataSource(
-            container: contextManager.container,
-            context: contextManager.context
-        )
-    }
 }
 
 // MARK: - CRUD Operations

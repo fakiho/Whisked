@@ -29,20 +29,13 @@ public final class SwiftDataContextManager: @unchecked Sendable {
     /// Private initializer to enforce singleton pattern
     /// Initializes the model container with all required models
     private init() {
-        setupModelContainer()
-    }
-    
-    // MARK: - Private Methods
-    
-    /// Sets up the model container with all required models
-    private func setupModelContainer() {
         do {
             // Define the schema with PersistenceKit models
             let schema = Schema([
                 OfflineMeal.self
             ])
             
-            // Create a basic container configuration
+            // Configure the model container
             let modelConfiguration = ModelConfiguration(
                 schema: schema,
                 isStoredInMemoryOnly: false
@@ -65,73 +58,6 @@ public final class SwiftDataContextManager: @unchecked Sendable {
             container = nil
             context = nil
         }
-    }
-    
-    // MARK: - Public Methods
-    
-    /// Saves the current context if there are pending changes
-    /// - Throws: Any errors that occur during the save operation
-    public func save() throws {
-        guard let context = context else {
-            throw SwiftDataContextManagerError.contextNotAvailable
-        }
-        
-        if context.hasChanges {
-            try context.save()
-        }
-    }
-    
-    /// Creates a new background context for performing operations off the main thread
-    /// - Returns: A new ModelContext for background operations
-    /// - Throws: SwiftDataContextManagerError if container is not available
-    public func newBackgroundContext() throws -> ModelContext {
-        guard let container = container else {
-            throw SwiftDataContextManagerError.containerNotAvailable
-        }
-        
-        return ModelContext(container)
-    }
-    
-    /// Resets the context manager by reinitializing the container and context
-    public func reset() {
-        container = nil
-        context = nil
-        setupModelContainer()
-    }
-    
-    /// Updates the schema with new models (call this to add additional models)
-    /// - Parameter models: Array of model types to include in the schema
-    public func updateSchema(with models: [any PersistentModel.Type]) {
-        do {
-            let schema = Schema(models)
-            let modelConfiguration = ModelConfiguration(
-                schema: schema,
-                isStoredInMemoryOnly: false
-            )
-            
-            container = try ModelContainer(for: schema, configurations: [modelConfiguration])
-            
-            if let container = container {
-                context = ModelContext(container)
-                context?.autosaveEnabled = true
-            }
-            
-        } catch {
-            debugPrint("Error updating SwiftData schema:", error)
-            container = nil
-            context = nil
-        }
-    }
-    
-    /// Creates a new PersistenceService using the shared context
-    /// - Returns: A configured PersistenceService instance
-    /// - Throws: SwiftDataContextManagerError if context is not available
-    public func createPersistenceService() throws -> PersistenceService {
-        guard let context = context else {
-            throw SwiftDataContextManagerError.contextNotAvailable
-        }
-        
-        return PersistenceService(modelContext: context)
     }
 }
 
