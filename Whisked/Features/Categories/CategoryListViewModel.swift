@@ -9,7 +9,14 @@ import Foundation
 import Combine
 import PersistenceKit
 
+/// Protocol for category list navigation operations
+protocol CategoryListCoordinatorProtocol {
+    func showMealsByCategory(_ category: MealCategory)
+    func showFavorites()
+}
+
 /// ViewModel managing category list state and business logic
+/// Now conforms to protocol for better testability and MVVM compliance
 @MainActor
 final class CategoryListViewModel: ObservableObject {
     
@@ -23,20 +30,28 @@ final class CategoryListViewModel: ObservableObject {
     // MARK: - Private Properties
     private let persistenceService: PersistenceServiceProtocol?
     private let mealService: MealServiceProtocol
+    private let coordinator: CategoryListCoordinatorProtocol
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
     
-    init(mealService: MealServiceProtocol, persistenceService: PersistenceServiceProtocol?) {
+    init(
+        mealService: MealServiceProtocol, 
+        persistenceService: PersistenceServiceProtocol?,
+        coordinator: CategoryListCoordinatorProtocol
+    ) {
         self.mealService = mealService
         self.persistenceService = persistenceService
+        self.coordinator = coordinator
     }
     
     // MARK: - Public Methods
 
     func load() async {
-        await loadCategories()
-        await loadFavoritesCount()
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await self.loadCategories() }
+            group.addTask { await self.loadFavoritesCount() }
+        }
     }
 
     func refresh() async {
@@ -46,12 +61,22 @@ final class CategoryListViewModel: ObservableObject {
     /// Selects a category for navigation
     func selectCategory(_ category: MealCategory) {
         selectedCategory = category
-        // Navigation will be handled by the coordinator
     }
     
     /// Clears the selected category
     func clearSelection() {
         selectedCategory = nil
+    }
+    
+    /// Handles category selection with navigation
+    func handleCategorySelection(_ category: MealCategory) {
+        selectCategory(category)
+        coordinator.showMealsByCategory(category)
+    }
+    
+    /// Handles favorites selection with navigation
+    func handleFavoritesSelection() {
+        coordinator.showFavorites()
     }
 
     // MARK: - Private Methods
@@ -85,18 +110,14 @@ final class CategoryListViewModel: ObservableObject {
 
         do {
             let count = try await persistenceService.getOfflineMealsCount()
-            await MainActor.run {
-                favoritesCount = count
-            }
+            favoritesCount = count
         } catch {
-            await MainActor.run {
-                favoritesCount = 0
-            }
+            favoritesCount = 0
         }
     }
 }
 
-// MARK: - Loading State
+// MARK: - LoadingState
 
 enum LoadingState<T> {
     case idle
@@ -123,3 +144,7 @@ extension LoadingState: Equatable where T: Equatable {
         }
     }
 }
+
+// MARK: - Coordinator Protocol Conformance
+
+extension WhiskedMainCoordinator: CategoryListCoordinatorProtocol {}

@@ -15,6 +15,7 @@
 
 // MARK: - Category List
 "categories.title" = "Meal Categories";
+"categories.navigation_title" = "Meal Categories";
 "categories.loading" = "Exploring meal categories...";
 "categories.loading_description" = "Loading delicious options";
 "categories.load_more" = "Load More";
@@ -23,6 +24,7 @@
 "categories.empty.description" = "No meal categories could be loaded at this time.";
 "categories.error.title" = "Unable to Load Categories";
 "categories.error.description" = "Please check your internet connection and try again.";
+"categories.retry_button" = "Retry";
 
 // MARK: - Meal List
 "meals.search_placeholder" = "Search meals...";
@@ -46,12 +48,15 @@
 
 // MARK: - Favorites
 "favorites.title" = "Favorites";
+"favorites.navigation_title" = "Favorites";
 "favorites.count_zero" = "No favorite meals yet";
 "favorites.count_one" = "1 favorite meal";
 "favorites.count_many" = "%d favorite meals";
 "favorites.empty.title" = "No Favorites Yet";
 "favorites.empty.description" = "Meals you favorite will appear here for easy access.";
 "favorites.empty.browse" = "Browse Recipes";
+"favorites.card_title" = "Favorites";
+"favorites.card_description" = "Your saved recipes";
 
 // MARK: - Loading States
 "loading.default" = "Loading...";
@@ -78,6 +83,14 @@
 "accessibility.loading_hint" = "Please wait while we fetch the complete meal catalog";
 "accessibility.error_loading" = "Error loading meals";
 "accessibility.retry_hint" = "Tap try again to reload the meal list";
+"accessibility.category_card" = "Category card";
+"accessibility.category_card_hint" = "Tap to view meals in this category";
+"accessibility.favorites_card" = "Favorites card";
+"accessibility.favorites_card_hint" = "Tap to view your favorite meals";
+"accessibility.category_image" = "Category image";
+"accessibility.loading_view" = "Loading categories";
+"accessibility.empty_view" = "Empty categories view";
+"accessibility.error_view" = "Error loading categories view";
 
 // MARK: - Categories
 "category.dessert" = "Dessert";

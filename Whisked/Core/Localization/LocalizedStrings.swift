@@ -20,6 +20,7 @@ enum LocalizedStrings {
     
     // MARK: - Category List
     static let categoriesTitle = NSLocalizedString("categories.title", comment: "Categories screen title")
+    static let categoriesNavigationTitle = NSLocalizedString("categories.navigation_title", comment: "Categories navigation title")
     static let categoriesLoading = NSLocalizedString("categories.loading", comment: "Loading categories message")
     static let categoriesLoadingDescription = NSLocalizedString("categories.loading_description", comment: "Loading categories description")
     static let categoriesLoadMore = NSLocalizedString("categories.load_more", comment: "Load more button")
@@ -28,6 +29,7 @@ enum LocalizedStrings {
     static let categoriesEmptyDescription = NSLocalizedString("categories.empty.description", comment: "Empty categories description")
     static let categoriesErrorTitle = NSLocalizedString("categories.error.title", comment: "Categories error title")
     static let categoriesErrorDescription = NSLocalizedString("categories.error.description", comment: "Categories error description")
+    static let categoriesRetryButton = NSLocalizedString("categories.retry_button", comment: "Retry button text")
     
     // MARK: - Meal List
     static let mealsSearchPlaceholder = NSLocalizedString("meals.search_placeholder", comment: "Meals search placeholder")
@@ -55,10 +57,13 @@ enum LocalizedStrings {
     
     // MARK: - Favorites
     static let favoritesTitle = NSLocalizedString("favorites.title", comment: "Favorites screen title")
+    static let favoritesNavigationTitle = NSLocalizedString("favorites.navigation_title", comment: "Favorites navigation title")
     static let favoritesCountZero = NSLocalizedString("favorites.count_zero", comment: "No favorites message")
     static let favoritesEmptyTitle = NSLocalizedString("favorites.empty.title", comment: "Empty favorites title")
     static let favoritesEmptyDescription = NSLocalizedString("favorites.empty.description", comment: "Empty favorites description")
     static let favoritesEmptyBrowse = NSLocalizedString("favorites.empty.browse", comment: "Browse recipes button")
+    static let favoritesCardTitle = NSLocalizedString("favorites.card_title", comment: "Favorites card title")
+    static let favoritesCardDescription = NSLocalizedString("favorites.card_description", comment: "Favorites card description")
     
     static func favoritesCount(_ count: Int) -> String {
         if count == 1 {
@@ -91,6 +96,14 @@ enum LocalizedStrings {
     static let accessibilityFavorited = NSLocalizedString("accessibility.favorited", comment: "Favorited accessibility label")
     static let accessibilityErrorLoading = NSLocalizedString("accessibility.error_loading", comment: "Error loading accessibility")
     static let accessibilityRetryHint = NSLocalizedString("accessibility.retry_hint", comment: "Retry accessibility hint")
+    static let accessibilityCategoryCard = NSLocalizedString("accessibility.category_card", comment: "Category card accessibility label")
+    static let accessibilityCategoryCardHint = NSLocalizedString("accessibility.category_card_hint", comment: "Category card accessibility hint")
+    static let accessibilityFavoritesCard = NSLocalizedString("accessibility.favorites_card", comment: "Favorites card accessibility label")
+    static let accessibilityFavoritesCardHint = NSLocalizedString("accessibility.favorites_card_hint", comment: "Favorites card accessibility hint")
+    static let accessibilityCategoryImage = NSLocalizedString("accessibility.category_image", comment: "Category image accessibility label")
+    static let accessibilityLoadingView = NSLocalizedString("accessibility.loading_view", comment: "Loading view accessibility label")
+    static let accessibilityEmptyView = NSLocalizedString("accessibility.empty_view", comment: "Empty view accessibility label")
+    static let accessibilityErrorView = NSLocalizedString("accessibility.error_view", comment: "Error view accessibility label")
     
     static func accessibilityLoadingMeals(category: String) -> String {
         String(format: NSLocalizedString("accessibility.loading_meals", comment: "Loading meals accessibility"), category)

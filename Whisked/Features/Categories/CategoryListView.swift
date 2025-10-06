@@ -14,7 +14,6 @@ struct CategoryListView: View {
     // MARK: - Properties
     
     @StateObject private var viewModel: CategoryListViewModel
-    private let coordinator: WhiskedMainCoordinator
 
     // MARK: - Device-specific Grid Layout
     
@@ -31,16 +30,15 @@ struct CategoryListView: View {
     
     // MARK: - Initialization
     
-    init(coordinator: WhiskedMainCoordinator, viewModel: CategoryListViewModel) {
+    init(viewModel: CategoryListViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
-        self.coordinator = coordinator
     }
     
     // MARK: - Body
     
     var body: some View {
         contentView
-            .navigationTitle("Meal Categories")
+            .navigationTitle(LocalizedStrings.categoriesNavigationTitle)
             .navigationBarTitleDisplayMode(.large)
             .task {
                 await viewModel.load()
@@ -75,17 +73,20 @@ struct CategoryListView: View {
             Image(systemName: "tray")
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
+                .accessibilityLabel(LocalizedStrings.accessibilityCategoryImage)
 
-            Text("No Categories Available")
+            Text(LocalizedStrings.categoriesEmptyTitle)
                 .font(.title2)
                 .foregroundStyle(.primary)
 
-            Text("No meal categories could be loaded at this time.")
+            Text(LocalizedStrings.categoriesEmptyDescription)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .padding()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(LocalizedStrings.accessibilityEmptyView)
     }
 
     private var loadingView: some View {
@@ -107,6 +108,9 @@ struct CategoryListView: View {
             ShimmerCategoryGrid(itemCount: 6) // 6 categories in 2-column grid
                 .padding(.horizontal, Theme.Spacing.large.value)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(LocalizedStrings.accessibilityLoadingView)
+        .accessibilityHint(LocalizedStrings.accessibilityLoadingHint)
     }
     
     private func loadedView(categories: [MealCategory]) -> some View {
@@ -116,16 +120,8 @@ struct CategoryListView: View {
                 FavoritesCard(
                     favoritesCount: viewModel.favoritesCount,
                     onTap: {
-                        coordinator.showFavorites()
+                        viewModel.handleFavoritesSelection()
                     }
-                )
-                .transition(.asymmetric(
-                    insertion: .scale(scale: 0.8).combined(with: .opacity),
-                    removal: .scale(scale: 0.8).combined(with: .opacity)
-                ))
-                .animation(
-                    .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0),
-                    value: viewModel.loadingState
                 )
 
                 // Categories grid with device-specific adaptive sizing
@@ -137,17 +133,8 @@ struct CategoryListView: View {
                         CategoryGridCard(
                             category: category,
                             onTap: {
-                                coordinator.showMealsByCategory(category)
+                                viewModel.handleCategorySelection(category)
                             }
-                        )
-                        .transition(.asymmetric(
-                            insertion: .scale(scale: 0.8).combined(with: .opacity),
-                            removal: .scale(scale: 0.8).combined(with: .opacity)
-                        ))
-                        .animation(
-                            .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0)
-                            .delay(Double(index) * 0.1),
-                            value: viewModel.loadingState
                         )
                     }
                 }
@@ -162,25 +149,29 @@ struct CategoryListView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
                 .foregroundStyle(.red)
+                .accessibilityLabel(LocalizedStrings.accessibilityErrorLoading)
             
-            Text("Unable to Load Categories")
+            Text(LocalizedStrings.categoriesErrorTitle)
                 .font(.title2)
                 .foregroundStyle(.primary)
             
-            Text("Please check your internet connection and try again.")
+            Text(LocalizedStrings.categoriesErrorDescription)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
-            Button("Retry") {
+            Button(LocalizedStrings.categoriesRetryButton) {
                 Task {
                     await viewModel.load()
                 }
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .accessibilityHint(LocalizedStrings.accessibilityRetryHint)
         }
         .padding()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(LocalizedStrings.accessibilityErrorView)
     }
 }
 
@@ -313,7 +304,7 @@ private struct CategoryGridCard: View {
     }
     
     private var imageAspectRatio: CGFloat {
-        isIPad ? 4/3 : 3/2  // Slightly taller on iPad for better proportions
+        isIPad ? 16/9 : 3/2  // Slightly taller on iPad for better proportions
     }
     
     private var titleFont: Font {
@@ -339,6 +330,7 @@ private struct CategoryGridCard: View {
                                 .font(isIPad ? .largeTitle : .title)
                                 .foregroundStyle(.secondary)
                         }
+                        .accessibilityLabel(LocalizedStrings.accessibilityCategoryImage)
                 }
                 .aspectRatio(imageAspectRatio, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -374,6 +366,10 @@ private struct CategoryGridCard: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(LocalizedStrings.accessibilityCategoryCard), \(category.name)")
+        .accessibilityHint(LocalizedStrings.accessibilityCategoryCardHint)
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -398,11 +394,11 @@ private struct FavoritesCard: View {
                     }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Favorites")
+                    Text(LocalizedStrings.favoritesCardTitle)
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    Text(favoritesCount == 0 ? "No favorite meals yet" : "\(favoritesCount) favorite meal\(favoritesCount == 1 ? "" : "s")")
+                    Text(favoritesCount == 0 ? LocalizedStrings.favoritesCountZero : LocalizedStrings.favoritesCount(favoritesCount))
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -427,5 +423,9 @@ private struct FavoritesCard: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(LocalizedStrings.accessibilityFavoritesCard), \(favoritesCount == 0 ? LocalizedStrings.favoritesCountZero : LocalizedStrings.favoritesCount(favoritesCount))")
+        .accessibilityHint(LocalizedStrings.accessibilityFavoritesCardHint)
+        .accessibilityAddTraits(.isButton)
     }
 }

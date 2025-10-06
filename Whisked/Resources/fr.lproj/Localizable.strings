@@ -15,6 +15,7 @@
 
 // MARK: - Category List
 "categories.title" = "Catégories de Repas";
+"categories.navigation_title" = "Catégories de Repas";
 "categories.loading" = "Exploration des catégories de repas...";
 "categories.loading_description" = "Chargement des options délicieuses";
 "categories.load_more" = "Charger Plus";
@@ -23,6 +24,7 @@
 "categories.empty.description" = "Aucune catégorie de repas n'a pu être chargée pour le moment.";
 "categories.error.title" = "Impossible de Charger les Catégories";
 "categories.error.description" = "Veuillez vérifier votre connexion internet et réessayer.";
+"categories.retry_button" = "Réessayer";
 
 // MARK: - Meal List
 "meals.search_placeholder" = "Rechercher des repas...";
@@ -46,12 +48,15 @@
 
 // MARK: - Favorites
 "favorites.title" = "Favoris";
+"favorites.navigation_title" = "Favoris";
 "favorites.count_zero" = "Aucun repas favori pour le moment";
 "favorites.count_one" = "1 repas favori";
 "favorites.count_many" = "%d repas favoris";
 "favorites.empty.title" = "Aucun Favori";
 "favorites.empty.description" = "Les repas que vous mettez en favori apparaîtront ici pour un accès facile.";
 "favorites.empty.browse" = "Parcourir les Recettes";
+"favorites.card_title" = "Favoris";
+"favorites.card_description" = "Vos recettes sauvegardées";
 
 // MARK: - Loading States
 "loading.default" = "Chargement...";
@@ -78,6 +83,14 @@
 "accessibility.loading_hint" = "Veuillez patienter pendant que nous récupérons le catalogue complet de repas";
 "accessibility.error_loading" = "Erreur lors du chargement des repas";
 "accessibility.retry_hint" = "Appuyez sur réessayer pour recharger la liste des repas";
+"accessibility.category_card" = "Carte de catégorie";
+"accessibility.category_card_hint" = "Appuyez pour voir les repas de cette catégorie";
+"accessibility.favorites_card" = "Carte des favoris";
+"accessibility.favorites_card_hint" = "Appuyez pour voir vos repas favoris";
+"accessibility.category_image" = "Image de catégorie";
+"accessibility.loading_view" = "Chargement des catégories";
+"accessibility.empty_view" = "Vue des catégories vides";
+"accessibility.error_view" = "Vue d'erreur de chargement des catégories";
 
 // MARK: - Categories
 "category.dessert" = "Dessert";
