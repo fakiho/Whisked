@@ -14,7 +14,11 @@ final class PersistenceServiceTests: XCTestCase {
     
     override func setUp() async throws {
         // Create an in-memory persistence service for testing
-        persistenceService = try PersistenceSetup.createInMemoryPersistenceService()
+        let schema = Schema([OfflineMeal.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+        let context = ModelContext(container)
+        persistenceService = PersistenceService(modelContext: context)
     }
     
     override func tearDown() async throws {
