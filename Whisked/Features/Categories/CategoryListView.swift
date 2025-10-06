@@ -17,9 +17,7 @@ struct CategoryListView: View {
     
     @StateObject private var viewModel: CategoryListViewModel
     private let coordinator: WhiskedMainCoordinator
-    private let persistenceService: PersistenceService?
-    @State private var favoritesCount: Int = 0
-    
+
     // MARK: - Device-specific Grid Layout
     
     /// Fixed grid columns based on device type to prevent overlapping
@@ -35,10 +33,9 @@ struct CategoryListView: View {
     
     // MARK: - Initialization
     
-    init(coordinator: WhiskedMainCoordinator, networkService: NetworkServiceProtocol = NetworkService(), persistenceService: PersistenceService? = nil) {
-        self._viewModel = StateObject(wrappedValue: CategoryListViewModel(networkService: networkService))
+    init(coordinator: WhiskedMainCoordinator, viewModel: CategoryListViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
         self.coordinator = coordinator
-        self.persistenceService = persistenceService
     }
     
     // MARK: - Body
@@ -48,19 +45,10 @@ struct CategoryListView: View {
             .navigationTitle("Meal Categories")
             .navigationBarTitleDisplayMode(.large)
             .task {
-                await viewModel.loadCategories()
-                await loadFavoritesCount()
+                await viewModel.load()
             }
             .refreshable {
-                await viewModel.refreshCategories()
-                await loadFavoritesCount()
-            }
-            .onReceive(coordinator.$persistenceService) { persistenceService in
-                if persistenceService != nil {
-                    Task {
-                        await loadFavoritesCount()
-                    }
-                }
+                await viewModel.refresh()
             }
     }
     
@@ -69,39 +57,12 @@ struct CategoryListView: View {
     @ViewBuilder
     private var contentView: some View {
         switch viewModel.loadingState {
-        case .idle:
-            VStack {
-                ProgressView("Loading categories...")
-                    .progressViewStyle(CircularProgressViewStyle())
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-        case .loading:
+        case .idle, .loading:
             loadingView
             
         case .loaded(let categories):
-            if viewModel.displayedCategories.isEmpty {
-                if viewModel.isLoadingMore {
-                    // Show shimmer while loading first page after categories are fetched
-                    loadingView
-                } else {
-                    // Show empty state only if no categories at all
-                    VStack(spacing: 20) {
-                        Image(systemName: "tray")
-                            .font(.system(size: 48))
-                            .foregroundStyle(.secondary)
-                        
-                        Text("No Categories Available")
-                            .font(.title2)
-                            .foregroundStyle(.primary)
-                        
-                        Text("No meal categories could be loaded at this time.")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                }
+            if viewModel.allCategories.isEmpty {
+                emptyView
             } else {
                 loadedView(categories: categories)
             }
@@ -110,7 +71,25 @@ struct CategoryListView: View {
             errorView(error: error)
         }
     }
-    
+
+    private var emptyView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "tray")
+                .font(.system(size: 48))
+                .foregroundStyle(.secondary)
+
+            Text("No Categories Available")
+                .font(.title2)
+                .foregroundStyle(.primary)
+
+            Text("No meal categories could be loaded at this time.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+    }
+
     private var loadingView: some View {
         VStack(spacing: 20) {
             // Hero section with shimmer
@@ -137,7 +116,7 @@ struct CategoryListView: View {
             LazyVStack(spacing: 16) {
                 // Favorites card - always show at the top
                 FavoritesCard(
-                    favoritesCount: favoritesCount,
+                    favoritesCount: viewModel.favoritesCount,
                     onTap: {
                         coordinator.showFavorites()
                     }
@@ -150,13 +129,13 @@ struct CategoryListView: View {
                     .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0),
                     value: viewModel.loadingState
                 )
-                
+
                 // Categories grid with device-specific adaptive sizing
                 LazyVGrid(
                     columns: gridColumns,
                     spacing: Theme.Spacing.medium.value
                 ) {
-                    ForEach(Array(viewModel.displayedCategories.enumerated()), id: \.element.id) { index, category in
+                    ForEach(Array(viewModel.allCategories.enumerated()), id: \.element.id) { index, category in
                         CategoryGridCard(
                             category: category,
                             onTap: {
@@ -172,33 +151,9 @@ struct CategoryListView: View {
                             .delay(Double(index) * 0.1),
                             value: viewModel.loadingState
                         )
-                        .onAppear {
-                            viewModel.checkForLoadMore(category: category)
-                        }
                     }
                 }
                 .padding(.horizontal, Theme.Spacing.large.value)
-                
-                // Load more indicator
-                if viewModel.hasMorePages {
-                    if viewModel.isLoadingMore {
-                        HStack {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle())
-                                .scaleEffect(0.8)
-                            Text("Loading more categories...")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding()
-                    } else {
-                        Button("Load More") {
-                            viewModel.loadNextPage()
-                        }
-                        .buttonStyle(.bordered)
-                        .padding()
-                    }
-                }
             }
             .padding()
         }
@@ -221,34 +176,13 @@ struct CategoryListView: View {
             
             Button("Retry") {
                 Task {
-                    await viewModel.loadCategories()
+                    await viewModel.load()
                 }
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
         }
         .padding()
-    }
-    
-    // MARK: - Private Methods
-    
-    /// Loads the count of favorite meals from persistence service
-    private func loadFavoritesCount() async {
-        guard let persistenceService = coordinator.persistenceService else {
-            favoritesCount = 0
-            return
-        }
-        
-        do {
-            let count = try await persistenceService.getOfflineMealsCount()
-            await MainActor.run {
-                favoritesCount = count
-            }
-        } catch {
-            await MainActor.run {
-                favoritesCount = 0
-            }
-        }
     }
 }
 
@@ -502,15 +436,15 @@ private struct FavoritesCard: View {
 
 #Preview("CategoryListView - Loaded") {
     let coordinator = WhiskedMainCoordinator(networkService: MockNetworkService.success())
-    CategoryListView(coordinator: coordinator, networkService: MockNetworkService.success())
+    coordinator.createCategoryListView()
 }
 
 #Preview("CategoryListView - Loading") {
     let coordinator = WhiskedMainCoordinator(networkService: MockNetworkService.slowNetwork())
-    CategoryListView(coordinator: coordinator, networkService: MockNetworkService.slowNetwork())
+    coordinator.createCategoryListView()
 }
 
 #Preview("CategoryListView - Error") {
     let coordinator = WhiskedMainCoordinator(networkService: MockNetworkService.networkError())
-    CategoryListView(coordinator: coordinator, networkService: MockNetworkService.networkError())
+    coordinator.createCategoryListView()
 }
