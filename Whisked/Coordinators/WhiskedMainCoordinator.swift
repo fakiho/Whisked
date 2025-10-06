@@ -21,15 +21,9 @@ final class WhiskedMainCoordinator: ObservableObject {
     // MARK: - Dependencies
     
     private let mealService: MealServiceProtocol
-
+    
     /// Persistence service for managing offline favorites
-    private var persistenceService: PersistenceService {
-        let contextManager = SwiftDataContextManager.shared
-        guard let context = contextManager.context else {
-            fatalError("Could not get context from SwiftDataContextManager")
-        }
-        return PersistenceService(modelContext: context)
-    }
+    private let persistenceService: PersistenceService
 
     // MARK: - Destinations
     
@@ -47,6 +41,13 @@ final class WhiskedMainCoordinator: ObservableObject {
     /// - Parameter mealService: The meal service for data operations
     init(mealService: MealServiceProtocol? = nil) {
         self.mealService = mealService ?? MealService()
+        
+        // Initialize persistence service with ModelContainer for @ModelActor
+        let contextManager = SwiftDataContextManager.shared
+        guard let container = contextManager.container else {
+            fatalError("Could not get container from SwiftDataContextManager")
+        }
+        self.persistenceService = PersistenceService(modelContainer: container)
     }
     
     // MARK: - Factory Methods

@@ -24,6 +24,15 @@ public final class SwiftDataContextManager: @unchecked Sendable {
     /// The main model context for performing SwiftData operations
     public var context: ModelContext?
     
+    // MARK: - Public Methods
+    
+    /// Creates a new model context for actor isolation
+    /// This ensures each actor gets its own context to avoid main queue warnings
+    public func createActorContext() -> ModelContext? {
+        guard let container = container else { return nil }
+        return ModelContext(container)
+    }
+    
     // MARK: - Initialization
     
     /// Private initializer to enforce singleton pattern

@@ -8,23 +8,11 @@
 import Foundation
 import SwiftData
 
-/// Thread-safe actor responsible for managing offline meal data persistence
+/// Thread-safe ModelActor responsible for managing offline meal data persistence
 /// Uses SwiftData for robust local storage with complete meal information
+@ModelActor
 public actor PersistenceService: PersistenceServiceProtocol {
 
-    // MARK: - Properties
-    
-    /// The SwiftData model context for persistence operations
-    private let modelContext: ModelContext
-    
-    // MARK: - Initialization
-    
-    /// Initializes the persistence service with a model context
-    /// - Parameter modelContext: The SwiftData model context to use for persistence
-    public init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    
     // MARK: - Public Methods
     
     /// Saves a meal with complete details to offline storage
