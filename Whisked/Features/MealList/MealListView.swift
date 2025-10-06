@@ -89,14 +89,6 @@ struct MealListView: View {
         horizontalSizeClass == .regular && verticalSizeClass == .compact
     }
     
-    /// Adaptive content width for iPad layouts
-    private var adaptiveContentWidth: CGFloat? {
-        if isIPad && !isLandscape {
-            return Theme.Layout.maxContentWidth
-        }
-        return nil
-    }
-    
     /// Adaptive icon size based on device
     private var adaptiveIconSize: CGFloat {
         if isIPad {
@@ -146,14 +138,10 @@ struct MealListView: View {
                         .foregroundColor(.textSecondary)
                 }
                 .themePadding(.horizontal, isIPad ? .extraLarge : .large)
-                .frame(maxWidth: adaptiveContentWidth)
-                .frame(maxWidth: .infinity)
                 
                 // Shimmer grid - represents loading state for initial fetch only
                 ShimmerMealGrid(itemCount: isIPad ? 9 : 6)
-                    .themePadding(.horizontal, isIPad ? .large : .medium)
-                    .frame(maxWidth: adaptiveContentWidth)
-                    .frame(maxWidth: .infinity)
+                    .themePadding(.horizontal, isIPad ? .extraLarge : .medium)
             }
         }
         .background(Color.backgroundPrimary)
@@ -202,9 +190,7 @@ struct MealListView: View {
                     .delay(Double(index) * (isIPad ? 0.03 : 0.05)),
                     value: hasAppeared
                 )
-                .themePadding(.horizontal, isIPad ? .large : .medium)
-                .frame(maxWidth: adaptiveContentWidth)
-                .frame(maxWidth: .infinity)
+                .themePadding(.horizontal, isIPad ? .extraLarge : .medium)
                 .onAppear {
                     // Only trigger pagination on specific threshold items for efficiency
                     if viewModel.shouldTriggerPagination(for: index) {
@@ -304,8 +290,6 @@ struct MealListView: View {
                     .themePadding(.horizontal, isIPad ? .extraLarge : .large)
                     .themePadding(.top, isIPad ? .medium : .small)
             }
-            .frame(maxWidth: adaptiveContentWidth)
-            .frame(maxWidth: .infinity)
             
             Spacer(minLength: isIPad ? 120 : 100)
         }
@@ -338,8 +322,6 @@ struct MealListView: View {
                         .multilineTextAlignment(.center)
                         .themePadding(.horizontal, isIPad ? .extraLarge : .large)
                 }
-                .frame(maxWidth: adaptiveContentWidth)
-                .frame(maxWidth: .infinity)
                 
                 Button(LocalizedStrings.mealsTryAgain) {
                     Task {
