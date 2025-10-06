@@ -30,6 +30,7 @@
 "meals.search_placeholder" = "Rechercher des repas...";
 "meals.loading" = "Exploration des recettes %@...";
 "meals.loading_description" = "Récupération du catalogue complet de repas";
+"meals.loading_more" = "Chargement d'autres...";
 "meals.error.title" = "Oups !";
 "meals.error.default" = "Une erreur s'est produite lors du chargement des repas";
 "meals.try_again" = "Réessayer";

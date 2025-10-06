@@ -76,7 +76,7 @@ struct MealListView: View {
         switch viewModel.state {
         case .idle, .loading:
             loadingView
-        case .loaded, .finished:
+        case .loaded, .finished, .loadingMore:
             mealListView
         case .error:
             errorView
@@ -125,13 +125,7 @@ struct MealListView: View {
     
     private var mealListContent: some View {
         LazyVStack(spacing: Theme.Spacing.medium.value) {
-            mealCardsSection
-            bottomSpacing
-        }
-    }
-    
-    private var mealCardsSection: some View {
-        VStack(spacing: Theme.Spacing.medium.value) {
+            // Meal cards with efficient pagination
             ForEach(Array(viewModel.filteredMeals.enumerated()), id: \.element.id) { index, meal in
                 MealCard(
                     meal: meal,
@@ -147,23 +141,55 @@ struct MealListView: View {
                     .delay(Double(index) * 0.05),
                     value: hasAppeared
                 )
+                .padding(.horizontal, Theme.Spacing.medium.value)
+                .onAppear {
+                    // Only trigger pagination on specific threshold items for efficiency
+                    if viewModel.shouldTriggerPagination(for: index) {
+                        viewModel.loadNextPage()
+                    }
+                }
                 .id(meal.id)
             }
-            .padding(.horizontal, Theme.Spacing.medium.value)
             
-            if viewModel.state.canLoadMore && searchText.isEmpty {
+            // Loading more indicator and pagination trigger
+            if viewModel.state.isLoadingMore {
+                loadingMoreView
+            } else if !viewModel.state.isFinished && !viewModel.filteredMeals.isEmpty {
+                // Invisible pagination trigger - more efficient than onAppear on every card
                 paginationTrigger
             }
+            
+            bottomSpacing
         }
     }
     
-    /// Invisible pagination trigger that loads the next page when scrolled into view
+    /// Invisible view that triggers pagination when it appears
+    /// More efficient than checking every card
     private var paginationTrigger: some View {
-        Color.clear
+        Rectangle()
+            .fill(Color.clear)
             .frame(height: 1)
             .onAppear {
-                viewModel.loadNextPage()
+                // This will only trigger when user scrolls close to the bottom
+                if !viewModel.state.isLoadingMore && !viewModel.state.isFinished {
+                    viewModel.loadNextPage()
+                }
             }
+    }
+    
+    /// Loading more indicator shown at the bottom when paginating
+    private var loadingMoreView: some View {
+        HStack(spacing: Theme.Spacing.medium.value) {
+            ProgressView()
+                .scaleEffect(0.8)
+                .tint(.textSecondary)
+            
+            Text(LocalizedStrings.mealsLoadingMore)
+                .themeCaption()
+                .foregroundColor(.textSecondary)
+        }
+        .padding(.vertical, Theme.Spacing.large.value)
+        .frame(maxWidth: .infinity)
     }
     
     private var bottomSpacing: some View {

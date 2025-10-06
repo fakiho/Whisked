@@ -56,6 +56,14 @@ final class MealListViewModel {
     /// Set of favorite meal IDs for quick lookup
     private(set) var favoriteMealIDs: Set<String> = []
     
+    /// Whether pagination has reached the end
+    private(set) var hasReachedEnd: Bool = false
+    
+    /// Whether search is currently active
+    var isSearchActive: Bool {
+        return !searchQuery.isEmpty
+    }
+    
     // MARK: - Private Properties
     
     /// Complete dataset fetched from API - single source of truth
@@ -105,6 +113,7 @@ final class MealListViewModel {
         meals = []
         allMeals = []
         currentPage = 0
+        hasReachedEnd = false
         
         do {
             // Load favorites and meals concurrently
@@ -164,19 +173,51 @@ final class MealListViewModel {
         return favoriteMealIDs.contains(mealID)
     }
     
+    /// Determines if more data should be loaded based on current scroll position
+    /// Call this method when the user scrolls near the end of the list
+    /// - Parameter currentIndex: The index of the item currently visible
+    /// - Returns: True if more data should be loaded
+    func shouldLoadMore(currentIndex: Int) -> Bool {
+        guard !isSearchActive && !hasReachedEnd && state.canLoadMore else {
+            return false
+        }
+        
+        // Load more when user is within 5 items of the end
+        let threshold = max(0, filteredMeals.count - 5)
+        return currentIndex >= threshold
+    }
+    
+    /// Determines if pagination should be triggered for the given index
+    /// Only triggers on specific items near the end to avoid excessive calls
+    /// This method is designed for efficient UI pagination triggers
+    /// - Parameter index: The index of the item that appeared in the UI
+    /// - Returns: True if pagination should be triggered for this index
+    func shouldTriggerPagination(for index: Int) -> Bool {
+        // Use a more restrictive threshold for UI triggers to avoid excessive calls
+        let threshold = max(5, filteredMeals.count - 3)
+        return index >= threshold && shouldLoadMore(currentIndex: index)
+    }
+    
     // MARK: - Public Methods
     
     /// Loads the next page of meals from the in-memory dataset
     /// This is a synchronous operation that provides instant results
+    /// Call this method when the user scrolls near the end of the list
     func loadNextPage() {
+        // Don't load more if search is active - search shows all results
+        guard !isSearchActive else { return }
+        
         // Guard against invalid states and conditions
-        guard state.canLoadMore,
-              !allMeals.isEmpty else { return }
+        guard state.canLoadMore && !hasReachedEnd && !allMeals.isEmpty else { return }
+        
+        // Set loading more state
+        state = .loadingMore
         
         let startIndex = currentPage * pageSize
         
         // Ensure we don't go beyond available data
         guard startIndex < allMeals.count else {
+            hasReachedEnd = true
             state = .finished
             return
         }
@@ -190,16 +231,15 @@ final class MealListViewModel {
         // Append to displayed meals (not replace - this is pagination)
         meals.append(contentsOf: newMeals)
         
-        // Update filtered meals if no search is active
-        if searchQuery.isEmpty {
-            filteredMeals = meals
-        }
+        // Update filtered meals to match current meals when no search is active
+        filteredMeals = meals
         
         // Update pagination state
         currentPage += 1
         
         // Check if we've loaded all available data
         if endIndex >= allMeals.count {
+            hasReachedEnd = true
             state = .finished
         } else {
             state = .loaded
@@ -209,25 +249,31 @@ final class MealListViewModel {
     /// Refreshes the meal list by re-fetching all data and resetting pagination
     func refresh() async {
         hasFetchedData = false
+        hasReachedEnd = false
+        currentPage = 0
         await fetchAllMeals()
     }
     
     /// Retries fetching meals after an error
     func retry() async {
         hasFetchedData = false
+        hasReachedEnd = false
+        currentPage = 0
         await fetchAllMeals()
     }
     
     /// Filters meals based on search query with case-insensitive matching
+    /// When search is active, shows all matching results immediately
+    /// When search is cleared, returns to paginated view
     /// - Parameter query: The search query to filter meals
     func filterMeals(with query: String) {
         searchQuery = query
         
         if query.isEmpty {
-            // Show all displayed meals when search is empty
+            // Return to paginated view - show currently loaded pages
             filteredMeals = meals
         } else {
-            // Filter meals based on name containing the query (case-insensitive)
+            // Search is active - show all matching results from the complete dataset
             filteredMeals = allMeals.filter { meal in
                 meal.name.localizedCaseInsensitiveContains(query)
             }
@@ -240,6 +286,7 @@ final class MealListViewModel {
     /// Handles the initial page load directly without delegation
     private func loadFirstPage() {
         guard !allMeals.isEmpty else {
+            hasReachedEnd = true
             state = .finished // No data available
             return
         }
@@ -247,6 +294,7 @@ final class MealListViewModel {
         // Reset pagination state
         currentPage = 0
         meals = []
+        hasReachedEnd = false
         
         // Calculate how many items to show on first page
         let endIndex = min(pageSize, allMeals.count)
@@ -263,6 +311,7 @@ final class MealListViewModel {
         
         // Set appropriate state based on whether there's more data
         if endIndex >= allMeals.count {
+            hasReachedEnd = true
             state = .finished // All data loaded in first page
         } else {
             state = .loaded   // More pages available
@@ -281,21 +330,24 @@ extension MealListViewModel {
         case idle           // Initial state before any network call
         case loading        // Fetching complete dataset from API
         case loaded         // Successfully loaded, pagination may continue
+        case loadingMore    // Loading next page of data
         case error(String)  // Network error occurred
         case finished       // All data has been paginated to the user
         
         /// Computed property to check if the view is in loading state
         var isLoading: Bool {
-            if case .loading = self {
+            switch self {
+            case .loading, .loadingMore:
                 return true
+            default:
+                return false
             }
-            return false
         }
         
         /// Computed property to check if the view is in success state (loaded or finished)
         var isSuccess: Bool {
             switch self {
-            case .loaded, .finished:
+            case .loaded, .finished, .loadingMore:
                 return true
             default:
                 return false
@@ -313,6 +365,22 @@ extension MealListViewModel {
         /// Computed property to check if pagination can continue
         var canLoadMore: Bool {
             if case .loaded = self {
+                return true
+            }
+            return false
+        }
+        
+        /// Computed property to check if currently loading more data
+        var isLoadingMore: Bool {
+            if case .loadingMore = self {
+                return true
+            }
+            return false
+        }
+        
+        /// Computed property to check if all data has been loaded
+        var isFinished: Bool {
+            if case .finished = self {
                 return true
             }
             return false

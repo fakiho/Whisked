@@ -37,6 +37,7 @@ enum LocalizedStrings {
     static let mealsErrorDefault = NSLocalizedString("meals.error.default", comment: "Default meals error message")
     static let mealsTryAgain = NSLocalizedString("meals.try_again", comment: "Try again button")
     static let mealsTapToView = NSLocalizedString("meals.tap_to_view", comment: "Tap to view recipe hint")
+    static let mealsLoadingMore = NSLocalizedString("meals.loading_more", comment: "Loading more meals indicator")
     
     static func mealsLoading(category: String) -> String {
         String(format: NSLocalizedString("meals.loading", comment: "Loading meals for category"), category)

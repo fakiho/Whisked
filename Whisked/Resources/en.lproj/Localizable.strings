@@ -30,6 +30,7 @@
 "meals.search_placeholder" = "Search meals...";
 "meals.loading" = "Exploring %@ recipes...";
 "meals.loading_description" = "Fetching complete meal catalog";
+"meals.loading_more" = "Loading more...";
 "meals.error.title" = "Oops!";
 "meals.error.default" = "Something went wrong while loading meals";
 "meals.try_again" = "Try Again";
