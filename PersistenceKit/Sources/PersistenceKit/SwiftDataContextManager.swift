@@ -122,6 +122,17 @@ public final class SwiftDataContextManager: @unchecked Sendable {
             context = nil
         }
     }
+    
+    /// Creates a new PersistenceService using the shared context
+    /// - Returns: A configured PersistenceService instance
+    /// - Throws: SwiftDataContextManagerError if context is not available
+    public func createPersistenceService() throws -> PersistenceService {
+        guard let context = context else {
+            throw SwiftDataContextManagerError.contextNotAvailable
+        }
+        
+        return PersistenceService(modelContext: context)
+    }
 }
 
 // MARK: - Error Types

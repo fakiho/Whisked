@@ -21,8 +21,17 @@ final class WhiskedMainCoordinator: ObservableObject {
     // MARK: - Dependencies
     
     private let mealService: MealServiceProtocol
-    @Published var persistenceService: PersistenceService?
-    
+
+    /// Persistence service for managing offline favorites
+    private var persistenceService: PersistenceService {
+        let contextManager = SwiftDataContextManager.shared
+        do {
+            return try contextManager.createPersistenceService()
+        } catch {
+            fatalError("Could not create PersistenceService: \(error)")
+        }
+    }
+
     // MARK: - Destinations
     
     /// Enumeration defining all possible navigation destinations in the app
@@ -39,14 +48,6 @@ final class WhiskedMainCoordinator: ObservableObject {
     /// - Parameter mealService: The meal service for data operations
     init(mealService: MealServiceProtocol? = nil) {
         self.mealService = mealService ?? MealService()
-    }
-    
-    // MARK: - Configuration
-    
-    /// Configures the persistence service after app initialization
-    /// - Parameter persistenceService: The persistence service to use for offline storage
-    func configurePersistenceService(_ persistenceService: PersistenceService) {
-        self.persistenceService = persistenceService
     }
     
     // MARK: - Factory Methods
