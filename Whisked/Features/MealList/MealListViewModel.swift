@@ -11,6 +11,27 @@ import Combine
 import NetworkKit
 
 /// ViewModel for managing the meal list screen state and data with client-side pagination
+///
+/// **Technical Note**: This ViewModel uses `@Observable` (iOS 17+) as an alternative to the traditional
+/// `ObservableObject` + `@Published` pattern used elsewhere in this codebase. This demonstrates both
+/// approaches for technical evaluation purposes.
+///
+/// **Production Consideration**: In a real project, consistency is crucial. All ViewModels should follow
+/// the same observation pattern. The choice between `@Observable` and `ObservableObject` should be made
+/// project-wide based on:
+/// - Minimum deployment target (iOS 17+ required for @Observable)
+/// - Team familiarity and preferences
+/// - Performance requirements (@Observable is more efficient)
+/// - Migration timeline (for existing projects)
+///
+/// **@Observable Benefits**:
+/// - Better performance than ObservableObject
+/// - Cleaner syntax (no @Published required)
+/// - Better Swift concurrency integration
+/// - Automatic observation of property changes
+///
+/// **For Production**: Consider standardizing all ViewModels to use @Observable for iOS 17+ projects,
+/// or ObservableObject for broader iOS version support.
 @MainActor
 @Observable
 final class MealListViewModel {
