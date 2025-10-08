@@ -8,95 +8,105 @@
 import Foundation
 
 /// Centralized access to localized strings
+/// Now automatically uses the current language from LocalizableManager
 enum LocalizedStrings {
     
+    /// Internal helper method to get localized strings using our dynamic system
+    private static func localized(_ key: String) -> String {
+        return Bundle.localizedBundle().localizedString(forKey: key, value: nil, table: nil)
+    }
+
+    static var languageSwitchButton: String { localized("language.switch_button") }
+    static var languageEnglish: String { localized("language.english") }
+    static var languageFrench: String { localized("language.french") }
+    
     // MARK: - Navigation & General
-    static let appTitle = NSLocalizedString("app.title", comment: "App title")
-    static let navigationBack = NSLocalizedString("navigation.back", comment: "Back button")
-    static let navigationDone = NSLocalizedString("navigation.done", comment: "Done button")
-    static let navigationCancel = NSLocalizedString("navigation.cancel", comment: "Cancel button")
-    static let navigationRetry = NSLocalizedString("navigation.retry", comment: "Retry button")
-    static let navigationClose = NSLocalizedString("navigation.close", comment: "Close button")
+    static var appTitle: String { localized("app.title") }
+    static var navigationBack: String { localized("navigation.back") }
+    static var navigationDone: String { localized("navigation.done") }
+    static var navigationCancel: String { localized("navigation.cancel") }
+    static var navigationRetry: String { localized("navigation.retry") }
+    static var navigationClose: String { localized("navigation.close") }
     
     // MARK: - Category List
-    static let categoriesTitle = NSLocalizedString("categories.title", comment: "Categories screen title")
-    static let categoriesNavigationTitle = NSLocalizedString("categories.navigation_title", comment: "Categories navigation title")
-    static let categoriesLoading = NSLocalizedString("categories.loading", comment: "Loading categories message")
-    static let categoriesLoadingDescription = NSLocalizedString("categories.loading_description", comment: "Loading categories description")
-    static let categoriesLoadMore = NSLocalizedString("categories.load_more", comment: "Load more button")
-    static let categoriesLoadingMore = NSLocalizedString("categories.loading_more", comment: "Loading more categories")
-    static let categoriesEmptyTitle = NSLocalizedString("categories.empty.title", comment: "Empty categories title")
-    static let categoriesEmptyDescription = NSLocalizedString("categories.empty.description", comment: "Empty categories description")
-    static let categoriesErrorTitle = NSLocalizedString("categories.error.title", comment: "Categories error title")
-    static let categoriesErrorDescription = NSLocalizedString("categories.error.description", comment: "Categories error description")
-    static let categoriesRetryButton = NSLocalizedString("categories.retry_button", comment: "Retry button text")
+    static var categoriesTitle: String { localized("categories.title") }
+    static var categoriesNavigationTitle: String { localized("categories.navigation_title") }
+    static var categoriesLoading: String { localized("categories.loading") }
+    static var categoriesLoadingDescription: String { localized("categories.loading_description") }
+    static var categoriesLoadMore: String { localized("categories.load_more") }
+    static var categoriesLoadingMore: String { localized("categories.loading_more") }
+    static var categoriesEmptyTitle: String { localized("categories.empty.title") }
+    static var categoriesEmptyDescription: String { localized("categories.empty.description") }
+    static var categoriesErrorTitle: String { localized("categories.error.title") }
+    static var categoriesErrorDescription: String { localized("categories.error.description") }
+    static var categoriesRetryButton: String { localized("categories.retry_button") }
     
     // MARK: - Meal List
-    static let mealsSearchPlaceholder = NSLocalizedString("meals.search_placeholder", comment: "Meals search placeholder")
-    static let mealsErrorTitle = NSLocalizedString("meals.error.title", comment: "Meals error title")
-    static let mealsErrorDefault = NSLocalizedString("meals.error.default", comment: "Default meals error message")
-    static let mealsTryAgain = NSLocalizedString("meals.try_again", comment: "Try again button")
-    static let mealsTapToView = NSLocalizedString("meals.tap_to_view", comment: "Tap to view recipe hint")
-    static let mealsLoadingMore = NSLocalizedString("meals.loading_more", comment: "Loading more meals indicator")
-    static let mealsEmptySearchTitle = NSLocalizedString("meals.empty_search.title", comment: "Empty search results title")
-    static let mealsEmptySearchDescription = NSLocalizedString("meals.empty_search.description", comment: "Empty search results description")
-    static let mealsEmptySearchSuggestion = NSLocalizedString("meals.empty_search.suggestion", comment: "Empty search results suggestion")
+    static var mealsSearchPlaceholder: String { localized("meals.search_placeholder") }
+    static var mealsErrorTitle: String { localized("meals.error.title") }
+    static var mealsErrorDefault: String { localized("meals.error.default") }
+    static var mealsTryAgain: String { localized("meals.try_again") }
+    static var mealsTapToView: String { localized("meals.tap_to_view") }
+    static var mealsLoadingMore: String { localized("meals.loading_more") }
+    static var mealsEmptySearchTitle: String { localized("meals.empty_search.title") }
+    static var mealsEmptySearchDescription: String { localized("meals.empty_search.description") }
+    static var mealsEmptySearchSuggestion: String { localized("meals.empty_search.suggestion") }
     
     static func mealsEmptySearchQuery(query: String) -> String {
-        String(format: NSLocalizedString("meals.empty_search.query", comment: "No results for search query"), query)
+        String(format: localized("meals.empty_search.query"), query)
     }
     
     static func mealsLoading(category: String) -> String {
-        String(format: NSLocalizedString("meals.loading", comment: "Loading meals for category"), category)
+        String(format: localized("meals.loading"), category)
     }
     
-    static let mealsLoadingDescription = NSLocalizedString("meals.loading_description", comment: "Loading meals description")
+    static var mealsLoadingDescription: String { localized("meals.loading_description") }
     
     // MARK: - Meal Detail
-    static let mealDetailIngredients = NSLocalizedString("meal_detail.ingredients", comment: "Ingredients section title")
-    static let mealDetailInstructions = NSLocalizedString("meal_detail.instructions", comment: "Instructions section title")
-    static let mealDetailFavoriteAdd = NSLocalizedString("meal_detail.favorite.add", comment: "Add to favorites")
-    static let mealDetailFavoriteRemove = NSLocalizedString("meal_detail.favorite.remove", comment: "Remove from favorites")
-    static let mealDetailFavoriteAdded = NSLocalizedString("meal_detail.favorite.added", comment: "Added to favorites")
-    static let mealDetailFavoriteRemoved = NSLocalizedString("meal_detail.favorite.removed", comment: "Removed from favorites")
-    static let mealDetailLoading = NSLocalizedString("meal_detail.loading", comment: "Loading meal detail")
-    static let mealDetailErrorTitle = NSLocalizedString("meal_detail.error.title", comment: "Meal detail error title")
-    static let mealDetailErrorDescription = NSLocalizedString("meal_detail.error.description", comment: "Meal detail error description")
+    static var mealDetailIngredients: String { localized("meal_detail.ingredients") }
+    static var mealDetailInstructions: String { localized("meal_detail.instructions") }
+    static var mealDetailFavoriteAdd: String { localized("meal_detail.favorite.add") }
+    static var mealDetailFavoriteRemove: String { localized("meal_detail.favorite.remove") }
+    static var mealDetailFavoriteAdded: String { localized("meal_detail.favorite.added") }
+    static var mealDetailFavoriteRemoved: String { localized("meal_detail.favorite.removed") }
+    static var mealDetailLoading: String { localized("meal_detail.loading") }
+    static var mealDetailErrorTitle: String { localized("meal_detail.error.title") }
+    static var mealDetailErrorDescription: String { localized("meal_detail.error.description") }
     
     // MARK: - Favorites
-    static let favoritesTitle = NSLocalizedString("favorites.title", comment: "Favorites screen title")
-    static let favoritesNavigationTitle = NSLocalizedString("favorites.navigation_title", comment: "Favorites navigation title")
-    static let favoritesCountZero = NSLocalizedString("favorites.count_zero", comment: "No favorites message")
-    static let favoritesEmptyTitle = NSLocalizedString("favorites.empty.title", comment: "Empty favorites title")
-    static let favoritesEmptyDescription = NSLocalizedString("favorites.empty.description", comment: "Empty favorites description")
-    static let favoritesEmptyBrowse = NSLocalizedString("favorites.empty.browse", comment: "Browse recipes button")
-    static let favoritesCardTitle = NSLocalizedString("favorites.card_title", comment: "Favorites card title")
-    static let favoritesCardDescription = NSLocalizedString("favorites.card_description", comment: "Favorites card description")
+    static var favoritesTitle: String { localized("favorites.title") }
+    static var favoritesNavigationTitle: String { localized("favorites.navigation_title") }
+    static var favoritesCountZero: String { localized("favorites.count_zero") }
+    static var favoritesEmptyTitle: String { localized("favorites.empty.title") }
+    static var favoritesEmptyDescription: String { localized("favorites.empty.description") }
+    static var favoritesEmptyBrowse: String { localized("favorites.empty.browse") }
+    static var favoritesCardTitle: String { localized("favorites.card_title") }
+    static var favoritesCardDescription: String { localized("favorites.card_description") }
     
     static func favoritesCount(_ count: Int) -> String {
         if count == 1 {
-            return NSLocalizedString("favorites.count_one", comment: "One favorite meal")
+            return localized("favorites.count_one")
         } else {
-            return String(format: NSLocalizedString("favorites.count_many", comment: "Multiple favorite meals"), count)
+            return String(format: localized("favorites.count_many"), count)
         }
     }
     
     // MARK: - Loading States
-    static let loadingDefault = NSLocalizedString("loading.default", comment: "Default loading message")
-    static let loadingPleaseWait = NSLocalizedString("loading.please_wait", comment: "Please wait message")
-    static let loadingCategories = NSLocalizedString("loading.categories", comment: "Loading categories")
-    static let loadingMeals = NSLocalizedString("loading.meals", comment: "Loading meals")
-    static let loadingRecipe = NSLocalizedString("loading.recipe", comment: "Loading recipe")
+    static var loadingDefault: String { localized("loading.default") }
+    static var loadingPleaseWait: String { localized("loading.please_wait") }
+    static var loadingCategories: String { localized("loading.categories") }
+    static var loadingMeals: String { localized("loading.meals") }
+    static var loadingRecipe: String { localized("loading.recipe") }
     
     // MARK: - Error Messages
-    static let errorNetworkTitle = NSLocalizedString("error.network.title", comment: "Network error title")
-    static let errorNetworkDescription = NSLocalizedString("error.network.description", comment: "Network error description")
-    static let errorServerTitle = NSLocalizedString("error.server.title", comment: "Server error title")
-    static let errorServerDescription = NSLocalizedString("error.server.description", comment: "Server error description")
-    static let errorTimeoutTitle = NSLocalizedString("error.timeout.title", comment: "Timeout error title")
-    static let errorTimeoutDescription = NSLocalizedString("error.timeout.description", comment: "Timeout error description")
-    static let errorUnknownTitle = NSLocalizedString("error.unknown.title", comment: "Unknown error title")
-    static let errorUnknownDescription = NSLocalizedString("error.unknown.description", comment: "Unknown error description")
+    static var errorNetworkTitle: String { localized("error.network.title") }
+    static var errorNetworkDescription: String { localized("error.network.description") }
+    static var errorServerTitle: String { localized("error.server.title") }
+    static var errorServerDescription: String { localized("error.server.description") }
+    static var errorTimeoutTitle: String { localized("error.timeout.title") }
+    static var errorTimeoutDescription: String { localized("error.timeout.description") }
+    static var errorUnknownTitle: String { localized("error.unknown.title") }
+    static var errorUnknownDescription: String { localized("error.unknown.description") }
     
     // MARK: - Meal List Specific Error Messages
     static let errorMealsNoInternet = NSLocalizedString("error.meals.no_internet", comment: "No internet connection error for meals")
@@ -113,25 +123,25 @@ enum LocalizedStrings {
     }
     
     // MARK: - Accessibility
-    static let accessibilityMealList = NSLocalizedString("accessibility.meal_list", comment: "Meal list accessibility label")
-    static let accessibilityMealListHint = NSLocalizedString("accessibility.meal_list_hint", comment: "Meal list accessibility hint")
-    static let accessibilityFavorited = NSLocalizedString("accessibility.favorited", comment: "Favorited accessibility label")
-    static let accessibilityErrorLoading = NSLocalizedString("accessibility.error_loading", comment: "Error loading accessibility")
-    static let accessibilityRetryHint = NSLocalizedString("accessibility.retry_hint", comment: "Retry accessibility hint")
-    static let accessibilityCategoryCard = NSLocalizedString("accessibility.category_card", comment: "Category card accessibility label")
-    static let accessibilityCategoryCardHint = NSLocalizedString("accessibility.category_card_hint", comment: "Category card accessibility hint")
-    static let accessibilityFavoritesCard = NSLocalizedString("accessibility.favorites_card", comment: "Favorites card accessibility label")
-    static let accessibilityFavoritesCardHint = NSLocalizedString("accessibility.favorites_card_hint", comment: "Favorites card accessibility hint")
-    static let accessibilityCategoryImage = NSLocalizedString("accessibility.category_image", comment: "Category image accessibility label")
-    static let accessibilityLoadingView = NSLocalizedString("accessibility.loading_view", comment: "Loading view accessibility label")
-    static let accessibilityEmptyView = NSLocalizedString("accessibility.empty_view", comment: "Empty view accessibility label")
-    static let accessibilityErrorView = NSLocalizedString("accessibility.error_view", comment: "Error view accessibility label")
+    static var accessibilityMealList: String { localized("accessibility.meal_list") }
+    static var accessibilityMealListHint: String { localized("accessibility.meal_list_hint") }
+    static var accessibilityFavorited: String { localized("accessibility.favorited") }
+    static var accessibilityErrorLoading: String { localized("accessibility.error_loading") }
+    static var accessibilityRetryHint: String { localized("accessibility.retry_hint") }
+    static var accessibilityCategoryCard: String { localized("accessibility.category_card") }
+    static var accessibilityCategoryCardHint: String { localized("accessibility.category_card_hint") }
+    static var accessibilityFavoritesCard: String { localized("accessibility.favorites_card") }
+    static var accessibilityFavoritesCardHint: String { localized("accessibility.favorites_card_hint") }
+    static var accessibilityCategoryImage: String { localized("accessibility.category_image") }
+    static var accessibilityLoadingView: String { localized("accessibility.loading_view") }
+    static var accessibilityEmptyView: String { localized("accessibility.empty_view") }
+    static var accessibilityErrorView: String { localized("accessibility.error_view") }
     
     static func accessibilityLoadingMeals(category: String) -> String {
-        String(format: NSLocalizedString("accessibility.loading_meals", comment: "Loading meals accessibility"), category)
+        String(format: localized("accessibility.loading_meals"), category)
     }
     
-    static let accessibilityLoadingHint = NSLocalizedString("accessibility.loading_hint", comment: "Loading accessibility hint")
+    static var accessibilityLoadingHint: String { localized("accessibility.loading_hint") }
     
     // MARK: - Enhanced Accessibility
     static let accessibilityMealCard = NSLocalizedString("accessibility.meal_card", comment: "Meal card accessibility label")
@@ -165,11 +175,11 @@ enum LocalizedStrings {
     static let accessibilityNavigationBackHint = NSLocalizedString("accessibility.navigation_back_hint", comment: "Navigation back accessibility hint")
     
     static func accessibilityRecipeCount(_ count: Int) -> String {
-        String(format: NSLocalizedString("accessibility.recipe_count", comment: "Recipe count accessibility"), count)
+        String(format: localized("accessibility.recipe_count"), count)
     }
     
     static func accessibilityIngredientCount(_ count: Int) -> String {
-        String(format: NSLocalizedString("accessibility.ingredient_count", comment: "Ingredient count accessibility"), count)
+        String(format: localized("accessibility.ingredient_count"), count)
     }
     
     // MARK: - Categories
@@ -191,7 +201,7 @@ enum LocalizedStrings {
     static let uiLoadingImage = NSLocalizedString("ui.loading_image", comment: "Loading image text")
     static let uiRecipeDetails = NSLocalizedString("ui.recipe_details", comment: "Recipe details label")
     static let uiItems = NSLocalizedString("ui.items", comment: "Items count label")
-    static let uiCategoriesGrid = NSLocalizedString("ui.categories_grid", comment: "Categories grid label")
+    static var uiCategoriesGrid: String { localized("ui.categories_grid") }
     static let uiFavoriteRecipe = NSLocalizedString("ui.favorite_recipe", comment: "Favorite recipe label")
     static let uiDoubleTapRecipeDetails = NSLocalizedString("ui.double_tap_recipe_details", comment: "Double tap for recipe details hint")
     static let uiExploreMeals = NSLocalizedString("ui.explore_meals", comment: "Explore meals button")

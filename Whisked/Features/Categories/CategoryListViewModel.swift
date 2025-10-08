@@ -21,7 +21,6 @@ protocol CategoryListCoordinatorProtocol {
 final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Published Properties
-    
     @Published private(set) var loadingState: LoadingState<[MealCategory]> = .idle
     @Published private(set) var selectedCategory: MealCategory?
     @Published private(set) var allCategories: [MealCategory] = []

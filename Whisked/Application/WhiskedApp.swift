@@ -27,6 +27,7 @@ struct WhiskedApp: App {
                         coordinator.view(for: destination)
                     }
             }
+            .environmentObject(LocalizableManager.shared)
         }
     }
 }

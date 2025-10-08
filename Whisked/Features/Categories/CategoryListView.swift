@@ -14,6 +14,7 @@ struct CategoryListView: View {
     // MARK: - Properties
     
     @StateObject private var viewModel: CategoryListViewModel
+    @EnvironmentObject private var localizableManager: LocalizableManager
 
     // MARK: - Device-specific Grid Layout
     
@@ -40,6 +41,21 @@ struct CategoryListView: View {
         contentView
             .navigationTitle(LocalizedStrings.categoriesNavigationTitle)
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        localizableManager.toggleLanguage()
+                    }) {
+                        HStack(spacing: Theme.Spacing.extraSmall.value) {
+                            Text(localizableManager.currentLanguage.flag)
+                            Image(systemName: "globe")
+                                .font(.system(size: Theme.IconSize.medium))
+                        }
+                    }
+                    .accessibilityLabel("Switch Language")
+                    .accessibilityHint("Switches between English and French")
+                }
+            }
             .task {
                 await viewModel.load()
             }

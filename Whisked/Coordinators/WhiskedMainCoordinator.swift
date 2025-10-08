@@ -55,7 +55,13 @@ final class WhiskedMainCoordinator: ObservableObject {
     /// Creates the main category list view with proper dependency injection
     /// - Returns: Configured CategoryListView
     func createCategoryListView() -> CategoryListView {
-        return CategoryListView(viewModel: CategoryListViewModel(mealService: mealService, persistenceService: persistenceService, coordinator: self))
+        return CategoryListView(
+            viewModel: CategoryListViewModel(
+                mealService: mealService,
+                persistenceService: persistenceService,
+                coordinator: self
+            )
+        )
     }
     
     /// Creates a meal list view for a specific category
