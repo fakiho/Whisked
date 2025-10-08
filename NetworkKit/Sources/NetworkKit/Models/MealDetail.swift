@@ -17,51 +17,13 @@ public struct MealDetail: Identifiable, Codable, Hashable, Sendable {
     public let strInstructions: String
     public let strMealThumb: String
     
-    // MARK: - Ingredient Properties (Raw from API)
+    // MARK: - Dynamic Ingredient and Measure Properties
     
-    public let strIngredient1: String?
-    public let strIngredient2: String?
-    public let strIngredient3: String?
-    public let strIngredient4: String?
-    public let strIngredient5: String?
-    public let strIngredient6: String?
-    public let strIngredient7: String?
-    public let strIngredient8: String?
-    public let strIngredient9: String?
-    public let strIngredient10: String?
-    public let strIngredient11: String?
-    public let strIngredient12: String?
-    public let strIngredient13: String?
-    public let strIngredient14: String?
-    public let strIngredient15: String?
-    public let strIngredient16: String?
-    public let strIngredient17: String?
-    public let strIngredient18: String?
-    public let strIngredient19: String?
-    public let strIngredient20: String?
+    /// Dynamic storage for ingredients (strIngredient1, strIngredient2, etc.)
+    public let rawIngredients: [String: String?]
     
-    // MARK: - Measure Properties (Raw from API)
-    
-    public let strMeasure1: String?
-    public let strMeasure2: String?
-    public let strMeasure3: String?
-    public let strMeasure4: String?
-    public let strMeasure5: String?
-    public let strMeasure6: String?
-    public let strMeasure7: String?
-    public let strMeasure8: String?
-    public let strMeasure9: String?
-    public let strMeasure10: String?
-    public let strMeasure11: String?
-    public let strMeasure12: String?
-    public let strMeasure13: String?
-    public let strMeasure14: String?
-    public let strMeasure15: String?
-    public let strMeasure16: String?
-    public let strMeasure17: String?
-    public let strMeasure18: String?
-    public let strMeasure19: String?
-    public let strMeasure20: String?
+    /// Dynamic storage for measures (strMeasure1, strMeasure2, etc.)
+    public let rawMeasures: [String: String?]
     
     // MARK: - Initializer
     
@@ -70,91 +32,15 @@ public struct MealDetail: Identifiable, Codable, Hashable, Sendable {
         strMeal: String,
         strInstructions: String,
         strMealThumb: String,
-        strIngredient1: String? = nil,
-        strIngredient2: String? = nil,
-        strIngredient3: String? = nil,
-        strIngredient4: String? = nil,
-        strIngredient5: String? = nil,
-        strIngredient6: String? = nil,
-        strIngredient7: String? = nil,
-        strIngredient8: String? = nil,
-        strIngredient9: String? = nil,
-        strIngredient10: String? = nil,
-        strIngredient11: String? = nil,
-        strIngredient12: String? = nil,
-        strIngredient13: String? = nil,
-        strIngredient14: String? = nil,
-        strIngredient15: String? = nil,
-        strIngredient16: String? = nil,
-        strIngredient17: String? = nil,
-        strIngredient18: String? = nil,
-        strIngredient19: String? = nil,
-        strIngredient20: String? = nil,
-        strMeasure1: String? = nil,
-        strMeasure2: String? = nil,
-        strMeasure3: String? = nil,
-        strMeasure4: String? = nil,
-        strMeasure5: String? = nil,
-        strMeasure6: String? = nil,
-        strMeasure7: String? = nil,
-        strMeasure8: String? = nil,
-        strMeasure9: String? = nil,
-        strMeasure10: String? = nil,
-        strMeasure11: String? = nil,
-        strMeasure12: String? = nil,
-        strMeasure13: String? = nil,
-        strMeasure14: String? = nil,
-        strMeasure15: String? = nil,
-        strMeasure16: String? = nil,
-        strMeasure17: String? = nil,
-        strMeasure18: String? = nil,
-        strMeasure19: String? = nil,
-        strMeasure20: String? = nil
+        rawIngredients: [String: String?] = [:],
+        rawMeasures: [String: String?] = [:]
     ) {
         self.idMeal = idMeal
         self.strMeal = strMeal
         self.strInstructions = strInstructions
         self.strMealThumb = strMealThumb
-        self.strIngredient1 = strIngredient1
-        self.strIngredient2 = strIngredient2
-        self.strIngredient3 = strIngredient3
-        self.strIngredient4 = strIngredient4
-        self.strIngredient5 = strIngredient5
-        self.strIngredient6 = strIngredient6
-        self.strIngredient7 = strIngredient7
-        self.strIngredient8 = strIngredient8
-        self.strIngredient9 = strIngredient9
-        self.strIngredient10 = strIngredient10
-        self.strIngredient11 = strIngredient11
-        self.strIngredient12 = strIngredient12
-        self.strIngredient13 = strIngredient13
-        self.strIngredient14 = strIngredient14
-        self.strIngredient15 = strIngredient15
-        self.strIngredient16 = strIngredient16
-        self.strIngredient17 = strIngredient17
-        self.strIngredient18 = strIngredient18
-        self.strIngredient19 = strIngredient19
-        self.strIngredient20 = strIngredient20
-        self.strMeasure1 = strMeasure1
-        self.strMeasure2 = strMeasure2
-        self.strMeasure3 = strMeasure3
-        self.strMeasure4 = strMeasure4
-        self.strMeasure5 = strMeasure5
-        self.strMeasure6 = strMeasure6
-        self.strMeasure7 = strMeasure7
-        self.strMeasure8 = strMeasure8
-        self.strMeasure9 = strMeasure9
-        self.strMeasure10 = strMeasure10
-        self.strMeasure11 = strMeasure11
-        self.strMeasure12 = strMeasure12
-        self.strMeasure13 = strMeasure13
-        self.strMeasure14 = strMeasure14
-        self.strMeasure15 = strMeasure15
-        self.strMeasure16 = strMeasure16
-        self.strMeasure17 = strMeasure17
-        self.strMeasure18 = strMeasure18
-        self.strMeasure19 = strMeasure19
-        self.strMeasure20 = strMeasure20
+        self.rawIngredients = rawIngredients
+        self.rawMeasures = rawMeasures
     }
     
     // MARK: - Computed Properties
@@ -173,37 +59,181 @@ public struct MealDetail: Identifiable, Codable, Hashable, Sendable {
     
     /// Intelligently parsed ingredients and measures as a clean array
     public var ingredients: [Ingredient] {
-        let ingredientPairs = [
-            (strIngredient1, strMeasure1),
-            (strIngredient2, strMeasure2),
-            (strIngredient3, strMeasure3),
-            (strIngredient4, strMeasure4),
-            (strIngredient5, strMeasure5),
-            (strIngredient6, strMeasure6),
-            (strIngredient7, strMeasure7),
-            (strIngredient8, strMeasure8),
-            (strIngredient9, strMeasure9),
-            (strIngredient10, strMeasure10),
-            (strIngredient11, strMeasure11),
-            (strIngredient12, strMeasure12),
-            (strIngredient13, strMeasure13),
-            (strIngredient14, strMeasure14),
-            (strIngredient15, strMeasure15),
-            (strIngredient16, strMeasure16),
-            (strIngredient17, strMeasure17),
-            (strIngredient18, strMeasure18),
-            (strIngredient19, strMeasure19),
-            (strIngredient20, strMeasure20)
-        ]
+        // Extract all valid indices from both ingredients and measures
+        let ingredientIndices = Set(rawIngredients.keys.compactMap { extractIndex(from: $0) })
+        let measureIndices = Set(rawMeasures.keys.compactMap { extractIndex(from: $0) })
         
-        return ingredientPairs.compactMap { ingredientName, measure in
-            guard let ingredientName = ingredientName?.trimmingCharacters(in: .whitespacesAndNewlines),
+        // Get the intersection - only indices that have both ingredient and measure
+        let validIndices = ingredientIndices.intersection(measureIndices).sorted()
+        
+        var ingredientList: [Ingredient] = []
+        
+        for index in validIndices {
+            let ingredientKey = "strIngredient\(index)"
+            let measureKey = "strMeasure\(index)"
+            
+            // Safe access to dictionary values
+            guard let ingredientValue = rawIngredients[ingredientKey],
+                  let measureValue = rawMeasures[measureKey],
+                  let ingredientName = ingredientValue?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !ingredientName.isEmpty,
-                  let measure = measure?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  let measure = measureValue?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !measure.isEmpty else {
-                return nil
+                continue
             }
-            return Ingredient(name: ingredientName, measure: measure)
+            
+            ingredientList.append(Ingredient(name: ingredientName, measure: measure))
+        }
+        
+        return ingredientList
+    }
+    
+    /// Helper method to extract numeric index from ingredient/measure key
+    /// Returns nil for malformed keys (e.g., "strIngredient" without number)
+    private func extractIndex(from key: String) -> Int? {
+        if key.hasPrefix("strIngredient") {
+            let numberPart = key.dropFirst("strIngredient".count)
+            return numberPart.isEmpty ? nil : Int(numberPart)
+        } else if key.hasPrefix("strMeasure") {
+            let numberPart = key.dropFirst("strMeasure".count)
+            return numberPart.isEmpty ? nil : Int(numberPart)
+        }
+        return nil
+    }
+}
+
+// MARK: - Custom Codable Implementation
+
+extension MealDetail {
+    
+    /// Custom decoder to handle dynamic ingredient/measure parsing
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: DynamicCodingKeys.self)
+        
+        // Decode core properties safely - provide fallback behavior if keys can't be created
+        if let idMealKey = DynamicCodingKeys.idMeal {
+            self.idMeal = try container.decode(String.self, forKey: idMealKey)
+        } else {
+            // If we can't create the key, provide a default value or throw a proper error
+            self.idMeal = ""
+        }
+        
+        if let strMealKey = DynamicCodingKeys.strMeal {
+            self.strMeal = try container.decode(String.self, forKey: strMealKey)
+        } else {
+            self.strMeal = ""
+        }
+        
+        if let strInstructionsKey = DynamicCodingKeys.strInstructions {
+            self.strInstructions = try container.decode(String.self, forKey: strInstructionsKey)
+        } else {
+            self.strInstructions = ""
+        }
+        
+        if let strMealThumbKey = DynamicCodingKeys.strMealThumb {
+            self.strMealThumb = try container.decode(String.self, forKey: strMealThumbKey)
+        } else {
+            self.strMealThumb = ""
+        }
+        
+        // Dynamically decode ingredients and measures
+        var ingredients: [String: String?] = [:]
+        var measures: [String: String?] = [:]
+        
+        for key in container.allKeys {
+            if key.stringValue.hasPrefix("strIngredient") {
+                ingredients[key.stringValue] = try container.decodeIfPresent(String.self, forKey: key)
+            } else if key.stringValue.hasPrefix("strMeasure") {
+                measures[key.stringValue] = try container.decodeIfPresent(String.self, forKey: key)
+            }
+        }
+        
+        self.rawIngredients = ingredients
+        self.rawMeasures = measures
+    }
+    
+    /// Custom encoder to handle dynamic ingredient/measure encoding
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: DynamicCodingKeys.self)
+        
+        // Encode core properties safely - skip if keys can't be created
+        if let idMealKey = DynamicCodingKeys.idMeal {
+            try container.encode(idMeal, forKey: idMealKey)
+        }
+        
+        if let strMealKey = DynamicCodingKeys.strMeal {
+            try container.encode(strMeal, forKey: strMealKey)
+        }
+        
+        if let strInstructionsKey = DynamicCodingKeys.strInstructions {
+            try container.encode(strInstructions, forKey: strInstructionsKey)
+        }
+        
+        if let strMealThumbKey = DynamicCodingKeys.strMealThumb {
+            try container.encode(strMealThumb, forKey: strMealThumbKey)
+        }
+        
+        // Encode ingredients dynamically - skip if key creation fails
+        for (key, value) in rawIngredients {
+            if let codingKey = DynamicCodingKeys.makeSafe(stringValue: key) {
+                try container.encodeIfPresent(value, forKey: codingKey)
+            }
+            // If key creation fails, silently skip this ingredient
+        }
+        
+        // Encode measures dynamically - skip if key creation fails
+        for (key, value) in rawMeasures {
+            if let codingKey = DynamicCodingKeys.makeSafe(stringValue: key) {
+                try container.encodeIfPresent(value, forKey: codingKey)
+            }
+            // If key creation fails, silently skip this measure
+        }
+    }
+    
+    /// Dynamic coding keys to handle variable ingredient/measure fields
+    private struct DynamicCodingKeys: CodingKey {
+        var stringValue: String
+        var intValue: Int?
+        
+        init?(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+        
+        init?(intValue: Int) {
+            self.stringValue = String(intValue)
+            self.intValue = intValue
+        }
+        
+        // MARK: - Completely Safe Keys for Core Properties (Zero Force Unwrapping!)
+        
+        static var idMeal: DynamicCodingKeys? {
+            DynamicCodingKeys(stringValue: "idMeal")
+        }
+        
+        static var strMeal: DynamicCodingKeys? {
+            DynamicCodingKeys(stringValue: "strMeal")
+        }
+        
+        static var strInstructions: DynamicCodingKeys? {
+            DynamicCodingKeys(stringValue: "strInstructions")
+        }
+        
+        static var strMealThumb: DynamicCodingKeys? {
+            DynamicCodingKeys(stringValue: "strMealThumb")
+        }
+        
+        // MARK: - Completely Safe Factory Method
+        
+        /// Creates a DynamicCodingKeys instance safely, returns nil if creation fails
+        static func makeSafe(stringValue: String) -> DynamicCodingKeys? {
+            return DynamicCodingKeys(stringValue: stringValue)
+        }
+        
+        /// Ultimate fallback initializer that cannot fail
+        private init(fallbackKey: String) {
+            self.stringValue = fallbackKey
+            self.intValue = nil
         }
     }
 }

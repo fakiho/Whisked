@@ -181,34 +181,6 @@ enum AccessibilityConstants {
     }
 }
 
-// MARK: - Accessibility Testing Helpers
-
-#if DEBUG
-struct AccessibilityTestHelpers {
-    
-    /// Validates that a view meets accessibility requirements
-    /// - Parameter view: The view to validate
-    /// - Returns: Array of accessibility issues found
-    static func validateAccessibility<V: View>(for view: V) -> [String] {
-        let issues: [String] = []
-        
-        // This would be expanded with actual validation logic
-        // For now, it's a placeholder for future accessibility testing
-        
-        return issues
-    }
-    
-    /// Simulates VoiceOver reading order
-    /// - Parameter view: The view to analyze
-    /// - Returns: Array of strings representing reading order
-    static func simulateVoiceOverReading<V: View>(for view: V) -> [String] {
-        // Placeholder for VoiceOver simulation
-        // Would be implemented with actual view hierarchy analysis
-        return []
-    }
-}
-#endif
-
 // MARK: - Preview Helpers
 
 #Preview("Accessibility Demo") {

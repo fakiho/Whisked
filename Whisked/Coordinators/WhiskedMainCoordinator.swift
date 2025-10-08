@@ -23,7 +23,7 @@ final class WhiskedMainCoordinator: ObservableObject {
     private let mealService: MealServiceProtocol
     
     /// Persistence service for managing offline favorites
-    private let persistenceService: PersistenceService
+    private let persistenceService: PersistenceServiceProtocol
 
     // MARK: - Destinations
     
@@ -44,10 +44,23 @@ final class WhiskedMainCoordinator: ObservableObject {
         
         // Initialize persistence service with ModelContainer for @ModelActor
         let contextManager = SwiftDataContextManager.shared
-        guard let container = contextManager.container else {
-            fatalError("Could not get container from SwiftDataContextManager")
+        
+        // Handle SwiftData container initialization gracefully
+        if let container = contextManager.container {
+            self.persistenceService = PersistenceService(modelContainer: container)
+        } else {
+            // Create a fallback persistence service or use a mock implementation
+            // For now, we'll attempt to create a fresh container as a fallback
+            do {
+                let fallbackContainer = try Self.createFallbackContainer()
+                self.persistenceService = PersistenceService(modelContainer: fallbackContainer)
+            } catch {
+                print("Warning: SwiftData container initialization failed. Persistence features may be limited. Error: \(error)")
+                // Create a mock persistence service that gracefully handles failures
+                // This will provide in-memory storage as a fallback
+                self.persistenceService = MockPersistenceService()
+            }
         }
-        self.persistenceService = PersistenceService(modelContainer: container)
     }
     
     // MARK: - Factory Methods
@@ -154,5 +167,17 @@ final class WhiskedMainCoordinator: ObservableObject {
             coordinator: self, 
             viewModel: viewModel
         )
+    }
+    
+    /// Creates a fallback SwiftData container when the shared one fails
+    /// - Returns: A new ModelContainer for SwiftData
+    /// - Throws: SwiftData errors if container creation fails
+    private static func createFallbackContainer() throws -> ModelContainer {
+        let schema = Schema([OfflineMeal.self])
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false
+        )
+        return try ModelContainer(for: schema, configurations: [modelConfiguration])
     }
 }

@@ -59,11 +59,14 @@ public final class SwiftDataContextManager: @unchecked Sendable {
                 
                 // Configure autosave (optional)
                 context?.autosaveEnabled = true
+                
+                debugPrint("SwiftData container initialized successfully")
             }
             
         } catch {
             debugPrint("Error initializing SwiftData container:", error)
-            // In a production app, you might want to handle this more gracefully
+            debugPrint("SwiftData persistence will be unavailable")
+            // Set both container and context to nil to indicate failure
             container = nil
             context = nil
         }
