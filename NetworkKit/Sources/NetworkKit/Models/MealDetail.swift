@@ -235,9 +235,9 @@ public struct Ingredient: Identifiable, Codable, Hashable, Sendable {
 
 /// Container for the API response containing an array of meal details
 public struct MealDetailResponse: Codable, Sendable {
-    public let meals: [MealDetail]
+    public let meals: [MealDetail]?
     
-    public init(meals: [MealDetail]) {
+    public init(meals: [MealDetail]?) {
         self.meals = meals
     }
 }

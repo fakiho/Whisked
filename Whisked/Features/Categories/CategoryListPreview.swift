@@ -8,18 +8,18 @@ import SwiftUI
 import NetworkKit
 
 // MARK: - Previews
-
-#Preview("CategoryListView - Loaded") {
-    let coordinator = WhiskedMainCoordinator(mealService: MealService(networkService: MockNetworkService.success()))
-    coordinator.createCategoryListView()
-}
-
-#Preview("CategoryListView - Loading") {
-    let coordinator = WhiskedMainCoordinator(mealService: MealService(networkService: MockNetworkService.slowNetwork()))
-    coordinator.createCategoryListView()
-}
-
-#Preview("CategoryListView - Error") {
-    let coordinator = WhiskedMainCoordinator(mealService: MealService(networkService: MockNetworkService.networkError()))
-    coordinator.createCategoryListView()
-}
+//
+//#Preview("CategoryListView - Loaded") {
+//    let coordinator = WhiskedMainCoordinator(mealService: MealService(networkService: MockNetworkService.success()))
+//    coordinator.createCategoryListView()
+//}
+//
+//#Preview("CategoryListView - Loading") {
+//    let coordinator = WhiskedMainCoordinator(mealService: MealService(networkService: MockNetworkService.slowNetwork()))
+//    coordinator.createCategoryListView()
+//}
+//
+//#Preview("CategoryListView - Error") {
+//    let coordinator = WhiskedMainCoordinator(mealService: MealService(networkService: MockNetworkService.networkError()))
+//    coordinator.createCategoryListView()
+//}

@@ -13,21 +13,21 @@ final class MealService: MealServiceProtocol {
     
     // MARK: - Dependencies
     
-    private let networkService: NetworkKit.NetworkServiceProtocol
+    private let networkService: MealRepositoryProtocol
     
     // MARK: - Initialization
     
     /// Initializes the MealService with a NetworkKit service
     /// - Parameter networkService: The NetworkKit service for network operations
-    init(networkService: NetworkKit.NetworkServiceProtocol? = nil) {
-        self.networkService = networkService ?? NetworkKit.NetworkService()
+    init(networkService: NetworkKit.MealRepositoryProtocol = MealRepositories()) {
+        self.networkService = networkService
     }
     
     // MARK: - MealServiceProtocol Implementation
     
     func fetchCategories() async throws -> [MealCategory] {
         do {
-            let networkCategories = try await networkService.fetchCategories()
+            let networkCategories = try await networkService.getCategoryList()
             return NetworkModelMapper.mapToMealCategories(networkCategories)
         } catch {
             throw NetworkModelMapper.mapErrorToMealServiceError(error)
@@ -36,7 +36,7 @@ final class MealService: MealServiceProtocol {
     
     func fetchMealsByCategory(_ category: String) async throws -> [Meal] {
         do {
-            let networkMeals = try await networkService.fetchMealsByCategory(category)
+            let networkMeals = try await networkService.getMeals(by: category)
             return NetworkModelMapper.mapToMeals(networkMeals)
         } catch {
             throw NetworkModelMapper.mapErrorToMealServiceError(error)
@@ -45,7 +45,7 @@ final class MealService: MealServiceProtocol {
     
     func fetchMealDetail(id: String) async throws -> MealDetail {
         do {
-            let networkMealDetail = try await networkService.fetchMealDetail(id: id)
+            let networkMealDetail = try await networkService.getMealDetail(mealID: id)
             return NetworkModelMapper.mapToMealDetail(networkMealDetail)
         } catch {
             throw NetworkModelMapper.mapErrorToMealServiceError(error)

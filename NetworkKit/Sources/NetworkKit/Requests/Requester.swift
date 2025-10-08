@@ -1,22 +1,16 @@
 //
-//  NetworkService.swift
+//  Requester.swift
 //  NetworkKit
 //
 //  Created by Ali FAKIH on 10/8/25.
 //
 
+
 import Foundation
 
-actor NetworkService {
-    private let session: URLSession
-    
-    public init(session: URLSession = .shared) {
-        self.session = session
-    }
-    
-    func request<T: Decodable>(
-        from request: APIRequest
-    ) async throws -> T {
+final class Requester {
+
+    func request<T:Decodable>(request: APIRequest) async throws -> T {
         do {
             let networkRequest = NetworkRequest(apiRequest: request)
             let (data, response) = try await URLSession.shared.data(for: networkRequest.request)
