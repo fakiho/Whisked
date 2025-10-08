@@ -1,5 +1,15 @@
 # Whisked iOS App - Comprehensive Technical Documentation
 
+## Screenshots
+
+<div align="center">
+  <img src="media/iPhone-screenshot.png" alt="Whisked App - iPhone" width="300"/>
+  
+  <img src="media/iPad-screenshot.png" alt="Whisked App - iPad" width="500"/>
+</div>
+
+*Whisked iOS app showcasing the meal categories interface in both French and English, demonstrating the app's internationalization support and responsive design across different device orientations.*
+
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Architecture & Design Principles](#architecture--design-principles)
@@ -13,9 +23,8 @@
 10. [Persistence & Offline Strategy](#persistence--offline-strategy)
 11. [Network Layer Architecture](#network-layer-architecture)
 12. [Navigation & Coordination](#navigation--coordination)
-13. [Development Workflow](#development-workflow)
-14. [API Integration](#api-integration)
-15. [Future Considerations](#future-considerations)
+13. [API Integration](#api-integration)
+14. [Future Considerations](#future-considerations)
 
 ---
 
@@ -1191,85 +1200,6 @@ func pop() {
         navigationPath.removeLast()
     }
 }
-```
-
----
-
-## Development Workflow
-
-### Development Environment Setup
-
-#### Prerequisites
-- Xcode 15+
-- iOS 17+ Simulator
-- Swift 6 toolchain
-
-#### Project Setup
-```bash
-# Clone repository
-git clone [repository-url]
-cd Whisked
-
-# Build project
-./build-project.sh
-
-# Or use VS Code tasks
-# Cmd+Shift+P > "Tasks: Run Task" > "Build iOS Simulator"
-```
-
-### VS Code Integration
-
-#### Tasks Configuration
-```json
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Build iOS Simulator",
-            "type": "shell",
-            "command": "xcodebuild",
-            "args": [
-                "-project", "Whisked.xcodeproj",
-                "-scheme", "Whisked",
-                "-destination", "platform=iOS Simulator,name=iPhone 16",
-                "build"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
-    ]
-}
-```
-
-### Development Best Practices
-
-#### Code Organization
-- **Feature-Based Structure**: Related files grouped by feature
-- **Protocol-First Design**: Interfaces before implementations
-- **Separation of Concerns**: Each class has single responsibility
-
-#### Testing Workflow
-```bash
-# Run all tests
-xcodebuild test -project Whisked.xcodeproj -scheme Whisked -destination 'platform=iOS Simulator,name=iPhone 16'
-
-# Run specific test suite
-# Use Xcode Test Navigator or VS Code test extensions
-```
-
-#### Package Development
-Each Swift package can be developed independently:
-
-```bash
-# Test NetworkKit in isolation
-cd NetworkKit
-swift test
-
-# Test PersistenceKit
-cd PersistenceKit
-swift test
 ```
 
 ---
