@@ -19,7 +19,7 @@ actor NetworkService {
     ) async throws -> T {
         do {
             let networkRequest = NetworkRequest(apiRequest: request)
-            let (data, response) = try await URLSession.shared.data(for: networkRequest.request)
+            let (data, response) = try await session.data(for: networkRequest.request)
 
             try ErrorMapper.validateHTTPResponse(response, data: data)
 

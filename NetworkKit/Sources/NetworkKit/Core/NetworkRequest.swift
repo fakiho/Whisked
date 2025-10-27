@@ -10,7 +10,7 @@ import Foundation
 
 struct NetworkRequest {
     
-    var request: URLRequest
+    private(set) var request: URLRequest
     
     init(apiRequest: APIRequest) {
         var urlcomponents = URLComponents(string: apiRequest.url?.description ?? Constants.baseURL) // if there is nothing inside api.url than send me the base url
